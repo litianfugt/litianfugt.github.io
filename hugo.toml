@@ -46,7 +46,6 @@ hasCJKLanguage = true
   name = "搜索"
   url = "#search"
   weight = 6
-  pre = "<i class='fa fa-search'></i>"  # 可选：添加搜索图标
 
 # PaperMod 主题配置
 [params]
