@@ -1,0 +1,25 @@
+# hugo.toml
+baseURL = "https://litianfugt.github.io/"
+languageCode = "zh-CN"
+title = "我的技术笔记"
+theme = "PaperMod"
+publishDir = "public"
+summaryLength = 20
+
+[[menu.main]]
+  identifier = "home"
+  name = "首页"
+  url = "/"
+  weight = 1
+
+[[menu.main]]
+  identifier = "posts"
+  name = "文章"
+  url = "/posts/"
+  weight = 2
+
+[params]
+  env = "production"
+  ShowReadingTime = true
+  ShowPostNavs = true
+  comments = false
