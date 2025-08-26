@@ -1,11 +1,15 @@
-# hugo.toml
+# 基础配置
 baseURL = "https://litianfugt.github.io/"
 languageCode = "zh-CN"
-title = "我的技术笔记"
+title = "李石原的博客"
 theme = "PaperMod"
 publishDir = "public"
 summaryLength = 20
+pagination.pagerSize = 15
+defaultContentLanguage = "zh"
+hasCJKLanguage = true
 
+# 主菜单配置
 [[menu.main]]
   identifier = "home"
   name = "首页"
@@ -18,8 +22,49 @@ summaryLength = 20
   url = "/posts/"
   weight = 2
 
+[[menu.main]]
+  identifier = "categories"
+  name = "分类"
+  url = "/categories/"
+  weight = 3
+
+[[menu.main]]
+  identifier = "archives"
+  name = "归档"
+  url = "/archives/"
+  weight = 4
+
+[[menu.main]]
+  identifier = "about"
+  name = "关于"
+  url = "/about/"
+  weight = 5
+
+# 搜索菜单项
+[[menu.main]]
+  identifier = "search"
+  name = "搜索"
+  url = "#search"
+  weight = 6
+  pre = "<i class='fa fa-search'></i>"  # 可选：添加搜索图标
+
+# PaperMod 主题配置
 [params]
   env = "production"
   ShowReadingTime = true
   ShowPostNavs = true
   comments = false
+  
+  # 启用搜索功能
+  [params.search]
+    enable = true
+    maxResults = 10
+    
+  # 深色模式设置
+  defaultTheme = "auto"
+  disableThemeToggle = false
+  
+  # 社交链接（可选）
+  [params.social]
+    GitHub = "litianfugt"
+    RSS = true
