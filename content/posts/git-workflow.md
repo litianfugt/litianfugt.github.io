@@ -1,6 +1,6 @@
 ---
 title: "Git工作流程：从入门到精通"
-date: 2023-12-01T09:15:00+08:00
+date: 2025-09-10T00:00:00+08:00
 draft: false
 description: "本文详细介绍了Git的工作流程，包括基本命令、分支管理、协作模式以及最佳实践，帮助开发者高效使用Git进行版本控制。"
 keywords: ["Git", "版本控制", "工作流程", "分支管理", "协作开发"]
@@ -87,17 +87,18 @@ git clone https://github.com/username/repository.git
 #### 查看状态
 
 ```bash
+
 # 查看工作区状态
-git status
+git status  # 显示当前文件修改情况
 
 # 查看简化状态
-git status -s
+git status -s  # 简化输出，适合快速查看
 
 # 查看提交历史
-git log
+git log  # 显示详细提交记录
 
 # 查看简洁提交历史
-git log --oneline
+git log --oneline  # 每条提交一行，便于快速浏览
 
 # 查看图形化提交历史
 git log --graph --oneline --all

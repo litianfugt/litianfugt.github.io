@@ -1,6 +1,6 @@
 ---
 title: "图像处理基础：从像素到滤波"
-date: 2023-10-10T09:15:00+08:00
+date: 2025-09-10T00:00:00+08:00
 draft: false
 description: "本文介绍了图像处理的基础知识，包括图像表示、基本操作、滤波器设计和图像增强技术，为计算机视觉学习打下基础。"
 keywords: ["图像处理", "像素操作", "滤波器", "图像增强", "计算机视觉"]
@@ -132,13 +132,13 @@ equalized_image = cv2.equalizeHist(gray_image)
 
 伽马校正用于调整图像的亮度，特别适用于显示设备的非线性响应。
 
+gamma_image = gamma_correction(image, 2.2)  # 典型的伽马值
 ```python
+# 伽马校正函数
 def gamma_correction(image, gamma=1.0):
     # 构建查找表
     inv_gamma = 1.0 / gamma
-    table = np.array([((i / 255.0) ** inv_gamma) * 255
-        for i in np.arange(0, 256)]).astype("uint8")
-    
+    table = np.array([((i / 255.0) ** inv_gamma) * 255 for i in np.arange(0, 256)]).astype("uint8")
     # 应用伽马校正
     return cv2.LUT(image, table)
 

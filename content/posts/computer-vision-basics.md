@@ -1,6 +1,6 @@
 ---
 title: "计算机视觉基础：从像素到理解"
-date: 2023-10-20T10:45:00+08:00
+date: 2025-09-10T00:00:00+08:00
 draft: false
 description: "本文全面介绍了计算机视觉的基础知识，从图像表示、基本处理到高级特征提取和目标检测，帮助读者理解计算机如何看懂图像。"
 keywords: ["计算机视觉", "图像处理", "特征提取", "目标检测", "深度学习"]
@@ -52,6 +52,9 @@ gray_image = np.array([
     [120, 170, 200, 230, 255]
 ], dtype=np.uint8)
 
+# 判空处理
+assert gray_image is not None, "灰度图像创建失败！"
+
 # 显示图像
 plt.imshow(gray_image, cmap='gray')
 plt.title('Grayscale Image')
@@ -67,6 +70,9 @@ plt.show()
 # 创建一个简单的彩色图像
 # 5x5x3的RGB图像，值范围0-255
 color_image = np.zeros((5, 5, 3), dtype=np.uint8)
+
+# 判空处理
+assert color_image is not None, "彩色图像创建失败！"
 
 # 设置红色通道
 color_image[:, :, 0] = np.array([

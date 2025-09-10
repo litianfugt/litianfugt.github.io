@@ -1,6 +1,6 @@
 ---
 title: "算法优化：提升代码性能的实用技巧"
-date: 2023-09-25T11:20:00+08:00
+date: 2025-09-10T00:00:00+08:00
 draft: false
 description: "探讨算法优化的基本原则和实用技巧，包括时间复杂度分析、空间优化和常见算法的优化方法。"
 keywords: ["算法优化", "性能分析", "时间复杂度", "空间复杂度", "代码优化"]
@@ -51,7 +51,11 @@ def get_first_element(arr):
 对数时间算法的执行时间随输入规模的对数增长，常见于分治算法。
 
 ```python
-# 示例：二分查找
+"""
+示例：二分查找
+参数：arr (List[int])，target (int)
+返回：目标索引或-1
+"""
 def binary_search(arr, target):
     left, right = 0, len(arr) - 1
     while left <= right:
@@ -132,8 +136,14 @@ def bubble_sort(arr):
 指数时间算法的执行时间随输入规模指数增长，通常用于解决NP难问题。
 
 ```python
-# 示例：递归计算斐波那契数列（低效版本）
+"""
+示例：递归计算斐波那契数列（低效版本）
+参数：n (int)
+返回：第n项斐波那契数
+"""
 def fibonacci(n):
+    if not isinstance(n, int) or n < 0:
+        raise ValueError("n必须为非负整数")
     if n <= 1:
         return n
     return fibonacci(n - 1) + fibonacci(n - 2)
@@ -286,12 +296,18 @@ def find_duplicates(arr):
 
 ```python
 # 使用缓存优化斐波那契数列计算
+"""
+使用缓存优化斐波那契数列计算
+参数：n (int), cache (dict)
+返回：第n项斐波那契数
+"""
 def fibonacci(n, cache={}):
+    if not isinstance(n, int) or n < 0:
+        raise ValueError("n必须为非负整数")
     if n in cache:
         return cache[n]
     if n <= 1:
         return n
-    
     result = fibonacci(n - 1, cache) + fibonacci(n - 2, cache)
     cache[n] = result
     return result
@@ -323,7 +339,8 @@ def swap(a, b):
 import concurrent.futures
 
 def process_data(data):
-    # 处理数据的函数
+    # 处理数据的函数，返回处理结果
+    result = ... # 根据实际需求处理
     return result
 
 def parallel_process(data_list, num_workers=4):
@@ -1226,9 +1243,9 @@ def time_function(func, *args, **kwargs):
 
 def benchmark_function(func, *args, **kwargs):
     # 使用timeit进行更精确的基准测试
-    setup = f"from __main__ import {func.__name__}"
-    stmt = f"{func.__name__}(*{args}, **{kwargs})"
-    time_taken = timeit.timeit(stmt, setup=setup, number=1000)
+    import functools
+    wrapped = functools.partial(func, *args, **kwargs)
+    time_taken = timeit.timeit(wrapped, number=1000)
     print(f"函数 {func.__name__} 平均执行时间: {time_taken/1000:.6f} 秒")
     return func(*args, **kwargs)
 

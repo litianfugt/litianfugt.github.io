@@ -1,6 +1,6 @@
 ---
 title: "深度学习在图像处理中的应用"
-date: 2023-10-15T14:30:00+08:00
+date: 2025-09-10T00:00:00+08:00
 draft: false
 description: "探讨深度学习技术在图像处理领域的应用，包括卷积神经网络、图像分类、目标检测和图像分割等前沿技术。"
 keywords: ["深度学习", "图像处理", "卷积神经网络", "目标检测", "图像分割"]
@@ -92,13 +92,15 @@ class SimpleCNN(nn.Module):
         
         self.classifier = nn.Sequential(
             nn.Dropout(),
-            nn.Linear(128 * 28 * 28, 512),
+            nn.Linear(128 * 28 * 28, 512),  # 输入尺寸需与特征图尺寸一致
             nn.ReLU(inplace=True),
             nn.Dropout(),
             nn.Linear(512, num_classes)
         )
     
     def forward(self, x):
+        # x: 输入张量，形状为 (batch_size, 3, 224, 224) 或根据实际输入调整
+        # 返回分类结果
         x = self.features(x)
         x = x.view(x.size(0), -1)
         x = self.classifier(x)
