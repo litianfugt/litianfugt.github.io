@@ -4,10 +4,20 @@ languageCode = "zh-CN"
 title = "李石原的博客"
 theme = "PaperMod"
 publishDir = "public"
-summaryLength = 20
-pagination.pagerSize = 15
+summaryLength = 70
+pagination.pagerSize = 10
 defaultContentLanguage = "zh"
 hasCJKLanguage = true
+enableRobotsTXT = true
+buildDrafts = false
+buildFuture = false
+buildExpired = false
+enableEmoji = true
+pygmentsUseClasses = true
+pygmentsCodeFences = true
+pygmentsStyle = "monokai"
+
+
 
 # 主菜单配置
 [[menu.main]]
@@ -44,26 +54,140 @@ hasCJKLanguage = true
 [[menu.main]]
   identifier = "search"
   name = "搜索"
-  url = "#search"
+  url = "/search/"
   weight = 6
+
+# 标签菜单项
+[[menu.main]]
+  identifier = "tags"
+  name = "标签"
+  url = "/tags/"
+  weight = 7
 
 # PaperMod 主题配置
 [params]
   env = "production"
+  description = "李石原的个人技术博客，专注于图像算法、计算机视觉和深度学习技术分享"
+  author = "李石原"
+  keywords = ["图像算法", "计算机视觉", "深度学习", "机器学习", "技术博客"]
   ShowReadingTime = true
-  ShowPostNavs = true
-  comments = false
+  ShowShareButtons = true
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+  ShowWordCount = true
+  ShowRssButtonInSectionTermList = true
+  UseHugoToc = true
+  disableSpecial1stPost = false
+  disableScrollToTop = false
+  hidemeta = false
+  hideSummary = false
+  showtoc = true
+  tocopen = false
   
   # 启用搜索功能
   [params.search]
     enable = true
     maxResults = 10
+    contentLength = 1000
+    highlight = true
+    
+  # Fuse.js 搜索选项
+  [params.fuseOpts]
+    isCaseSensitive = false
+    shouldSort = true
+    location = 0
+    distance = 100
+    threshold = 0.4
+    minMatchCharLength = 2
+    keys = ["title", "permalink", "summary", "content"]
+    limit = 10
     
   # 深色模式设置
   defaultTheme = "auto"
   disableThemeToggle = false
   
-  # 社交链接（可选）
+  # 主页信息设置
+  [params.homeInfoParams]
+    Title = "欢迎来到李石原的技术博客"
+    Content = "图像算法工程师，专注于计算机视觉与深度学习技术。在这里分享技术心得、学习笔记和项目经验。"
+    
+  # 社交链接
   [params.social]
     GitHub = "litianfugt"
+    Linkedin = ""
+    Twitter = ""
+    Instagram = ""
+    Email = "your.email@example.com"
     RSS = true
+    # 添加更多社交平台
+    Zhihu = ""
+    Weibo = ""
+    CSDN = ""
+    Juejin = ""
+    
+  # 标签页配置
+  [params.label]
+    text = "首页"
+    icon = "/apple-touch-icon.png"
+    iconHeight = 35
+    
+  # 资料配置
+  [params.profileMode]
+    enabled = false
+    title = "李石原"
+    imageUrl = "https://example.com/avatar.jpg"
+    imageTitle = "我的头像"
+    imageWidth = 120
+    imageHeight = 120
+    subtitle = "图像算法工程师 | 计算机视觉 | 深度学习"
+    
+  
+
+  # SEO优化配置
+  [params.seo]
+    # 图片默认描述
+    image = "https://example.com/default-image.jpg"
+    # Twitter卡片配置
+    twitterCard = "summary_large_image"
+    # OpenGraph默认图片
+    ogImage = "https://example.com/default-image.jpg"
+
+  # 评论系统配置（可选）
+  [params.comments]
+    enable = false
+    # 可以选择启用以下评论系统之一
+    # utterances:
+    #   repo = "your-repo/your-repo"
+    #   issueTerm = "pathname"
+    #   theme = "github-light"
+    
+    # gitalk:
+    #   owner = "your-github-username"
+    #   repo = "your-repo"
+    #   clientId = "your-client-id"
+    #   clientSecret = "your-client-secret"
+
+# 搜索输出格式
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+  section = ["HTML", "RSS"]
+  taxonomy = ["HTML", "RSS"]
+  term = ["HTML", "RSS"]
+
+# 搜索索引配置
+[outputFormats]
+  [outputFormats.JSON]
+    mediaType = "application/json"
+    isPlainText = true
+    isHTML = false
+    notAlternative = true
+
+# 自定义CSS
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.highlight]
+    style = "monokai"
+    lineNos = true
