@@ -1,0 +1,16 @@
+# 忽略敏感配置文件
+static/github-gist-config.js
+
+# 忽略Hugo缓存
+.hugo_build.lock
+public/
+
+# 忽略IDE和操作系统文件
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# 忽略临时文件
+*.tmp
+*.temp

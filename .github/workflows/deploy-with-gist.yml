@@ -1,0 +1,61 @@
+name: Deploy to GitHub Pages with Gist Configuration
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: '0.110.0'
+          extended: true
+
+      - name: Configure GitHub Gist
+        run: |
+          # 创建配置文件，注入GitHub令牌
+          cat > static/github-gist-config.js << 'EOF'
+          // GitHub Gist 配置文件 - 由GitHub Actions自动生成
+          window.GITHUB_GIST_TOKEN = "${{ secrets.BLOG_GIST_TOKEN }}"
+          window.GITHUB_GIST_ID = "${{ secrets.BLOG_GIST_ID }}"
+          EOF
+          
+          echo "GitHub Gist配置文件已生成"
+          
+          # 显示配置文件内容（不显示敏感信息）
+          echo "配置文件内容（敏感信息已隐藏）："
+          cat static/github-gist-config.js | sed 's/window\.GITHUB_GIST_TOKEN = .*/window.GITHUB_GIST_TOKEN = "[REDACTED]"/' | sed 's/window\.GITHUB_GIST_ID = .*/window.GITHUB_GIST_ID = "[REDACTED]"/'
+
+      - name: Build
+        run: hugo
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: ./public
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
