@@ -136,6 +136,207 @@
   justify-content: center;
 }
 
+/* Enhanced Thoughts Page Header */
+.thoughts-header {
+  text-align: center;
+  padding: 40px 0;
+  margin-bottom: 30px;
+  background: linear-gradient(135deg, var(--entry) 0%, var(--theme) 100%);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.thoughts-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+}
+
+.thoughts-header-content {
+  position: relative;
+  z-index: 1;
+}
+
+.thoughts-title {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+}
+
+.thoughts-description {
+  font-size: 18px;
+  color: var(--secondary);
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
+  opacity: 0.9;
+}
+
+.thoughts-header-meta {
+  margin-top: 25px;
+}
+
+.thoughts-stats {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  font-size: 14px;
+  color: var(--secondary);
+}
+
+.thoughts-count {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.thoughts-separator {
+  opacity: 0.5;
+}
+
+/* Enhanced Thought Cards */
+.thought-card {
+  background: var(--entry);
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.thought-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  border-color: rgba(var(--primary-rgb), 0.2);
+}
+
+.thought-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.thought-card:hover::before {
+  opacity: 1;
+}
+
+.thought-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border);
+}
+
+.thought-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  margin-right: 15px;
+  object-fit: cover;
+  border: 3px solid var(--tertiary);
+  transition: all 0.3s ease;
+}
+
+.thought-card:hover .thought-avatar {
+  border-color: var(--primary);
+  transform: scale(1.05);
+}
+
+.thought-meta {
+  flex: 1;
+}
+
+.thought-author {
+  font-weight: 600;
+  color: var(--primary);
+  font-size: 17px;
+  margin-bottom: 4px;
+  letter-spacing: -0.3px;
+}
+
+.thought-time {
+  color: var(--secondary);
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.thought-content {
+  color: var(--content);
+  line-height: 1.8;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.thought-content p {
+  margin: 0 0 12px 0;
+}
+
+.thought-content p:last-child {
+  margin-bottom: 0;
+}
+
+.thought-content h1, .thought-content h2, .thought-content h3 {
+  color: var(--primary);
+  margin: 16px 0 12px 0;
+}
+
+.thought-content ul, .thought-content ol {
+  margin: 12px 0;
+  padding-left: 24px;
+}
+
+.thought-content li {
+  margin: 6px 0;
+}
+
+.thought-content blockquote {
+  border-left: 4px solid var(--primary);
+  padding-left: 16px;
+  margin: 16px 0;
+  color: var(--secondary);
+  font-style: italic;
+}
+
+.thought-content code {
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.thought-content pre {
+  background: var(--code-bg);
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 16px 0;
+}
+
+.thoughts-update {
+  opacity: 0.8;
+}
+
 /* WeChat Moments-style Thoughts Page */
 .thoughts-container {
   max-width: 800px;
@@ -379,6 +580,138 @@
 @media screen and (min-width: 1300px) {
   .main {
     max-width: 850px;
+  }
+  
+  /* Comment functionality styling */
+  .thought-comment-form {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px;
+      background: var(--theme);
+      border-radius: 12px;
+      margin-top: 10px;
+  }
+  
+  .comment-input {
+      flex: 1;
+      padding: 10px 15px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--entry);
+      color: var(--content);
+      font-size: 14px;
+      outline: none;
+      transition: all 0.3s ease;
+  }
+  
+  .comment-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.1);
+  }
+  
+  .comment-submit {
+      padding: 10px 20px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+  }
+  
+  .comment-submit:hover {
+      background: var(--secondary);
+      transform: translateY(-1px);
+  }
+  
+  .comment-submit:active {
+      transform: translateY(0);
+  }
+  
+  .thought-comments-list {
+      max-height: 300px;
+      overflow-y: auto;
+      padding-right: 5px;
+  }
+  
+  .thought-comments-list::-webkit-scrollbar {
+      width: 4px;
+  }
+  
+  .thought-comments-list::-webkit-scrollbar-thumb {
+      background: var(--tertiary);
+      border-radius: 2px;
+  }
+  
+  .no-comments {
+      text-align: center;
+      color: var(--secondary);
+      padding: 20px;
+      font-size: 14px;
+      opacity: 0.7;
+  }
+  
+  .thought-action.active {
+      color: var(--primary);
+  }
+  
+  .thought-action.active svg {
+      fill: var(--primary);
+  }
+  
+  /* Notification styling */
+  .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      color: white;
+      font-size: 14px;
+      z-index: 1000;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all 0.3s ease;
+      max-width: 300px;
+      word-wrap: break-word;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .notification-success {
+      background: #4CAF50;
+  }
+  
+  .notification-warning {
+      background: #FF9800;
+  }
+  
+  .notification-error {
+      background: #F44336;
+  }
+  
+  .notification-info {
+      background: #2196F3;
+  }
+  
+  /* Responsive adjustments for comment form */
+  @media screen and (max-width: 768px) {
+      .thought-comment-form {
+          padding: 12px;
+          gap: 8px;
+      }
+      
+      .comment-input {
+          padding: 8px 12px;
+          font-size: 13px;
+      }
+      
+      .comment-submit {
+          padding: 8px 16px;
+          font-size: 13px;
+      }
   }
   
   :root {
