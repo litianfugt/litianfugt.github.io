@@ -1,0 +1,71 @@
+{{ define "main" }}
+<main class="main">
+    <div class="thoughts-container">
+        <header class="page-header">
+            <h1 class="post-title">{{ .Title }}</h1>
+            {{ if .Content }}
+            <div class="post-content">
+                {{ .Content }}
+            </div>
+            {{ end }}
+        </header>
+
+        <div class="thoughts-list">
+            {{ range .Pages.ByDate.Reverse }}
+            <article class="thought-card" data-thought-id="{{ .File.BaseFileName }}">
+                <div class="thought-header">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ .Site.Author.name | default "LiShiyuan" }}" alt="{{ .Site.Author.name | default "李石原" }}" class="thought-avatar">
+                    <div class="thought-meta">
+                        <div class="thought-author">{{ .Site.Author.name | default "李石原" }}</div>
+                        <div class="thought-time">{{ .Date.Format "2006-01-02 15:04" }}</div>
+                    </div>
+                </div>
+                <div class="thought-content">
+                    {{ .Content }}
+                </div>
+                <div class="thought-actions">
+                    <div class="thought-actions-left">
+                        <button class="thought-action like-btn" data-thought-id="{{ .File.BaseFileName }}">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                            <span class="like-count">0</span>
+                        </button>
+                        <button class="thought-action comment-btn" data-thought-id="{{ .File.BaseFileName }}">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                            </svg>
+                            <span class="comment-count">0</span>
+                        </button>
+                    </div>
+                    <div class="thought-stats">
+                        <span class="thought-views">👁 {{ .ReadingTime }} 分钟阅读</span>
+                    </div>
+                </div>
+                <div class="thought-comments" id="comments-{{ .File.BaseFileName }}" style="display: none;">
+                    <div class="thought-comment-form">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=visitor" alt="访客" class="comment-avatar">
+                        <input type="text" class="comment-input" placeholder="写下你的评论..." maxlength="200">
+                        <button class="comment-submit" data-thought-id="{{ .File.BaseFileName }}">发送</button>
+                    </div>
+                </div>
+            </article>
+            {{ end }}
+        </div>
+
+        <!-- Pagination -->
+        {{ if gt .Paginator.TotalPages 1 }}
+        <div class="load-more-container">
+            {{ if .Paginator.HasNext }}
+            <a href="{{ .Paginator.Next.URL }}" class="load-more-btn">
+                加载更多随想
+            </a>
+            {{ end }}
+        </div>
+        {{ end }}
+    </div>
+</main>
+
+<!-- Include the thoughts JavaScript -->
+<script src="/js/thoughts.js"></script>
+{{ end }}

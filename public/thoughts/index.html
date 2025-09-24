@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=62950&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>随想 | 李石原的博客</title>
+<meta name="keywords" content="">
+<meta name="description" content="这里记录一些日常的思考和感悟，技术的、生活的、或者任何突然想到的想法。欢迎点赞评论，一起交流！">
+<meta name="author" content="李石原">
+<link rel="canonical" href="http://localhost:62950/thoughts/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.66735491c02b60cf4b60cdca6997528b93de99db5f117f6fc7577a71ef15844c.css" integrity="sha256-ZnNUkcArYM9LYM3KaZdSi5PemdtfEX9vx1d6ce8VhEw=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:62950/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:62950/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:62950/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:62950/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:62950/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:62950/thoughts/index.xml">
+<link rel="alternate" hreflang="zh" href="http://localhost:62950/thoughts/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript><link rel="stylesheet" href="http://localhost:62950/css/custom.css">
+<script src="http://localhost:62950/js/thoughts.js" defer></script><meta property="og:url" content="http://localhost:62950/thoughts/">
+  <meta property="og:site_name" content="李石原的博客">
+  <meta property="og:title" content="随想">
+  <meta property="og:description" content="这里记录一些日常的思考和感悟，技术的、生活的、或者任何突然想到的想法。欢迎点赞评论，一起交流！">
+  <meta property="og:locale" content="zh-CN">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="随想">
+<meta name="twitter:description" content="李石原的个人技术博客，专注于图像算法、计算机视觉和深度学习技术分享">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "随想",
+      "item": "http://localhost:62950/thoughts/"
+    }
+  ]
+}
+</script>
+</head>
+
+<body class="list" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:62950/" accesskey="h" title="首页 (Alt + H)">
+                <img src="http://localhost:62950/apple-touch-icon.png" alt="" aria-label="logo"
+                    height="35">首页</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:62950/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:62950/posts/" title="文章">
+                    <span>文章</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:62950/categories/" title="分类">
+                    <span>分类</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:62950/archives/" title="归档">
+                    <span>归档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:62950/thoughts/" title="随想">
+                    <span class="active">随想</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:62950/about/" title="关于">
+                    <span>关于</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:62950/search/" title="搜索 (Alt &#43; /)" accesskey=/>
+                    <span>搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:62950/tags/" title="标签">
+                    <span>标签</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+<main class="main">
+    <div class="thoughts-container">
+        <header class="page-header">
+            <h1 class="post-title">随想</h1>
+            
+            <div class="post-content">
+                <p>这里记录一些日常的思考和感悟，技术的、生活的、或者任何突然想到的想法。欢迎点赞评论，一起交流！</p>
+
+            </div>
+            
+        </header>
+
+        <div class="thoughts-list">
+            
+            <article class="thought-card" data-thought-id="2025-09-24-first-thought">
+                <div class="thought-header">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=LiShiyuan" alt="李石原" class="thought-avatar">
+                    <div class="thought-meta">
+                        <div class="thought-author">李石原</div>
+                        <div class="thought-time">2025-09-24 10:30</div>
+                    </div>
+                </div>
+                <div class="thought-content">
+                    <p>今天对博客进行了一些优化，增加了这个&quot;随想&quot;页面，希望可以更方便地记录日常的想法和感悟。</p>
+<p>技术方面，最近在思考如何更好地组织代码结构，提高可维护性。有时候简单的功能也会有复杂的实现，关键是要找到合适的抽象层次。</p>
+<hr>
+<p><em>发布于 2025年9月24日 上午10:30</em></p>
+
+                </div>
+                <div class="thought-actions">
+                    <div class="thought-actions-left">
+                        <button class="thought-action like-btn" data-thought-id="2025-09-24-first-thought">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                            <span class="like-count">0</span>
+                        </button>
+                        <button class="thought-action comment-btn" data-thought-id="2025-09-24-first-thought">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                            </svg>
+                            <span class="comment-count">0</span>
+                        </button>
+                    </div>
+                    <div class="thought-stats">
+                        <span class="thought-views">👁 1 分钟阅读</span>
+                    </div>
+                </div>
+                <div class="thought-comments" id="comments-2025-09-24-first-thought" style="display: none;">
+                    <div class="thought-comment-form">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=visitor" alt="访客" class="comment-avatar">
+                        <input type="text" class="comment-input" placeholder="写下你的评论..." maxlength="200">
+                        <button class="comment-submit" data-thought-id="2025-09-24-first-thought">发送</button>
+                    </div>
+                </div>
+            </article>
+            
+            <article class="thought-card" data-thought-id="2025-09-23-meditation">
+                <div class="thought-header">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=LiShiyuan" alt="李石原" class="thought-avatar">
+                    <div class="thought-meta">
+                        <div class="thought-author">李石原</div>
+                        <div class="thought-time">2025-09-23 15:45</div>
+                    </div>
+                </div>
+                <div class="thought-content">
+                    <p>生活方面，感觉时间过得很快，需要更好地平衡工作和生活。最近开始尝试每天冥想10分钟，希望能帮助自己保持专注和平静。</p>
+<p>有时候停下来思考比一直忙碌更重要。🧘‍♂️</p>
+<hr>
+<p><em>发布于 2025年9月23日 下午3:45</em></p>
+
+                </div>
+                <div class="thought-actions">
+                    <div class="thought-actions-left">
+                        <button class="thought-action like-btn" data-thought-id="2025-09-23-meditation">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                            <span class="like-count">0</span>
+                        </button>
+                        <button class="thought-action comment-btn" data-thought-id="2025-09-23-meditation">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                            </svg>
+                            <span class="comment-count">0</span>
+                        </button>
+                    </div>
+                    <div class="thought-stats">
+                        <span class="thought-views">👁 1 分钟阅读</span>
+                    </div>
+                </div>
+                <div class="thought-comments" id="comments-2025-09-23-meditation" style="display: none;">
+                    <div class="thought-comment-form">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=visitor" alt="访客" class="comment-avatar">
+                        <input type="text" class="comment-input" placeholder="写下你的评论..." maxlength="200">
+                        <button class="comment-submit" data-thought-id="2025-09-23-meditation">发送</button>
+                    </div>
+                </div>
+            </article>
+            
+        </div>
+
+        
+        
+    </div>
+</main>
+
+
+<script src="/js/thoughts.js"></script>
+
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:62950/">李石原的博客</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

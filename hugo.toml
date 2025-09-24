@@ -45,24 +45,30 @@ pygmentsStyle = "monokai"
   weight = 4
 
 [[menu.main]]
+  identifier = "thoughts"
+  name = "随想"
+  url = "/thoughts/"
+  weight = 5
+
+[[menu.main]]
   identifier = "about"
   name = "关于"
   url = "/about/"
-  weight = 5
+  weight = 6
 
 # 搜索菜单项
 [[menu.main]]
   identifier = "search"
   name = "搜索"
   url = "/search/"
-  weight = 6
+  weight = 7
 
 # 标签菜单项
 [[menu.main]]
   identifier = "tags"
   name = "标签"
   url = "/tags/"
-  weight = 7
+  weight = 8
 
 # PaperMod 主题配置
 [params]
