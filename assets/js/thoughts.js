@@ -4,28 +4,112 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Thoughts.js: DOM loaded, initializing functionality...');
     
-    // 初始化本地存储
+    // 初始化存储系统
     const storage = {
-        getLikes: function() {
-            const likes = localStorage.getItem('thoughts-likes');
-            return likes ? JSON.parse(likes) : {};
+        // 获取点赞数据
+        getLikes: async function() {
+            // 首先尝试从本地存储获取
+            const localLikes = localStorage.getItem('thoughts-likes');
+            if (localLikes) {
+                return JSON.parse(localLikes);
+            }
+            
+            // 如果本地没有，尝试从服务器获取
+            try {
+                const serverLikes = await this.fetchServerData('likes');
+                if (serverLikes) {
+                    localStorage.setItem('thoughts-likes', JSON.stringify(serverLikes));
+                    return serverLikes;
+                }
+            } catch (error) {
+                console.warn('Thoughts.js: Failed to fetch likes from server:', error);
+            }
+            
+            return {};
         },
+        
+        // 保存点赞数据
         setLikes: function(likes) {
+            // 保存到本地存储
             localStorage.setItem('thoughts-likes', JSON.stringify(likes));
+            
+            // 尝试保存到服务器
+            this.saveServerData('likes', likes);
         },
-        getComments: function(thoughtId) {
-            const comments = localStorage.getItem(`thoughts-comments-${thoughtId}`);
-            return comments ? JSON.parse(comments) : [];
+        
+        // 获取评论数据
+        getComments: async function(thoughtId) {
+            // 首先尝试从本地存储获取
+            const localComments = localStorage.getItem(`thoughts-comments-${thoughtId}`);
+            if (localComments) {
+                return JSON.parse(localComments);
+            }
+            
+            // 如果本地没有，尝试从服务器获取
+            try {
+                const serverComments = await this.fetchServerData(`comments-${thoughtId}`);
+                if (serverComments) {
+                    localStorage.setItem(`thoughts-comments-${thoughtId}`, JSON.stringify(serverComments));
+                    return serverComments;
+                }
+            } catch (error) {
+                console.warn('Thoughts.js: Failed to fetch comments from server:', error);
+            }
+            
+            return [];
         },
+        
+        // 保存评论数据
         setComments: function(thoughtId, comments) {
+            // 保存到本地存储
             localStorage.setItem(`thoughts-comments-${thoughtId}`, JSON.stringify(comments));
+            
+            // 尝试保存到服务器
+            this.saveServerData(`comments-${thoughtId}`, comments);
+        },
+        
+        // 从服务器获取数据
+        fetchServerData: function(key) {
+            return new Promise((resolve, reject) => {
+                fetch(`/data/thoughts-${key}.json`)
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        }
+                        throw new Error('Data not found');
+                    })
+                    .then(data => resolve(data))
+                    .catch(error => {
+                        // 服务器数据不存在，返回null
+                        resolve(null);
+                    });
+            });
+        },
+        
+        // 保存数据到服务器（模拟）
+        saveServerData: function(key, data) {
+            // 注意：这是一个模拟实现，实际上静态网站无法直接写入服务器
+            // 在实际应用中，您需要一个后端API来处理数据存储
+            console.log('Thoughts.js: Data would be saved to server:', key, data);
+            
+            // 这里可以添加一个API调用来保存数据到服务器
+            // 例如：
+            // fetch('/api/save-thoughts-data', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //     },
+            //     body: JSON.stringify({ key, data })
+            // }).catch(error => {
+            //     console.error('Failed to save data to server:', error);
+            // });
         }
     };
 
     // 初始化点赞状态
-    function initializeLikes() {
+    async function initializeLikes() {
         try {
-            const likes = storage.getLikes();
+            const likes = await storage.getLikes();
             const likeButtons = document.querySelectorAll('.like-btn');
             
             if (likeButtons.length === 0) {
@@ -70,14 +154,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 点赞功能
-    function initializeLikeButtons() {
+    async function initializeLikeButtons() {
         const likeButtons = document.querySelectorAll('.like-btn');
         
         likeButtons.forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', async function() {
                 const thoughtId = this.dataset.thoughtId;
                 const likeCount = this.querySelector('.like-count');
-                const likes = storage.getLikes();
+                const likes = await storage.getLikes();
                 const userLikes = JSON.parse(localStorage.getItem('thoughts-user-likes') || '{}');
                 
                 // 切换点赞状态
@@ -169,8 +253,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 加载评论
-    function loadComments(thoughtId) {
-        const comments = storage.getComments(thoughtId);
+    async function loadComments(thoughtId) {
+        const comments = await storage.getComments(thoughtId);
         const commentsContainer = document.querySelector(`#comments-${thoughtId} .thought-comments-list`);
         
         if (!commentsContainer) return;
@@ -254,7 +338,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const submitButtons = document.querySelectorAll('.comment-submit');
         
         submitButtons.forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', async function() {
                 const thoughtId = this.dataset.thoughtId;
                 const input = document.querySelector(`#comments-${thoughtId} .comment-input`);
                 const commentText = input.value.trim();
@@ -287,7 +371,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     };
                     
                     // 获取现有评论并添加新评论
-                    const comments = storage.getComments(thoughtId);
+                    const comments = await storage.getComments(thoughtId);
                     comments.unshift(comment);
                     
                     // 保存到本地存储
@@ -297,10 +381,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     input.value = '';
                     
                     // 重新加载评论
-                    loadComments(thoughtId);
+                    await loadComments(thoughtId);
                     
                     // 更新评论计数
-                    updateCommentCount(thoughtId);
+                    await updateCommentCount(thoughtId);
                     
                     // 显示成功通知
                     showNotification('评论发表成功！', 'success');
@@ -330,8 +414,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 更新评论计数
-    function updateCommentCount(thoughtId) {
-        const comments = storage.getComments(thoughtId);
+    async function updateCommentCount(thoughtId) {
+        const comments = await storage.getComments(thoughtId);
         const commentButton = document.querySelector(`.comment-btn[data-thought-id="${thoughtId}"]`);
         const commentCount = commentButton.querySelector('.comment-count');
         commentCount.textContent = comments.length;
@@ -412,12 +496,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 初始化评论计数
-    function initializeCommentCounts() {
+    async function initializeCommentCounts() {
         const commentButtons = document.querySelectorAll('.comment-btn');
-        commentButtons.forEach(button => {
+        for (const button of commentButtons) {
             const thoughtId = button.dataset.thoughtId;
-            updateCommentCount(thoughtId);
-        });
+            await updateCommentCount(thoughtId);
+        }
     }
 
     // 添加回车键提交评论功能
@@ -483,13 +567,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 初始化所有功能
-    function initializeAll() {
+    async function initializeAll() {
         console.log('Thoughts.js: Starting initialization...');
         try {
-            initializeLikes();
+            await initializeLikes();
             console.log('Thoughts.js: Likes initialized');
             
-            initializeLikeButtons();
+            await initializeLikeButtons();
             console.log('Thoughts.js: Like buttons initialized');
             
             initializeCommentButtons();
@@ -498,7 +582,7 @@ document.addEventListener('DOMContentLoaded', function() {
             initializeCommentSubmission();
             console.log('Thoughts.js: Comment submission initialized');
             
-            initializeCommentCounts();
+            await initializeCommentCounts();
             console.log('Thoughts.js: Comment counts initialized');
             
             initializeCommentInputHandlers();
