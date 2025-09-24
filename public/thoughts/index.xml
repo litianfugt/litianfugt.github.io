@@ -2,25 +2,25 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>随想 on 李石原的博客</title>
-    <link>http://localhost:49228/thoughts/</link>
+    <link>http://localhost:62158/thoughts/</link>
     <description>Recent content in 随想 on 李石原的博客</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>zh-CN</language>
     <lastBuildDate>Wed, 24 Sep 2025 10:30:00 +0800</lastBuildDate>
-    <atom:link href="http://localhost:49228/thoughts/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:62158/thoughts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>博客随想功能上线了</title>
-      <link>http://localhost:49228/thoughts/2025-09-24-first-thought/</link>
+      <link>http://localhost:62158/thoughts/2025-09-24-first-thought/</link>
       <pubDate>Wed, 24 Sep 2025 10:30:00 +0800</pubDate>
-      <guid>http://localhost:49228/thoughts/2025-09-24-first-thought/</guid>
+      <guid>http://localhost:62158/thoughts/2025-09-24-first-thought/</guid>
       <description>&lt;p&gt;今天对博客进行了一些优化，增加了这个&amp;quot;随想&amp;quot;页面，希望可以更方便地记录日常的想法和感悟。&lt;/p&gt;
 &lt;p&gt;技术方面，最近在思考如何更好地组织代码结构，提高可维护性。有时候简单的功能也会有复杂的实现，关键是要找到合适的抽象层次。&lt;/p&gt;</description>
     </item>
     <item>
       <title>关于冥想和生活平衡的思考</title>
-      <link>http://localhost:49228/thoughts/2025-09-23-meditation/</link>
+      <link>http://localhost:62158/thoughts/2025-09-23-meditation/</link>
       <pubDate>Tue, 23 Sep 2025 15:45:00 +0800</pubDate>
-      <guid>http://localhost:49228/thoughts/2025-09-23-meditation/</guid>
+      <guid>http://localhost:62158/thoughts/2025-09-23-meditation/</guid>
       <description>&lt;p&gt;生活方面，感觉时间过得很快，需要更好地平衡工作和生活。最近开始尝试每天冥想10分钟，希望能帮助自己保持专注和平静。&lt;/p&gt;
 &lt;p&gt;有时候停下来思考比一直忙碌更重要。🧘‍♂️&lt;/p&gt;</description>
     </item>
