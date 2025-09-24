@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // 从GitHub Gist获取数据
         fetchGistData: async function() {
             // 如果没有配置Gist，返回空对象
-            if (this.gistConfig.token === 'your-github-token' || this.gistConfig.gistId === 'your-gist-id') {
+            if (!this.gistConfig.token || !this.gistConfig.gistId) {
                 console.warn('Thoughts.js: GitHub Gist not configured, using local storage only');
                 return {};
             }
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // 保存数据到GitHub Gist
         saveGistData: async function(data) {
             // 如果没有配置Gist，只保存到本地
-            if (this.gistConfig.token === 'your-github-token' || this.gistConfig.gistId === 'your-gist-id') {
+            if (!this.gistConfig.token || !this.gistConfig.gistId) {
                 console.warn('Thoughts.js: GitHub Gist not configured, saving to local storage only');
                 return;
             }

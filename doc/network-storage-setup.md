@@ -22,7 +22,7 @@ GitHub Gist是一个简单、免费的代码片段托管服务，非常适合存
 1. 登录您的GitHub账号
 2. 访问 [Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens)
 3. 点击"Generate new token"
-4. 勾选 `gist` 权限
+4. **重要**：确保勾选 `gist` 权限
 5. 点击"Generate token"
 6. **重要**：复制生成的令牌（只显示一次，请妥善保存）
 
@@ -61,8 +61,8 @@ GitHub Gist是一个简单、免费的代码片段托管服务，非常适合存
 // 将此文件复制到您的网站根目录，并根据您的实际情况修改配置
 
 // GitHub Gist 配置
-window.GITHUB_GIST_TOKEN = 'your-github-token';        // 替换为您的GitHub个人访问令牌
-window.GITHUB_GIST_ID = 'your-gist-id';                // 替换为您的Gist ID
+window.GITHUB_GIST_TOKEN = 'your-new-github-token';   // 替换为您的GitHub个人访问令牌
+window.GITHUB_GIST_ID = 'your-new-gist-id';           // 替换为您的Gist ID
 
 // 创建个人访问令牌: https://github.com/settings/tokens
 // 需要勾选 'gist' 权限
@@ -87,6 +87,7 @@ window.GITHUB_GIST_ID = 'your-gist-id';                // 替换为您的Gist ID
 - **不要将真实的GitHub令牌提交到代码仓库**。我们已经将令牌从代码中移除，改为通过外部配置文件加载。
 - **使用私有Gist**：如果您的评论数据包含敏感信息，建议创建私有Gist。
 - **定期备份**：虽然GitHub Gist非常可靠，但建议定期备份您的数据。
+- **GitHub推送保护**：GitHub会阻止包含敏感信息的推送。请确保您的配置文件中不包含真实的令牌，或者将配置文件添加到.gitignore中。
 
 ### 方案2：Firebase
 
