@@ -10,8 +10,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // 创建个人访问令牌: https://github.com/settings/tokens
         // 需要勾选 'gist' 权限
         gistConfig: {
-            token: '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', // 替换为您的GitHub个人访问令牌
-            gistId: '8d83cd81473f787cd064a637b4ddd4d4',     // 替换为您的Gist ID
+            // 尝试从环境变量获取配置，如果没有则使用空值
+            token: typeof window !== 'undefined' && window.GITHUB_GIST_TOKEN ? window.GITHUB_GIST_TOKEN : '',
+            gistId: typeof window !== 'undefined' && window.GITHUB_GIST_ID ? window.GITHUB_GIST_ID : '',
             filename: 'blog-likes-and-comments.json'
         },
         

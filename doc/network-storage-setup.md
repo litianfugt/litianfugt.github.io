@@ -51,26 +51,42 @@ GitHub Gist是一个简单、免费的代码片段托管服务，非常适合存
 
 创建Gist后，从浏览器地址栏复制Gist ID。例如，如果URL是 `https://gist.github.com/your-username/1234567890abcdef`，则Gist ID是 `1234567890abcdef`。
 
-#### 步骤4：配置JavaScript
+#### 步骤4：配置GitHub Gist
 
-编辑 `assets/js/thoughts.js` 文件，找到 `gistConfig` 对象，修改为：
+1. 复制 `static/github-gist-config.js` 文件到您的网站根目录
+2. 编辑该文件，填入您的GitHub令牌和Gist ID：
 
 ```javascript
-gistConfig: {
-    token: 'your-github-token',        // 替换为您在步骤1中获取的令牌
-    gistId: 'your-gist-id',            // 替换为您在步骤3中获取的Gist ID
-    filename: 'blog-likes-and-comments.json'
-},
+// GitHub Gist 配置文件
+// 将此文件复制到您的网站根目录，并根据您的实际情况修改配置
+
+// GitHub Gist 配置
+window.GITHUB_GIST_TOKEN = 'your-github-token';        // 替换为您的GitHub个人访问令牌
+window.GITHUB_GIST_ID = 'your-gist-id';                // 替换为您的Gist ID
+
+// 创建个人访问令牌: https://github.com/settings/tokens
+// 需要勾选 'gist' 权限
+
+// 创建Gist: https://gist.github.com/
+// Gist内容请参考 static/github-gist-example.json 文件
+
+// 注意：此文件应放在网站根目录，并在 thoughts.js 之前加载
 ```
 
 #### 步骤5：测试功能
 
-1. 保存修改后的JavaScript文件
+1. 保存修改后的配置文件
 2. 刷新浏览器页面
 3. 尝试点赞或添加评论
 4. 检查浏览器控制台是否有错误信息
 
 如果一切正常，您的点赞和评论数据现在将存储在GitHub Gist中，并在不同设备间共享。
+
+#### 安全注意事项
+
+- **不要将真实的GitHub令牌提交到代码仓库**。我们已经将令牌从代码中移除，改为通过外部配置文件加载。
+- **使用私有Gist**：如果您的评论数据包含敏感信息，建议创建私有Gist。
+- **定期备份**：虽然GitHub Gist非常可靠，但建议定期备份您的数据。
 
 ### 方案2：Firebase
 
