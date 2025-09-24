@@ -161,7 +161,7 @@ pygmentsStyle = "monokai"
 
   # 评论系统配置（可选）
   [params.comments]
-    enable = false
+    enable = true
     # 可以选择启用以下评论系统之一
     # utterances:
     #   repo = "your-repo/your-repo"

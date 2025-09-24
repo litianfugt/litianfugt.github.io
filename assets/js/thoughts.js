@@ -6,103 +6,157 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 初始化存储系统
     const storage = {
+        // GitHub Gist 配置
+        // 创建个人访问令牌: https://github.com/settings/tokens
+        // 需要勾选 'gist' 权限
+        gistConfig: {
+            token: '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', // 替换为您的GitHub个人访问令牌
+            gistId: '8d83cd81473f787cd064a637b4ddd4d4',     // 替换为您的Gist ID
+            filename: 'blog-likes-and-comments.json'
+        },
+        
         // 获取点赞数据
         getLikes: async function() {
-            // 首先尝试从本地存储获取
-            const localLikes = localStorage.getItem('thoughts-likes');
-            if (localLikes) {
-                return JSON.parse(localLikes);
-            }
-            
-            // 如果本地没有，尝试从服务器获取
             try {
-                const serverLikes = await this.fetchServerData('likes');
-                if (serverLikes) {
-                    localStorage.setItem('thoughts-likes', JSON.stringify(serverLikes));
-                    return serverLikes;
+                // 首先尝试从本地存储获取
+                const localLikes = localStorage.getItem('thoughts-likes');
+                if (localLikes) {
+                    return JSON.parse(localLikes);
+                }
+                
+                // 如果本地没有，尝试从GitHub Gist获取
+                const data = await this.fetchGistData();
+                if (data && data.likes) {
+                    localStorage.setItem('thoughts-likes', JSON.stringify(data.likes));
+                    return data.likes;
                 }
             } catch (error) {
-                console.warn('Thoughts.js: Failed to fetch likes from server:', error);
+                console.warn('Thoughts.js: Failed to fetch likes from GitHub Gist:', error);
             }
             
             return {};
         },
         
         // 保存点赞数据
-        setLikes: function(likes) {
+        setLikes: async function(likes) {
             // 保存到本地存储
             localStorage.setItem('thoughts-likes', JSON.stringify(likes));
             
-            // 尝试保存到服务器
-            this.saveServerData('likes', likes);
+            // 尝试保存到GitHub Gist
+            try {
+                const data = await this.fetchGistData() || {};
+                data.likes = likes;
+                await this.saveGistData(data);
+            } catch (error) {
+                console.error('Thoughts.js: Failed to save likes to GitHub Gist:', error);
+                showNotification('点赞数据已保存到本地，但无法同步到GitHub', 'warning');
+            }
         },
         
         // 获取评论数据
         getComments: async function(thoughtId) {
-            // 首先尝试从本地存储获取
-            const localComments = localStorage.getItem(`thoughts-comments-${thoughtId}`);
-            if (localComments) {
-                return JSON.parse(localComments);
-            }
-            
-            // 如果本地没有，尝试从服务器获取
             try {
-                const serverComments = await this.fetchServerData(`comments-${thoughtId}`);
-                if (serverComments) {
-                    localStorage.setItem(`thoughts-comments-${thoughtId}`, JSON.stringify(serverComments));
-                    return serverComments;
+                // 首先尝试从本地存储获取
+                const localComments = localStorage.getItem(`thoughts-comments-${thoughtId}`);
+                if (localComments) {
+                    return JSON.parse(localComments);
+                }
+                
+                // 如果本地没有，尝试从GitHub Gist获取
+                const data = await this.fetchGistData();
+                if (data && data.comments && data.comments[thoughtId]) {
+                    localStorage.setItem(`thoughts-comments-${thoughtId}`, JSON.stringify(data.comments[thoughtId]));
+                    return data.comments[thoughtId];
                 }
             } catch (error) {
-                console.warn('Thoughts.js: Failed to fetch comments from server:', error);
+                console.warn('Thoughts.js: Failed to fetch comments from GitHub Gist:', error);
             }
             
             return [];
         },
         
         // 保存评论数据
-        setComments: function(thoughtId, comments) {
+        setComments: async function(thoughtId, comments) {
             // 保存到本地存储
             localStorage.setItem(`thoughts-comments-${thoughtId}`, JSON.stringify(comments));
             
-            // 尝试保存到服务器
-            this.saveServerData(`comments-${thoughtId}`, comments);
+            // 尝试保存到GitHub Gist
+            try {
+                const data = await this.fetchGistData() || {};
+                if (!data.comments) {
+                    data.comments = {};
+                }
+                data.comments[thoughtId] = comments;
+                await this.saveGistData(data);
+            } catch (error) {
+                console.error('Thoughts.js: Failed to save comments to GitHub Gist:', error);
+                showNotification('评论已保存到本地，但无法同步到GitHub', 'warning');
+            }
         },
         
-        // 从服务器获取数据
-        fetchServerData: function(key) {
-            return new Promise((resolve, reject) => {
-                fetch(`/data/thoughts-${key}.json`)
-                    .then(response => {
-                        if (response.ok) {
-                            return response.json();
-                        }
-                        throw new Error('Data not found');
-                    })
-                    .then(data => resolve(data))
-                    .catch(error => {
-                        // 服务器数据不存在，返回null
-                        resolve(null);
-                    });
-            });
-        },
-        
-        // 保存数据到服务器（模拟）
-        saveServerData: function(key, data) {
-            // 注意：这是一个模拟实现，实际上静态网站无法直接写入服务器
-            // 在实际应用中，您需要一个后端API来处理数据存储
-            console.log('Thoughts.js: Data would be saved to server:', key, data);
+        // 从GitHub Gist获取数据
+        fetchGistData: async function() {
+            // 如果没有配置Gist，返回空对象
+            if (this.gistConfig.token === 'your-github-token' || this.gistConfig.gistId === 'your-gist-id') {
+                console.warn('Thoughts.js: GitHub Gist not configured, using local storage only');
+                return {};
+            }
             
-            // 这里可以添加一个API调用来保存数据到服务器
-            // 例如：
-            // fetch('/api/save-thoughts-data', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //     },
-            //     body: JSON.stringify({ key, data })
-            // }).catch(error => {
-            //     console.error('Failed to save data to server:', error);
-            // });
+            try {
+                const response = await fetch(`https://api.github.com/gists/${this.gistConfig.gistId}`, {
+                    headers: {
+                        'Authorization': `token ${this.gistConfig.token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch gist: ${response.status} ${response.statusText}`);
+                }
+                
+                const gist = await response.json();
+                const content = gist.files[this.gistConfig.filename].content;
+                return JSON.parse(content);
+            } catch (error) {
+                console.error('Thoughts.js: Error fetching Gist data:', error);
+                throw error;
+            }
+        },
+        
+        // 保存数据到GitHub Gist
+        saveGistData: async function(data) {
+            // 如果没有配置Gist，只保存到本地
+            if (this.gistConfig.token === 'your-github-token' || this.gistConfig.gistId === 'your-gist-id') {
+                console.warn('Thoughts.js: GitHub Gist not configured, saving to local storage only');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`https://api.github.com/gists/${this.gistConfig.gistId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `token ${this.gistConfig.token}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/vnd.github.v3+json'
+                    },
+                    body: JSON.stringify({
+                        files: {
+                            [this.gistConfig.filename]: {
+                                content: JSON.stringify(data, null, 2)
+                            }
+                        }
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to save gist: ${response.status} ${response.statusText}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('Thoughts.js: Error saving Gist data:', error);
+                throw error;
+            }
         }
     };
 
@@ -588,12 +642,130 @@ document.addEventListener('DOMContentLoaded', function() {
             initializeCommentInputHandlers();
             console.log('Thoughts.js: Comment input handlers initialized');
             
+            initializePostComments();
+            console.log('Thoughts.js: Post comments initialized');
+            
             optimizeForMobile();
             console.log('Thoughts.js: Mobile optimization initialized');
             
             console.log('Thoughts.js: All functionality initialized successfully!');
         } catch (error) {
             console.error('Thoughts.js: Error during initialization:', error);
+        }
+    }
+    
+    // 初始化博客文章评论
+    async function initializePostComments() {
+        // 检查是否在博客文章页面
+        const postComments = document.querySelector('.post-comments');
+        if (!postComments) return;
+        
+        // 获取文章ID
+        const article = document.querySelector('article.post-single');
+        if (!article) return;
+        
+        // 从URL获取文章ID
+        const path = window.location.pathname;
+        const pathParts = path.split('/');
+        const fileName = pathParts[pathParts.length - 1] || pathParts[pathParts.length - 2];
+        const thoughtId = fileName.replace('.html', '');
+        
+        if (!thoughtId) return;
+        
+        // 加载评论
+        await loadComments(thoughtId);
+        
+        // 初始化评论提交
+        const submitButton = postComments.querySelector('.comment-submit');
+        if (submitButton) {
+            submitButton.addEventListener('click', async function() {
+                const input = postComments.querySelector('.comment-input');
+                const commentText = input.value.trim();
+                
+                // 输入验证
+                if (!commentText) {
+                    showNotification('请输入评论内容', 'warning');
+                    input.focus();
+                    return;
+                }
+                
+                if (commentText.length > 200) {
+                    showNotification('评论内容不能超过200字', 'warning');
+                    input.focus();
+                    return;
+                }
+                
+                // 禁用提交按钮，防止重复提交
+                const originalText = this.textContent;
+                this.disabled = true;
+                this.textContent = '发送中...';
+                
+                try {
+                    // 创建评论对象
+                    const comment = {
+                        text: commentText,
+                        author: '访客',
+                        timestamp: new Date().toISOString(),
+                        id: Date.now().toString()
+                    };
+                    
+                    // 获取现有评论并添加新评论
+                    const comments = await storage.getComments(thoughtId);
+                    comments.unshift(comment);
+                    
+                    // 保存到本地存储
+                    await storage.setComments(thoughtId, comments);
+                    
+                    // 清空输入框
+                    input.value = '';
+                    
+                    // 重新加载评论
+                    await loadComments(thoughtId);
+                    
+                    // 显示成功通知
+                    showNotification('评论发表成功！', 'success');
+                    
+                    // 滚动到新评论
+                    setTimeout(() => {
+                        const newComment = postComments.querySelector('.thought-comment:first-child');
+                        if (newComment) {
+                            newComment.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            // 添加高亮效果
+                            newComment.style.backgroundColor = 'rgba(76, 175, 80, 0.1)';
+                            setTimeout(() => {
+                                newComment.style.backgroundColor = '';
+                            }, 2000);
+                        }
+                    }, 100);
+                } catch (error) {
+                    console.error('Thoughts.js: Error submitting comment:', error);
+                    showNotification('评论发表失败，请重试', 'error');
+                } finally {
+                    // 恢复提交按钮状态
+                    this.disabled = false;
+                    this.textContent = originalText;
+                }
+            });
+        }
+        
+        // 添加回车键提交评论功能
+        const commentInput = postComments.querySelector('.comment-input');
+        if (commentInput) {
+            commentInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    const submitButton = postComments.querySelector('.comment-submit');
+                    submitButton.click();
+                }
+            });
+            
+            // 移动端优化：自动调整输入框高度
+            if (window.innerWidth <= 768) {
+                commentInput.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+                });
+            }
         }
     }
     
