@@ -7,12 +7,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // 评论功能
     function initializeCommentButtons() {
         try {
-            const commentButtons = document.querySelectorAll('.comment-btn');
+            // 使用更精确的选择器来查找评论按钮
+            const commentButtons = document.querySelectorAll('.thought-action.comment-btn');
             
             if (commentButtons.length === 0) {
                 console.warn('Thoughts.js: No comment buttons found');
                 return;
             }
+            
+            console.log('Thoughts.js: Found', commentButtons.length, 'comment buttons');
             
             commentButtons.forEach(button => {
                 const thoughtId = button.dataset.thoughtId;
@@ -34,16 +37,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     
                     // 切换评论区域显示状态
+                    console.log('Thoughts.js: Toggling comments section for thought:', thoughtId);
+                    console.log('Thoughts.js: Current display style:', commentsSection.style.display);
+                    
                     if (commentsSection.style.display === 'none' || commentsSection.style.display === '') {
                         commentsSection.style.display = 'block';
                         this.classList.add('active');
+                        console.log('Thoughts.js: Comments section now visible');
                         
                         // 尝试加载Giscus评论系统
                         const giscusFrame = commentsSection.querySelector('iframe.giscus-frame');
                         if (!giscusFrame) {
+                            console.log('Thoughts.js: Giscus frame not found, attempting to load');
                             // 如果Giscus尚未加载，调用loadGiscus函数
                             if (typeof loadGiscus === 'function') {
                                 loadGiscus();
+                                console.log('Thoughts.js: loadGiscus function called');
                             } else {
                                 console.warn('Thoughts.js: loadGiscus function not available');
                             }
@@ -56,6 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else {
                         commentsSection.style.display = 'none';
                         this.classList.remove('active');
+                        console.log('Thoughts.js: Comments section now hidden');
                     }
                     
                     console.log('Thoughts.js: Comment button clicked for thought:', thoughtId);
