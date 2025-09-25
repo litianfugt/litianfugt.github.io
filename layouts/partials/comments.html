@@ -45,12 +45,26 @@
 <script>
     // 动态加载Giscus评论系统
     function loadGiscus() {
+        console.log('Giscus: loadGiscus function called');
+        
         // 查找所有可见的评论容器
         const commentContainers = document.querySelectorAll('.thought-comments[style*="display: block"], .thought-comments:not([style])');
         
+        console.log('Giscus: Found', commentContainers.length, 'visible comment containers');
+        
         commentContainers.forEach(container => {
+            console.log('Giscus: Processing container:', container.id);
+            
             const giscusContainer = container.querySelector('.giscus-container');
-            if (!giscusContainer || giscusContainer.querySelector('.giscus-frame')) return;
+            if (!giscusContainer) {
+                console.warn('Giscus: No giscus-container found in', container.id);
+                return;
+            }
+            
+            if (giscusContainer.querySelector('.giscus-frame')) {
+                console.log('Giscus: Frame already exists in', container.id);
+                return;
+            }
             
             // 清除加载提示
             const loading = giscusContainer.querySelector('.giscus-loading');
@@ -74,22 +88,23 @@
             script.setAttribute('crossorigin', 'anonymous');
             script.setAttribute('async', '');
             
+            console.log('Giscus: Adding script to container', container.id);
             giscusContainer.appendChild(script);
         });
     }
     
     // 如果评论区域可见，立即加载评论
     document.addEventListener('DOMContentLoaded', function() {
-        // 初始加载可见的评论
-        loadGiscus();
+        console.log('Giscus: DOM content loaded, setting up observer');
         
-        // 监听评论区域显示/隐藏变化
+        // 不在页面加载时立即加载评论，而是监听评论区域显示/隐藏变化
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
                     const target = mutation.target;
                     if (target.classList.contains('thought-comments') &&
                         (target.style.display === 'block' || !target.style.display)) {
+                        console.log('Giscus: Comment section became visible, loading Giscus');
                         loadGiscus();
                     }
                 }
@@ -98,6 +113,7 @@
         
         // 观察所有评论区域
         document.querySelectorAll('.thought-comments').forEach(function(el) {
+            console.log('Giscus: Setting up observer for', el.id);
             observer.observe(el, { attributes: true });
         });
     });
