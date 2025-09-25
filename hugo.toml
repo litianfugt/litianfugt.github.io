@@ -176,7 +176,7 @@ pygmentsStyle = "monokai"
       inputPosition = "bottom"   # 输入框位置：top 或 bottom（默认）
       theme = "preferred_color_scheme"  # 主题：light, dark, preferred_color_scheme（默认）
       lang = "zh-CN"            # 语言：zh-CN（默认）或其他语言代码
-      loading = "eager"          # 加载方式：lazy（默认）或 eager
+      loading = "lazy"          # 加载方式：lazy（默认）或 eager
 
 # 搜索输出格式
 [outputs]
