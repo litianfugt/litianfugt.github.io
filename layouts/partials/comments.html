@@ -89,7 +89,70 @@
             script.setAttribute('async', '');
             
             console.log('Giscus: Adding script to container', container.id);
+            
+            // 监听Giscus事件来更新评论计数
+            script.addEventListener('load', function() {
+                console.log('Giscus: Script loaded for', container.id);
+                
+                // 监听Giscus的评论变化事件
+                window.addEventListener('message', function(event) {
+                    if (event.origin !== 'https://giscus.app') return;
+                    
+                    if (event.data && event.data.giscus) {
+                        const giscusData = event.data.giscus;
+                        console.log('Giscus: Received message', giscusData);
+                        
+                        if (giscusData.discussion && giscusData.discussion.totalCommentCount !== undefined) {
+                            const commentCount = giscusData.discussion.totalCommentCount;
+                            console.log('Giscus: Comment count updated to', commentCount);
+                            
+                            // 更新评论计数
+                            updateCommentCount(container.id, commentCount);
+                        }
+                    }
+                });
+                
+                // 定期检查评论数量（备用方案）
+                const checkCommentCount = setInterval(() => {
+                    try {
+                        const iframe = giscusContainer.querySelector('iframe.giscus-frame');
+                        if (iframe && iframe.contentWindow) {
+                            iframe.contentWindow.postMessage({
+                                giscus: {
+                                    discussion: {
+                                        id: container.id.replace('comments-', ''),
+                                        totalCommentCount: null
+                                    }
+                                }
+                            }, 'https://giscus.app');
+                        }
+                    } catch (e) {
+                        console.log('Giscus: Error checking comment count', e);
+                    }
+                }, 5000);
+                
+                // 10秒后停止检查
+                setTimeout(() => clearInterval(checkCommentCount), 10000);
+            });
+            
             giscusContainer.appendChild(script);
+        });
+    }
+    
+    // 更新评论计数的函数
+    function updateCommentCount(containerId, count) {
+        // 从容器ID中提取thought ID
+        const thoughtId = containerId.replace('comments-', '');
+        console.log('Giscus: Updating comment count for', thoughtId, 'to', count);
+        
+        // 查找对应的评论按钮
+        const commentButtons = document.querySelectorAll('.thought-action.comment-btn[data-thought-id="' + thoughtId + '"]');
+        commentButtons.forEach(button => {
+            const countSpan = button.querySelector('.comment-count');
+            if (countSpan) {
+                countSpan.textContent = count;
+                console.log('Giscus: Updated comment count for', thoughtId, 'to', count);
+            }
         });
     }
     
@@ -118,7 +181,8 @@
         });
     });
     
-    // 将loadGiscus函数暴露到全局作用域，以便其他脚本可以调用
+    // 将loadGiscus和updateCommentCount函数暴露到全局作用域，以便其他脚本可以调用
     window.loadGiscus = loadGiscus;
+    window.updateCommentCount = updateCommentCount;
 </script>
 {{- end }}
