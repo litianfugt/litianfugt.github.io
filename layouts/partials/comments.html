@@ -1,7 +1,7 @@
 {{- /* Giscus Comments System */ -}}
 
 {{- if .Site.Params.comments.enable }}
-<div class="giscus-container" id="giscus-comments">
+<div class="giscus-container">
     <!-- Giscus评论将通过JavaScript动态加载 -->
     <div class="giscus-loading">加载评论中...</div>
 </div>
@@ -45,40 +45,64 @@
 <script>
     // 动态加载Giscus评论系统
     function loadGiscus() {
-        const container = document.getElementById('giscus-comments');
-        if (!container || container.querySelector('.giscus-frame')) return;
+        // 查找所有可见的评论容器
+        const commentContainers = document.querySelectorAll('.thought-comments[style*="display: block"], .thought-comments:not([style])');
         
-        // 清除加载提示
-        const loading = container.querySelector('.giscus-loading');
-        if (loading) loading.remove();
-        
-        // 创建Giscus脚本
-        const script = document.createElement('script');
-        script.src = 'https://giscus.app/client.js';
-        script.setAttribute('data-repo', '{{ .Site.Params.comments.giscus.repo }}');
-        script.setAttribute('data-repo-id', '{{ .Site.Params.comments.giscus.repoId }}');
-        script.setAttribute('data-category', '{{ .Site.Params.comments.giscus.category }}');
-        script.setAttribute('data-category-id', '{{ .Site.Params.comments.giscus.categoryId }}');
-        script.setAttribute('data-mapping', '{{ .Site.Params.comments.giscus.mapping | default "pathname" }}');
-        script.setAttribute('data-strict', '{{ .Site.Params.comments.giscus.strict | default "0" }}');
-        script.setAttribute('data-reactions-enabled', '{{ .Site.Params.comments.giscus.reactionsEnabled | default "1" }}');
-        script.setAttribute('data-emit-metadata', '{{ .Site.Params.comments.giscus.emitMetadata | default "0" }}');
-        script.setAttribute('data-input-position', '{{ .Site.Params.comments.giscus.inputPosition | default "bottom" }}');
-        script.setAttribute('data-theme', '{{ .Site.Params.comments.giscus.theme | default "preferred_color_scheme" }}');
-        script.setAttribute('data-lang', '{{ .Site.Params.comments.giscus.lang | default "zh-CN" }}');
-        script.setAttribute('data-loading', '{{ .Site.Params.comments.giscus.loading | default "eager" }}');
-        script.setAttribute('crossorigin', 'anonymous');
-        script.setAttribute('async', '');
-        
-        container.appendChild(script);
+        commentContainers.forEach(container => {
+            const giscusContainer = container.querySelector('.giscus-container');
+            if (!giscusContainer || giscusContainer.querySelector('.giscus-frame')) return;
+            
+            // 清除加载提示
+            const loading = giscusContainer.querySelector('.giscus-loading');
+            if (loading) loading.remove();
+            
+            // 创建Giscus脚本
+            const script = document.createElement('script');
+            script.src = 'https://giscus.app/client.js';
+            script.setAttribute('data-repo', '{{ .Site.Params.comments.giscus.repo }}');
+            script.setAttribute('data-repo-id', '{{ .Site.Params.comments.giscus.repoId }}');
+            script.setAttribute('data-category', '{{ .Site.Params.comments.giscus.category }}');
+            script.setAttribute('data-category-id', '{{ .Site.Params.comments.giscus.categoryId }}');
+            script.setAttribute('data-mapping', '{{ .Site.Params.comments.giscus.mapping | default "pathname" }}');
+            script.setAttribute('data-strict', '{{ .Site.Params.comments.giscus.strict | default "0" }}');
+            script.setAttribute('data-reactions-enabled', '{{ .Site.Params.comments.giscus.reactionsEnabled | default "1" }}');
+            script.setAttribute('data-emit-metadata', '{{ .Site.Params.comments.giscus.emitMetadata | default "0" }}');
+            script.setAttribute('data-input-position', '{{ .Site.Params.comments.giscus.inputPosition | default "bottom" }}');
+            script.setAttribute('data-theme', '{{ .Site.Params.comments.giscus.theme | default "preferred_color_scheme" }}');
+            script.setAttribute('data-lang', '{{ .Site.Params.comments.giscus.lang | default "zh-CN" }}');
+            script.setAttribute('data-loading', '{{ .Site.Params.comments.giscus.loading | default "eager" }}');
+            script.setAttribute('crossorigin', 'anonymous');
+            script.setAttribute('async', '');
+            
+            giscusContainer.appendChild(script);
+        });
     }
     
     // 如果评论区域可见，立即加载评论
     document.addEventListener('DOMContentLoaded', function() {
-        const commentsSection = document.querySelector('.thought-comments');
-        if (commentsSection && commentsSection.style.display === 'block') {
-            loadGiscus();
-        }
+        // 初始加载可见的评论
+        loadGiscus();
+        
+        // 监听评论区域显示/隐藏变化
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                    const target = mutation.target;
+                    if (target.classList.contains('thought-comments') &&
+                        (target.style.display === 'block' || !target.style.display)) {
+                        loadGiscus();
+                    }
+                }
+            });
+        });
+        
+        // 观察所有评论区域
+        document.querySelectorAll('.thought-comments').forEach(function(el) {
+            observer.observe(el, { attributes: true });
+        });
     });
+    
+    // 将loadGiscus函数暴露到全局作用域，以便其他脚本可以调用
+    window.loadGiscus = loadGiscus;
 </script>
 {{- end }}
