@@ -22,10 +22,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateScrollbar() {
         const windowHeight = window.innerHeight;
         const documentHeight = Math.max(
-            body.scrollHeight,
-            body.offsetHeight,
-            html.clientHeight,
-            html.scrollHeight,
+            body.scrollHeight, 
+            body.offsetHeight, 
+            html.clientHeight, 
+            html.scrollHeight, 
             html.offsetHeight
         );
         
@@ -46,9 +46,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateThumbPosition() {
         const scrolled = window.scrollY;
         const maxScroll = Math.max(
-            body.scrollHeight - window.innerHeight,
-            body.offsetHeight - window.innerHeight,
-            html.scrollHeight - window.innerHeight,
+            body.scrollHeight - window.innerHeight, 
+            body.offsetHeight - window.innerHeight, 
+            html.scrollHeight - window.innerHeight, 
             html.offsetHeight - window.innerHeight
         );
         
@@ -94,9 +94,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const scrollbarHeight = scrollbarContainer.clientHeight - scrollbarThumb.clientHeight;
         const scrollRatio = deltaY / scrollbarHeight;
         const maxScroll = Math.max(
-            body.scrollHeight - window.innerHeight,
-            body.offsetHeight - window.innerHeight,
-            html.scrollHeight - window.innerHeight,
+            body.scrollHeight - window.innerHeight, 
+            body.offsetHeight - window.innerHeight, 
+            html.scrollHeight - window.innerHeight, 
             html.offsetHeight - window.innerHeight
         );
         

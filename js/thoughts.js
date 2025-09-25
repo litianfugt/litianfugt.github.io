@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 评论功能 - 简化版本，仅用于显示/隐藏Giscus评论区域
+    // 评论功能
     function initializeCommentButtons() {
         try {
             const commentButtons = document.querySelectorAll('.comment-btn');
@@ -168,6 +168,186 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('Thoughts.js: Error initializing comment buttons:', error);
         }
+    }
+
+    // 确保评论结构存在
+    function ensureCommentsStructure(thoughtId) {
+        const commentsSection = document.getElementById(`comments-${thoughtId}`);
+        if (!commentsSection.querySelector('.thought-comments-list')) {
+            const commentsList = document.createElement('div');
+            commentsList.className = 'thought-comments-list';
+            commentsList.style.marginBottom = '15px';
+            commentsSection.insertBefore(commentsList, commentsSection.querySelector('.thought-comment-form'));
+        }
+    }
+
+    // 加载评论
+    function loadComments(thoughtId) {
+        const comments = storage.getComments(thoughtId);
+        const commentsContainer = document.querySelector(`#comments-${thoughtId} .thought-comments-list`);
+        
+        if (!commentsContainer) return;
+        
+        commentsContainer.innerHTML = '';
+        
+        if (comments.length === 0) {
+            const emptyMessage = document.createElement('div');
+            emptyMessage.className = 'no-comments';
+            emptyMessage.textContent = '暂无评论，来做第一个评论的人吧！';
+
+
+            emptyMessage.style.textAlign = 'center';
+            emptyMessage.style.color = 'var(--secondary)';
+            emptyMessage.style.padding = '20px';
+            emptyMessage.style.fontSize = '14px';
+            commentsContainer.appendChild(emptyMessage);
+        } else {
+            comments.forEach(comment => {
+                const commentElement = createCommentElement(comment);
+                commentsContainer.appendChild(commentElement);
+            });
+        }
+    }
+
+    // 创建评论元素
+    function createCommentElement(comment) {
+        const commentDiv = document.createElement('div');
+        commentDiv.className = 'thought-comment';
+        
+        const avatar = document.createElement('img');
+        avatar.className = 'comment-avatar';
+        avatar.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.author || 'visitor'}`;
+        avatar.alt = comment.author || '访客';
+        
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'comment-content';
+        
+        const authorDiv = document.createElement('div');
+        authorDiv.className = 'comment-author';
+        authorDiv.textContent = comment.author || '匿名用户';
+        
+        const textDiv = document.createElement('div');
+        textDiv.className = 'comment-text';
+        textDiv.textContent = comment.text;
+        
+        const timeDiv = document.createElement('div');
+        timeDiv.className = 'comment-time';
+        timeDiv.textContent = formatTime(comment.timestamp);
+        
+        contentDiv.appendChild(authorDiv);
+        contentDiv.appendChild(textDiv);
+        contentDiv.appendChild(timeDiv);
+        
+        commentDiv.appendChild(avatar);
+        commentDiv.appendChild(contentDiv);
+        
+        return commentDiv;
+    }
+
+    // 格式化时间
+    function formatTime(timestamp) {
+        const now = new Date();
+        const commentTime = new Date(timestamp);
+        const diff = now - commentTime;
+        
+        const minutes = Math.floor(diff / 60000);
+        const hours = Math.floor(diff / 3600000);
+        const days = Math.floor(diff / 86400000);
+        
+        if (minutes < 1) return '刚刚';
+        if (minutes < 60) return `${minutes}分钟前`;
+        if (hours < 24) return `${hours}小时前`;
+        if (days < 7) return `${days}天前`;
+        
+        return commentTime.toLocaleDateString('zh-CN');
+    }
+
+    // 初始化评论提交功能
+    function initializeCommentSubmission() {
+        const submitButtons = document.querySelectorAll('.comment-submit');
+        
+        submitButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const thoughtId = this.dataset.thoughtId;
+                const input = document.querySelector(`#comments-${thoughtId} .comment-input`);
+                const commentText = input.value.trim();
+                
+                // 输入验证
+                if (!commentText) {
+                    showNotification('请输入评论内容', 'warning');
+                    input.focus();
+                    return;
+                }
+                
+                if (commentText.length > 200) {
+                    showNotification('评论内容不能超过200字', 'warning');
+                    input.focus();
+                    return;
+                }
+                
+                // 禁用提交按钮，防止重复提交
+                const originalText = this.textContent;
+                this.disabled = true;
+                this.textContent = '发送中...';
+                
+                try {
+                    // 创建评论对象
+                    const comment = {
+                        text: commentText,
+                        author: '访客',
+                        timestamp: new Date().toISOString(),
+                        id: Date.now().toString()
+                    };
+                    
+                    // 获取现有评论并添加新评论
+                    const comments = storage.getComments(thoughtId);
+                    comments.unshift(comment);
+                    
+                    // 保存到本地存储
+                    storage.setComments(thoughtId, comments);
+                    
+                    // 清空输入框
+                    input.value = '';
+                    
+                    // 重新加载评论
+                    loadComments(thoughtId);
+                    
+                    // 更新评论计数
+                    updateCommentCount(thoughtId);
+                    
+                    // 显示成功通知
+                    showNotification('评论发表成功！', 'success');
+                    
+                    // 滚动到新评论
+                    setTimeout(() => {
+                        const newComment = document.querySelector(`#comments-${thoughtId} .thought-comment:first-child`);
+                        if (newComment) {
+                            newComment.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            // 添加高亮效果
+                            newComment.style.backgroundColor = 'rgba(76, 175, 80, 0.1)';
+                            setTimeout(() => {
+                                newComment.style.backgroundColor = '';
+                            }, 2000);
+                        }
+                    }, 100);
+                } catch (error) {
+                    console.error('Thoughts.js: Error submitting comment:', error);
+                    showNotification('评论发表失败，请重试', 'error');
+                } finally {
+                    // 恢复提交按钮状态
+                    this.disabled = false;
+                    this.textContent = originalText;
+                }
+            });
+        });
+    }
+
+    // 更新评论计数
+    function updateCommentCount(thoughtId) {
+        const comments = storage.getComments(thoughtId);
+        const commentButton = document.querySelector(`.comment-btn[data-thought-id="${thoughtId}"]`);
+        const commentCount = commentButton.querySelector('.comment-count');
+        commentCount.textContent = comments.length;
     }
 
     // 显示通知
@@ -244,13 +424,34 @@ document.addEventListener('DOMContentLoaded', function() {
         }, hideDelay);
     }
 
-    // 初始化评论计数 - 简化版本，仅显示占位符
+    // 初始化评论计数
     function initializeCommentCounts() {
         const commentButtons = document.querySelectorAll('.comment-btn');
         commentButtons.forEach(button => {
-            const commentCount = button.querySelector('.comment-count');
-            if (commentCount) {
-                commentCount.textContent = '💬';
+            const thoughtId = button.dataset.thoughtId;
+            updateCommentCount(thoughtId);
+        });
+    }
+
+    // 添加回车键提交评论功能
+    function initializeCommentInputHandlers() {
+        const commentInputs = document.querySelectorAll('.comment-input');
+        commentInputs.forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    const thoughtId = this.closest('.thought-comments').id.replace('comments-', '');
+                    const submitButton = document.querySelector(`.comment-submit[data-thought-id="${thoughtId}"]`);
+                    submitButton.click();
+                }
+            });
+            
+            // 移动端优化：自动调整输入框高度
+            if (window.innerWidth <= 768) {
+                input.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+                });
             }
         });
     }
@@ -262,7 +463,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (isMobile) {
             // 优化触摸反馈
-            const touchElements = document.querySelectorAll('.like-btn, .comment-btn');
+            const touchElements = document.querySelectorAll('.like-btn, .comment-btn, .comment-submit');
             touchElements.forEach(element => {
                 element.addEventListener('touchstart', function() {
                     this.style.transform = 'scale(0.95)';
@@ -281,9 +482,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     const commentsSection = document.getElementById(`comments-${thoughtId}`);
                     
                     if (commentsSection && commentsSection.style.display === 'block') {
-                        // 移动端显示评论时，确保评论区域可见
+                        // 移动端显示评论时，确保输入框可见
                         setTimeout(() => {
-                            commentsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            const inputField = commentsSection.querySelector('.comment-input');
+                            if (inputField) {
+                                inputField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
                         }, 300);
                     }
                 });
@@ -304,8 +508,14 @@ document.addEventListener('DOMContentLoaded', function() {
             initializeCommentButtons();
             console.log('Thoughts.js: Comment buttons initialized');
             
+            initializeCommentSubmission();
+            console.log('Thoughts.js: Comment submission initialized');
+            
             initializeCommentCounts();
             console.log('Thoughts.js: Comment counts initialized');
+            
+            initializeCommentInputHandlers();
+            console.log('Thoughts.js: Comment input handlers initialized');
             
             optimizeForMobile();
             console.log('Thoughts.js: Mobile optimization initialized');
