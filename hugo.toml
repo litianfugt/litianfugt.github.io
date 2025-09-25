@@ -162,17 +162,21 @@ pygmentsStyle = "monokai"
   # 评论系统配置（可选）
   [params.comments]
     enable = true
-    # 可以选择启用以下评论系统之一
-    # utterances:
-    #   repo = "your-repo/your-repo"
-    #   issueTerm = "pathname"
-    #   theme = "github-light"
     
-    # gitalk:
-    #   owner = "your-github-username"
-    #   repo = "your-repo"
-    #   clientId = "your-client-id"
-    #   clientSecret = "your-client-secret"
+    # Giscus评论系统配置
+    [params.comments.giscus]
+      repo = "litianfugt/litianfugt.github.io"  # 替换为您的GitHub仓库
+      repoId = "R_kgDOPkZVNQ"   # 替换为您的仓库ID
+      category = "General"  # 替换为您在仓库中创建的讨论类别
+      categoryId = "DIC_kwDOPkZVNc4Cv3cN" # 替换为您的讨论类别ID
+      mapping = "pathname"       # 映射方式：pathname, url, title, og:title
+      strict = "0"               # 严格模式：0（默认）或 1
+      reactionsEnabled = "1"     # 启用反应：1（默认）或 0
+      emitMetadata = "0"         # 发射元数据：0（默认）或 1
+      inputPosition = "bottom"   # 输入框位置：top 或 bottom（默认）
+      theme = "preferred_color_scheme"  # 主题：light, dark, preferred_color_scheme（默认）
+      lang = "zh-CN"            # 语言：zh-CN（默认）或其他语言代码
+      loading = "eager"          # 加载方式：lazy（默认）或 eager
 
 # 搜索输出格式
 [outputs]

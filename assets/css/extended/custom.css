@@ -731,3 +731,35 @@ div.highlight, pre {
   padding: 2px 8px;
   font-size: 13px;
 }
+
+/* Custom scrollbar */
+.custom-scrollbar-container {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 14px;
+  height: 100vh;
+  background-color: rgba(200, 200, 200, 0.2);
+  z-index: 9999;
+  cursor: pointer;
+}
+
+.custom-scrollbar-thumb {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 14px;
+  background-color: var(--primary);
+  border-radius: 7px;
+  cursor: grab;
+  transition: background-color 0.2s ease;
+}
+
+.custom-scrollbar-thumb:hover {
+  background-color: var(--secondary);
+}
+
+.custom-scrollbar-thumb.dragging {
+  background-color: var(--secondary);
+  cursor: grabbing;
+}

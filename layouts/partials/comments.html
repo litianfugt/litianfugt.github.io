@@ -1,0 +1,84 @@
+{{- /* Giscus Comments System */ -}}
+
+{{- if .Site.Params.comments.enable }}
+<div class="giscus-container" id="giscus-comments">
+    <!-- Giscus评论将通过JavaScript动态加载 -->
+    <div class="giscus-loading">加载评论中...</div>
+</div>
+
+<style>
+    .giscus-container {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--border);
+    }
+    
+    .giscus-loading {
+        text-align: center;
+        padding: 20px;
+        color: var(--secondary);
+        font-size: 14px;
+    }
+    
+    .giscus-frame {
+        border-radius: 8px;
+        box-shadow: 0 2px 8px var(--shadow-light);
+    }
+    
+    /* Dark mode support for Giscus */
+    @media (prefers-color-scheme: dark) {
+        .giscus-frame {
+            filter: brightness(0.9);
+        }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .giscus-container {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+        }
+    }
+</style>
+
+{{- /* 动态加载Giscus评论系统 */ -}}
+<script>
+    // 动态加载Giscus评论系统
+    function loadGiscus() {
+        const container = document.getElementById('giscus-comments');
+        if (!container || container.querySelector('.giscus-frame')) return;
+        
+        // 清除加载提示
+        const loading = container.querySelector('.giscus-loading');
+        if (loading) loading.remove();
+        
+        // 创建Giscus脚本
+        const script = document.createElement('script');
+        script.src = 'https://giscus.app/client.js';
+        script.setAttribute('data-repo', '{{ .Site.Params.comments.giscus.repo }}');
+        script.setAttribute('data-repo-id', '{{ .Site.Params.comments.giscus.repoId }}');
+        script.setAttribute('data-category', '{{ .Site.Params.comments.giscus.category }}');
+        script.setAttribute('data-category-id', '{{ .Site.Params.comments.giscus.categoryId }}');
+        script.setAttribute('data-mapping', '{{ .Site.Params.comments.giscus.mapping | default "pathname" }}');
+        script.setAttribute('data-strict', '{{ .Site.Params.comments.giscus.strict | default "0" }}');
+        script.setAttribute('data-reactions-enabled', '{{ .Site.Params.comments.giscus.reactionsEnabled | default "1" }}');
+        script.setAttribute('data-emit-metadata', '{{ .Site.Params.comments.giscus.emitMetadata | default "0" }}');
+        script.setAttribute('data-input-position', '{{ .Site.Params.comments.giscus.inputPosition | default "bottom" }}');
+        script.setAttribute('data-theme', '{{ .Site.Params.comments.giscus.theme | default "preferred_color_scheme" }}');
+        script.setAttribute('data-lang', '{{ .Site.Params.comments.giscus.lang | default "zh-CN" }}');
+        script.setAttribute('data-loading', '{{ .Site.Params.comments.giscus.loading | default "eager" }}');
+        script.setAttribute('crossorigin', 'anonymous');
+        script.setAttribute('async', '');
+        
+        container.appendChild(script);
+    }
+    
+    // 如果评论区域可见，立即加载评论
+    document.addEventListener('DOMContentLoaded', function() {
+        const commentsSection = document.querySelector('.thought-comments');
+        if (commentsSection && commentsSection.style.display === 'block') {
+            loadGiscus();
+        }
+    });
+</script>
+{{- end }}

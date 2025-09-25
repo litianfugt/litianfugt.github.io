@@ -56,10 +56,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     likeCount.textContent = likes[thoughtId];
                 } else {
-                    // 初始化随机点赞数
-                    const initialLikes = Math.floor(Math.random() * 10) + 1;
-                    likes[thoughtId] = initialLikes;
-                    likeCount.textContent = initialLikes;
+                    // 初始化点赞数为0
+                    likes[thoughtId] = 0;
+                    likeCount.textContent = 0;
                 }
             });
             
@@ -127,7 +126,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault(); // 阻止默认行为
+                    e.stopPropagation(); // 阻止事件冒泡
+                    
                     const commentsSection = document.getElementById(`comments-${thoughtId}`);
                     
                     if (!commentsSection) {
@@ -139,8 +141,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (commentsSection.style.display === 'none' || commentsSection.style.display === '') {
                         commentsSection.style.display = 'block';
                         this.classList.add('active');
-                        ensureCommentsStructure(thoughtId);
-                        loadComments(thoughtId);
+                        
+                        // 尝试加载Giscus评论系统
+                        const giscusFrame = commentsSection.querySelector('iframe.giscus-frame');
+                        if (!giscusFrame) {
+                            // 如果Giscus尚未加载，调用loadGiscus函数
+                            if (typeof loadGiscus === 'function') {
+                                loadGiscus();
+                            } else {
+                                console.warn('Thoughts.js: loadGiscus function not available');
+                            }
+                        }
                         
                         // 滚动到评论区域
                         setTimeout(() => {
@@ -150,6 +161,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         commentsSection.style.display = 'none';
                         this.classList.remove('active');
                     }
+                    
+                    console.log('Thoughts.js: Comment button clicked for thought:', thoughtId);
                 });
             });
         } catch (error) {
