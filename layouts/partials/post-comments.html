@@ -1,0 +1,173 @@
+{{- /* 博客文章评论系统 - 直接显示版本 */ -}}
+
+{{- if .Site.Params.comments.enable }}
+<div class="post-comments-container">
+    <div class="post-comments-header">
+        <h3 class="post-comments-title">评论</h3>
+        <div class="post-comments-loading">加载评论中...</div>
+    </div>
+    <div class="giscus-wrapper" id="giscus-comments">
+        <!-- Giscus评论将在这里加载 -->
+    </div>
+</div>
+
+<style>
+    .post-comments-container {
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--border);
+    }
+    
+    .post-comments-header {
+        margin-bottom: 1.5rem;
+    }
+    
+    .post-comments-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem 0;
+        color: var(--primary);
+    }
+    
+    .post-comments-loading {
+        color: var(--secondary);
+        font-size: 14px;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .giscus-wrapper {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        .giscus-wrapper {
+            filter: brightness(0.9);
+        }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .post-comments-container {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+        }
+        
+        .post-comments-title {
+            font-size: 1.25rem;
+        }
+    }
+</style>
+
+<script>
+    console.log('Post-comments: Starting to load Giscus for blog post...');
+    
+    // 博客文章评论加载函数
+    function loadPostComments() {
+        console.log('Post-comments: Loading Giscus for blog post');
+        
+        const giscusWrapper = document.getElementById('giscus-comments');
+        if (!giscusWrapper) {
+            console.error('Post-comments: Giscus wrapper not found');
+            return;
+        }
+        
+        // 清理现有的Giscus实例
+        const existingFrame = giscusWrapper.querySelector('iframe.giscus-frame');
+        const existingScript = giscusWrapper.querySelector('script[src="https://giscus.app/client.js"]');
+        
+        if (existingFrame) {
+            console.log('Post-comments: Removing existing frame');
+            existingFrame.remove();
+        }
+        
+        if (existingScript) {
+            console.log('Post-comments: Removing existing script');
+            existingScript.remove();
+        }
+        
+        // 重置加载提示
+        const loading = document.querySelector('.post-comments-loading');
+        if (loading) {
+            loading.style.display = 'block';
+            loading.textContent = '加载评论中...';
+            loading.style.color = '';
+        }
+        
+        // 获取页面信息
+        const pageTitle = document.title;
+        const pagePath = window.location.pathname;
+        const pageUrl = window.location.href;
+        
+        // 创建Giscus脚本
+        const script = document.createElement('script');
+        script.src = 'https://giscus.app/client.js';
+        
+        // 设置Giscus配置
+        script.setAttribute('data-repo', '{{ .Site.Params.comments.giscus.repo }}');
+        script.setAttribute('data-repo-id', '{{ .Site.Params.comments.giscus.repoId }}');
+        script.setAttribute('data-category', '{{ .Site.Params.comments.giscus.category }}');
+        script.setAttribute('data-category-id', '{{ .Site.Params.comments.giscus.categoryId }}');
+        script.setAttribute('data-mapping', 'pathname');
+        script.setAttribute('data-term', pagePath);
+        script.setAttribute('data-title', pageTitle);
+        script.setAttribute('data-url', pageUrl);
+        script.setAttribute('data-strict', '{{ .Site.Params.comments.giscus.strict | default "0" }}');
+        script.setAttribute('data-reactions-enabled', '{{ .Site.Params.comments.giscus.reactionsEnabled | default "1" }}');
+        script.setAttribute('data-emit-metadata', '{{ .Site.Params.comments.giscus.emitMetadata | default "0" }}');
+        script.setAttribute('data-input-position', '{{ .Site.Params.comments.giscus.inputPosition | default "bottom" }}');
+        script.setAttribute('data-theme', '{{ .Site.Params.comments.giscus.theme | default "preferred_color_scheme" }}');
+        script.setAttribute('data-lang', '{{ .Site.Params.comments.giscus.lang | default "zh-CN" }}');
+        script.setAttribute('data-loading', '{{ .Site.Params.comments.giscus.loading | default "eager" }}');
+        script.setAttribute('crossorigin', 'anonymous');
+        script.setAttribute('async', '');
+        
+        // 设置加载事件
+        script.addEventListener('load', () => {
+            console.log('Post-comments: Giscus loaded successfully');
+            const loading = document.querySelector('.post-comments-loading');
+            if (loading) {
+                loading.style.display = 'none';
+            }
+        });
+        
+        // 设置错误事件
+        script.addEventListener('error', () => {
+            console.error('Post-comments: Giscus load error');
+            const loading = document.querySelector('.post-comments-loading');
+            if (loading) {
+                loading.textContent = '评论加载失败，请刷新页面重试';
+                loading.style.color = '#F44336';
+            }
+        });
+        
+        // 添加脚本到页面
+        giscusWrapper.appendChild(script);
+        console.log('Post-comments: Giscus script added to page');
+    }
+    
+    // 页面加载完成后自动加载评论
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Post-comments: DOM loaded, preparing to load comments...');
+        
+        // 延迟一点时间确保页面完全加载
+        setTimeout(() => {
+            loadPostComments();
+        }, 100);
+    });
+    
+    // 监听页面变化（例如：SPA导航）
+    if (typeof window.addEventListener !== 'undefined') {
+        window.addEventListener('popstate', function() {
+            console.log('Post-comments: Page navigation detected, reloading comments...');
+            setTimeout(() => {
+                loadPostComments();
+            }, 100);
+        });
+    }
+    
+    console.log('Post-comments: Comment system initialized for blog post');
+</script>
+{{- end }}

@@ -19,6 +19,7 @@ ShowPostNavLinks: true
 ShowWordCount: true
 ShowRssButtonInSectionTermList: true
 UseHugoToc: true
+comments: true
 cover:
     image: "/images/deep-learning-image-processing.jpg"
     alt: "深度学习图像处理"

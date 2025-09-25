@@ -461,6 +461,11 @@
   border-top: 1px solid var(--border);
 }
 
+.thought-comments-placeholder {
+  /* Placeholder for dynamically loaded comments */
+  min-height: 20px;
+}
+
 .thought-comment {
   display: flex;
   gap: 10px;

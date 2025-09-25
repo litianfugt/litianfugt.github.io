@@ -17,7 +17,10 @@ pygmentsUseClasses = true
 pygmentsCodeFences = true
 pygmentsStyle = "monokai"
 
-
+# 静态文件配置
+[mediaTypes]
+  [mediaTypes."text/javascript"]
+    suffixes = ["js"]
 
 # 主菜单配置
 [[menu.main]]
@@ -172,7 +175,7 @@ pygmentsStyle = "monokai"
       mapping = "pathname"       # 映射方式：pathname, url, title, og:title
       strict = "0"               # 严格模式：0（默认）或 1
       reactionsEnabled = "1"     # 启用反应：1（默认）或 0
-      emitMetadata = "0"         # 发射元数据：0（默认）或 1
+      emitMetadata = "1"         # 发射元数据：0（默认）或 1
       inputPosition = "bottom"   # 输入框位置：top 或 bottom（默认）
       theme = "preferred_color_scheme"  # 主题：light, dark, preferred_color_scheme（默认）
       lang = "zh-CN"            # 语言：zh-CN（默认）或其他语言代码

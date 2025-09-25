@@ -19,6 +19,7 @@ ShowPostNavLinks: true
 ShowWordCount: true
 ShowRssButtonInSectionTermList: true
 UseHugoToc: true
+comments: true
 cover:
     image: "/images/git-workflow.jpg"
     alt: "Git工作流程"

@@ -10,8 +10,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // 使用更精确的选择器来查找评论按钮
             const commentButtons = document.querySelectorAll('.thought-action.comment-btn');
             
+            console.log('Thoughts.js: Looking for comment buttons with selector: .thought-action.comment-btn');
+            console.log('Thoughts.js: DOM fully loaded, document.readyState:', document.readyState);
+            console.log('Thoughts.js: CommentManager availability check:', {
+                commentManager: typeof window.commentManager,
+                CommentManager: typeof window.CommentManager
+            });
+            
             if (commentButtons.length === 0) {
                 console.warn('Thoughts.js: No comment buttons found');
+                // 添加更多调试信息
+                console.log('Thoughts.js: Available thought-action elements:', document.querySelectorAll('.thought-action'));
+                console.log('Thoughts.js: Available comment-btn elements:', document.querySelectorAll('.comment-btn'));
                 return;
             }
             
@@ -25,50 +35,81 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
-                button.addEventListener('click', function(e) {
-                    e.preventDefault(); // 阻止默认行为
-                    e.stopPropagation(); // 阻止事件冒泡
+                button.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
                     
-                    const commentsSection = document.getElementById(`comments-${thoughtId}`);
+                    const thoughtId = button.dataset.thoughtId;
+                    console.log('Thoughts.js: Comment button clicked for thought:', thoughtId);
+                    console.log('Thoughts.js: Button current active state:', button.classList.contains('active'));
                     
-                    if (!commentsSection) {
-                        console.error('Thoughts.js: Comments section not found for thought:', thoughtId);
+                    // Check if CommentManager is available
+                    let commentManager = window.commentManager;
+                    
+                    // If CommentManager is not available, try to create it
+                    if (!commentManager && window.CommentManager) {
+                        console.log('Thoughts.js: CommentManager class available but instance not found, creating instance...');
+                        commentManager = new window.CommentManager();
+                        window.commentManager = commentManager;
+                    }
+                    
+                    if (!commentManager) {
+                        console.error('Thoughts.js: CommentManager not available');
+                        console.log('Thoughts.js: window.commentManager type:', typeof window.commentManager);
+                        console.log('Thoughts.js: window.CommentManager type:', typeof window.CommentManager);
+                        showNotification('评论系统未正确加载，请刷新页面重试', 'error');
                         return;
                     }
                     
-                    // 切换评论区域显示状态
-                    console.log('Thoughts.js: Toggling comments section for thought:', thoughtId);
-                    console.log('Thoughts.js: Current display style:', commentsSection.style.display);
+                    console.log('Thoughts.js: CommentManager available, instances count:', commentManager.instances.size);
+                    console.log('Thoughts.js: CommentManager active instance:', commentManager.activeInstance ? commentManager.activeInstance.thoughtId : 'none');
                     
-                    if (commentsSection.style.display === 'none' || commentsSection.style.display === '') {
-                        commentsSection.style.display = 'block';
-                        this.classList.add('active');
-                        console.log('Thoughts.js: Comments section now visible');
-                        
-                        // 尝试加载Giscus评论系统
-                        const giscusFrame = commentsSection.querySelector('iframe.giscus-frame');
-                        if (!giscusFrame) {
-                            console.log('Thoughts.js: Giscus frame not found, attempting to load');
-                            // 如果Giscus尚未加载，调用loadGiscus函数
-                            if (typeof loadGiscus === 'function') {
-                                loadGiscus();
-                                console.log('Thoughts.js: loadGiscus function called');
-                            } else {
-                                console.warn('Thoughts.js: loadGiscus function not available');
-                            }
+                    // Check if comments are currently visible
+                    const isActive = button.classList.contains('active');
+                    
+                    try {
+                        if (isActive) {
+                            // Hide comments
+                            console.log('Thoughts.js: Hiding comments for thought:', thoughtId);
+                            button.classList.remove('active');
+                            
+                            // Use CommentManager to deactivate
+                            commentManager.deactivateCurrentInstance();
+                            console.log('Thoughts.js: CommentManager deactivated for thought:', thoughtId);
+                        } else {
+                            // Show comments
+                            console.log('Thoughts.js: Showing comments for thought:', thoughtId);
+                            button.classList.add('active');
+                            
+                            // Check if comments placeholder exists
+                            const placeholderId = `comments-placeholder-${thoughtId}`;
+                            const placeholder = document.getElementById(placeholderId);
+                            console.log('Thoughts.js: Comments placeholder exists:', !!placeholder, 'ID:', placeholderId);
+                            
+                            // Use CommentManager to activate
+                            console.log('Thoughts.js: Calling activateInstance for thought:', thoughtId);
+                            await commentManager.activateInstance(thoughtId);
+                            console.log('Thoughts.js: activateInstance completed for thought:', thoughtId);
+                            
+                            // Scroll to comments after a short delay
+                            setTimeout(() => {
+                                const commentsContainer = document.getElementById(`comments-${thoughtId}`);
+                                console.log('Thoughts.js: Comments container exists:', !!commentsContainer);
+                                if (commentsContainer) {
+                                    commentsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                                }
+                            }, 300);
                         }
                         
-                        // 滚动到评论区域
-                        setTimeout(() => {
-                            commentsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                        }, 100);
-                    } else {
-                        commentsSection.style.display = 'none';
-                        this.classList.remove('active');
-                        console.log('Thoughts.js: Comments section now hidden');
+                        console.log('Thoughts.js: Comment button click handler completed for thought:', thoughtId);
+                    } catch (error) {
+                        console.error('Thoughts.js: Error handling comment button click:', error);
+                        console.error('Thoughts.js: Error details:', error.message, error.stack);
+                        showNotification('评论加载失败，请刷新页面重试', 'error');
+                        
+                        // Reset button state
+                        button.classList.remove('active');
                     }
-                    
-                    console.log('Thoughts.js: Comment button clicked for thought:', thoughtId);
                 });
             });
         } catch (error) {
@@ -77,9 +118,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 更新评论计数
-    function updateCommentCount(thoughtId) {
-        // 评论计数现在由Giscus处理，这里可以留空或添加自定义逻辑
-        console.log('Thoughts.js: Comment count for', thoughtId, 'is handled by Giscus');
+    function updateCommentCount(thoughtId, count) {
+        // 查找对应的评论按钮
+        const commentButtons = document.querySelectorAll('.thought-action.comment-btn[data-thought-id="' + thoughtId + '"]');
+        commentButtons.forEach(button => {
+            const countSpan = button.querySelector('.comment-count');
+            if (countSpan) {
+                countSpan.textContent = count;
+                console.log('Thoughts.js: Updated comment count for', thoughtId, 'to', count);
+            }
+        });
     }
 
     // 显示通知
@@ -156,11 +204,28 @@ document.addEventListener('DOMContentLoaded', function() {
         }, hideDelay);
     }
 
-    // 初始化评论计数 - 现在由Giscus处理
+    // 初始化评论计数
     function initializeCommentCounts() {
-        // 评论计数现在由Giscus处理，这里可以留空或添加自定义逻辑
-        console.log('Thoughts.js: Comment counts are handled by Giscus');
+        console.log('Thoughts.js: Initializing comment counts');
+        
+        // 为每个随想获取评论数量
+        const thoughtCards = document.querySelectorAll('.thought-card');
+        thoughtCards.forEach(card => {
+            const thoughtId = card.dataset.thoughtId;
+            const countSpan = card.querySelector('.comment-count');
+            
+            if (thoughtId && countSpan) {
+                // 首先尝试从本地存储获取评论数量
+                const storedCount = localStorage.getItem(`comment-count-${thoughtId}`);
+                if (storedCount !== null) {
+                    countSpan.textContent = storedCount;
+                    console.log('Thoughts.js: Loaded comment count from localStorage for', thoughtId, ':', storedCount);
+                }
+                // 否则保持为0，等待Giscus加载后更新
+            }
+        });
     }
+    
 
     // 添加回车键提交评论功能 - 现在由Giscus处理
     function initializeCommentInputHandlers() {

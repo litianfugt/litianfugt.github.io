@@ -45,8 +45,8 @@
                         <span class="thought-views">👁 {{ .ReadingTime }} 分钟阅读</span>
                     </div>
                 </div>
-                <div class="thought-comments" id="comments-{{ .File.BaseFileName }}" style="display: none;">
-                    {{ partial "comments.html" . }}
+                <div class="thought-comments-placeholder" id="comments-placeholder-{{ .File.BaseFileName }}" data-thought-id="{{ .File.BaseFileName }}">
+                    <!-- 评论将在这里动态加载 -->
                 </div>
             </article>
             {{ end }}
@@ -65,6 +65,43 @@
     </div>
 </main>
 
+<!-- Ensure CommentManager is loaded before thoughts.js -->
+{{ partial "comments.html" . }}
+
 <!-- Include the thoughts JavaScript at the end of the page -->
 <script src="/js/thoughts.js"></script>
+
+<!-- Debug script to check if CommentManager is loaded -->
+<script>
+    console.log('Thoughts list: Checking if CommentManager is available...');
+    console.log('Thoughts list: window.commentManager type:', typeof window.commentManager);
+    console.log('Thoughts list: window.CommentManager type:', typeof window.CommentManager);
+    console.log('Thoughts list: window.commentManagerLoaded:', typeof window.commentManagerLoaded);
+    
+    // If CommentManager is not available, try to initialize it
+    if (typeof window.commentManager === 'undefined' && typeof window.CommentManager !== 'undefined') {
+        console.log('Thoughts list: CommentManager class is available but instance is not, creating instance...');
+        window.commentManager = new window.CommentManager();
+    }
+    
+    // 添加一个延迟检查，确保所有脚本都已加载
+    setTimeout(() => {
+        console.log('Thoughts list: Delayed check - CommentManager availability:', {
+            commentManager: typeof window.commentManager,
+            CommentManager: typeof window.CommentManager,
+            commentManagerLoaded: typeof window.commentManagerLoaded
+        });
+        
+        // 检查评论按钮
+        const commentButtons = document.querySelectorAll('.thought-action.comment-btn');
+        console.log('Thoughts list: Found', commentButtons.length, 'comment buttons');
+        
+        if (commentButtons.length > 0) {
+            console.log('Thoughts list: First comment button data:', {
+                thoughtId: commentButtons[0].dataset.thoughtId,
+                hasClickListener: commentButtons[0].onclick !== null || commentButtons[0].addEventListener
+            });
+        }
+    }, 1000);
+</script>
 {{ end }}

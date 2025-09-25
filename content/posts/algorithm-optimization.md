@@ -19,6 +19,7 @@ ShowPostNavLinks: true
 ShowWordCount: true
 ShowRssButtonInSectionTermList: true
 UseHugoToc: true
+comments: true
 cover:
     image: "/images/algorithm-optimization.jpg"
     alt: "算法优化"

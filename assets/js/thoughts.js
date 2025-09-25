@@ -274,8 +274,22 @@ document.addEventListener('DOMContentLoaded', function() {
                         return;
                     }
                     
-                    // 切换评论区域显示状态
-                    if (commentsSection.style.display === 'none' || commentsSection.style.display === '') {
+                    // 检查当前评论区域是否可见
+                    const isVisible = commentsSection.style.display === 'block';
+                    
+                    // 关闭所有评论区域
+                    document.querySelectorAll('.thought-comments').forEach(section => {
+                        section.style.display = 'none';
+                        // 移除所有评论按钮的活跃状态
+                        const otherThoughtId = section.id.replace('comments-', '');
+                        const otherButton = document.querySelector(`.comment-btn[data-thought-id="${otherThoughtId}"]`);
+                        if (otherButton) {
+                            otherButton.classList.remove('active');
+                        }
+                    });
+                    
+                    // 如果之前是隐藏状态，现在显示
+                    if (!isVisible) {
                         commentsSection.style.display = 'block';
                         this.classList.add('active');
                         ensureCommentsStructure(thoughtId);
@@ -285,9 +299,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         setTimeout(() => {
                             commentsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                         }, 100);
-                    } else {
-                        commentsSection.style.display = 'none';
-                        this.classList.remove('active');
                     }
                 });
             });
