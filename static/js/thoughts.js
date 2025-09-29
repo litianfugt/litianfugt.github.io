@@ -71,15 +71,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (isActive) {
                             // Hide comments
                             console.log('Thoughts.js: Hiding comments for thought:', thoughtId);
-                            button.classList.remove('active');
                             
                             // Use CommentManager to deactivate
-                            commentManager.deactivateCurrentInstance();
+                            await commentManager.deactivateCurrentInstanceAsync();
                             console.log('Thoughts.js: CommentManager deactivated for thought:', thoughtId);
                         } else {
                             // Show comments
                             console.log('Thoughts.js: Showing comments for thought:', thoughtId);
-                            button.classList.add('active');
                             
                             // Check if comments placeholder exists
                             const placeholderId = `comments-placeholder-${thoughtId}`;
@@ -117,18 +115,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 更新评论计数
-    function updateCommentCount(thoughtId, count) {
-        // 查找对应的评论按钮
-        const commentButtons = document.querySelectorAll('.thought-action.comment-btn[data-thought-id="' + thoughtId + '"]');
-        commentButtons.forEach(button => {
-            const countSpan = button.querySelector('.comment-count');
-            if (countSpan) {
-                countSpan.textContent = count;
-                console.log('Thoughts.js: Updated comment count for', thoughtId, 'to', count);
-            }
-        });
-    }
 
     // 显示通知
     function showNotification(message, type = 'info') {
@@ -205,12 +191,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 初始化评论计数
-    function initializeCommentCounts() {
+    async function initializeCommentCounts() {
         console.log('Thoughts.js: Initializing comment counts');
         
         // 为每个随想获取评论数量
         const thoughtCards = document.querySelectorAll('.thought-card');
-        thoughtCards.forEach(card => {
+        
+        for (const card of thoughtCards) {
             const thoughtId = card.dataset.thoughtId;
             const countSpan = card.querySelector('.comment-count');
             
@@ -220,8 +207,100 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (storedCount !== null) {
                     countSpan.textContent = storedCount;
                     console.log('Thoughts.js: Loaded comment count from localStorage for', thoughtId, ':', storedCount);
+                } else {
+                    // 如果本地存储没有，尝试从Giscus获取评论数量
+                    try {
+                        const count = await fetchCommentCountFromGiscus(thoughtId);
+                        countSpan.textContent = count;
+                        // 保存到本地存储
+                        localStorage.setItem(`comment-count-${thoughtId}`, count);
+                        console.log('Thoughts.js: Fetched comment count from Giscus for', thoughtId, ':', count);
+                    } catch (error) {
+                        console.warn('Thoughts.js: Failed to fetch comment count from Giscus for', thoughtId, ':', error);
+                        // 保持为0，等待Giscus加载后更新
+                        countSpan.textContent = '0';
+                    }
                 }
-                // 否则保持为0，等待Giscus加载后更新
+            }
+        }
+    }
+    
+    // 从Giscus获取评论数量
+    async function fetchCommentCountFromGiscus(thoughtId) {
+        console.log('Thoughts.js: Fetching comment count from Giscus for thought:', thoughtId);
+        
+        // 构建Giscus API请求URL
+        const pagePath = window.location.pathname;
+        const uniqueId = `${pagePath}#${thoughtId}`;
+        
+        // 使用GitHub API获取讨论数量
+        const repo = '{{ .Site.Params.comments.giscus.repo }}';
+        const categoryId = '{{ .Site.Params.comments.giscus.categoryId }}';
+        
+        if (!repo || !categoryId) {
+            console.warn('Thoughts.js: Giscus configuration not found');
+            return 0;
+        }
+        
+        try {
+            // 构建GraphQL查询
+            const query = `
+                query {
+                    repository(owner: "${repo.split('/')[0]}", name: "${repo.split('/')[1]}") {
+                        discussions(categoryId: "${categoryId}", first: 100) {
+                            nodes {
+                                title
+                                comments {
+                                    totalCount
+                                }
+                            }
+                        }
+                    }
+                }
+            `;
+            
+            // 发送GraphQL请求
+            const response = await fetch('https://api.github.com/graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'bearer {{ .Site.Params.comments.giscus.token | default "" }}'
+                },
+                body: JSON.stringify({ query })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`GitHub API request failed: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            const discussions = data.data.repository.discussions.nodes;
+            
+            // 查找匹配的讨论
+            const discussion = discussions.find(d => d.title === uniqueId || d.title.includes(thoughtId));
+            
+            if (discussion) {
+                return discussion.comments.totalCount;
+            }
+            
+            return 0;
+        } catch (error) {
+            console.error('Thoughts.js: Error fetching comment count from GitHub API:', error);
+            throw error;
+        }
+    }
+    
+    // 更新评论计数
+    function updateThoughtCommentCount(thoughtId, count) {
+        // 查找对应的评论按钮
+        const commentButtons = document.querySelectorAll('.thought-action.comment-btn[data-thought-id="' + thoughtId + '"]');
+        commentButtons.forEach(button => {
+            const countSpan = button.querySelector('.comment-count');
+            if (countSpan) {
+                countSpan.textContent = count;
+                // 保存到本地存储
+                localStorage.setItem(`comment-count-${thoughtId}`, count);
+                console.log('Thoughts.js: Updated comment count for', thoughtId, 'to', count);
             }
         });
     }

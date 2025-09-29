@@ -485,6 +485,11 @@
                             if (loading) {
                                 loading.style.display = 'none';
                             }
+                            
+                            
+                            setTimeout(() => {
+                                updateCommentCountFromGiscus(this.thoughtId);
+                            }, 1000); 
                         });
                         
                         script.addEventListener('error', () => {
@@ -534,33 +539,8 @@
                             this.loadGiscus();
                             
                             
-                            await new Promise((resolve, reject) => {
-                                const timeout = setTimeout(() => {
-                                    console.warn('CommentInstance: Giscus load timeout for thought:', this.thoughtId);
-                                    resolve(); 
-                                }, 5000); 
-                                
-                                
-                                const checkGiscusLoaded = () => {
-                                    const giscusContainer = this.container?.querySelector('.giscus-container');
-                                    const giscusFrame = giscusContainer?.querySelector('iframe.giscus-frame');
-                                    
-                                    if (giscusFrame) {
-                                        clearTimeout(timeout);
-                                        console.log('CommentInstance: Giscus frame detected for thought:', this.thoughtId);
-                                        resolve();
-                                    } else {
-                                        
-                                        setTimeout(checkGiscusLoaded, 100);
-                                    }
-                                };
-                                
-                                
-                                setTimeout(checkGiscusLoaded, 100);
-                            });
-                            
                             this.isActive = true;
-                            console.log('CommentInstance: Load process completed for thought:', this.thoughtId);
+                            console.log('CommentInstance: Load process initiated for thought:', this.thoughtId);
                         } catch (error) {
                             console.error('CommentInstance: Error during load process for thought:', this.thoughtId, error);
                             
@@ -600,19 +580,24 @@
             console.log('CommentManager: All instance IDs:', Array.from(this.instances.keys()));
             
             
-            if (this.activeInstance && this.activeInstance.thoughtId !== thoughtId) {
-                console.log('CommentManager: Deactivating current instance for thought:', this.activeInstance.thoughtId);
-                console.log('CommentManager: Before deactivation - instance state:', {
-                    isActive: this.activeInstance.isActive,
-                    isLoading: this.activeInstance.isLoading,
-                    hasContainer: !!this.activeInstance.container
-                });
+            this.setLoadingState(thoughtId, true);
+            
+            try {
                 
-                
-                this.deactivateCurrentInstance();
-                
-                
-                setTimeout(() => {
+                if (this.activeInstance && this.activeInstance.thoughtId !== thoughtId) {
+                    console.log('CommentManager: Deactivating current instance for thought:', this.activeInstance.thoughtId);
+                    console.log('CommentManager: Before deactivation - instance state:', {
+                        isActive: this.activeInstance.isActive,
+                        isLoading: this.activeInstance.isLoading,
+                        hasContainer: !!this.activeInstance.container
+                    });
+                    
+                    
+                    await this.deactivateCurrentInstanceAsync();
+                    
+                    
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    
                     const allGiscusFrames = document.querySelectorAll('iframe.giscus-frame');
                     const allGiscusScripts = document.querySelectorAll('script[src="https://giscus.app/client.js"]');
                     console.log('CommentManager: Global Giscus check after deactivation - Frames:', allGiscusFrames.length, 'Scripts:', allGiscusScripts.length);
@@ -622,27 +607,195 @@
                         allGiscusFrames.forEach(frame => frame.remove());
                         allGiscusScripts.forEach(script => script.remove());
                     }
-                }, 100);
+                }
+                
+                const instance = this.getInstance(thoughtId);
+                console.log('CommentManager: Got instance for thought:', thoughtId, 'isActive:', instance.isActive);
+                console.log('CommentManager: Instance container exists:', !!instance.container);
+                this.activeInstance = instance;
+                
+                if (!instance.isActive) {
+                    console.log('CommentManager: Loading new instance for thought:', thoughtId);
+                    console.log('CommentManager: Before load - instance.isLoading:', instance.isLoading);
+                    
+                    
+                    if (!instance.container) {
+                        instance.createContainer();
+                    }
+                    
+                    
+                    await instance.loadGiscus();
+                    
+                    
+                    instance.isActive = true;
+                    instance.isLoading = false;
+                    
+                    console.log('CommentManager: After load - instance.isActive:', instance.isActive, 'instance.isLoading:', instance.isLoading);
+                    console.log('CommentManager: Instance loaded for thought:', thoughtId);
+                } else {
+                    console.log('CommentManager: Instance already active for thought:', thoughtId);
+                }
+                
+                instance.show();
+                console.log('CommentManager: Instance activated for thought:', thoughtId);
+                console.log('CommentManager: Final state - activeInstance.thoughtId:', this.activeInstance.thoughtId);
+                
+                
+                this.updateButtonState(thoughtId, true);
+                
+            } catch (error) {
+                console.error('CommentManager: Error activating instance for thought:', thoughtId, error);
+                
+                
+                this.updateButtonState(thoughtId, false);
+                
+                
+                this.showNotification('评论加载失败，请刷新页面重试', 'error');
+            } finally {
+                
+                this.setLoadingState(thoughtId, false);
             }
-            
-            const instance = this.getInstance(thoughtId);
-            console.log('CommentManager: Got instance for thought:', thoughtId, 'isActive:', instance.isActive);
-            console.log('CommentManager: Instance container exists:', !!instance.container);
-            this.activeInstance = instance;
-            
-            if (!instance.isActive) {
-                console.log('CommentManager: Loading new instance for thought:', thoughtId);
-                console.log('CommentManager: Before load - instance.isLoading:', instance.isLoading);
-                await instance.load();
-                console.log('CommentManager: After load - instance.isActive:', instance.isActive, 'instance.isLoading:', instance.isLoading);
-                console.log('CommentManager: Instance loaded for thought:', thoughtId);
+        }
+        
+        
+        async deactivateCurrentInstanceAsync() {
+            if (this.activeInstance) {
+                console.log('CommentManager: Asynchronously deactivating current instance for thought:', this.activeInstance.thoughtId);
+                console.log('CommentManager: Before deactivation - instance state:', {
+                    isActive: this.activeInstance.isActive,
+                    isLoading: this.activeInstance.isLoading,
+                    hasContainer: !!this.activeInstance.container
+                });
+                
+                
+                this.activeInstance.hide();
+                
+                
+                this.updateButtonState(this.activeInstance.thoughtId, false);
+                
+                
+                if (this.activeInstance.container) {
+                    const giscusContainer = this.activeInstance.container.querySelector('.giscus-container');
+                    if (giscusContainer) {
+                        console.log('CommentManager: Force cleaning Giscus container for thought:', this.activeInstance.thoughtId);
+                        
+                        
+                        const frames = giscusContainer.querySelectorAll('iframe.giscus-frame');
+                        const scripts = giscusContainer.querySelectorAll('script[src="https://giscus.app/client.js"]');
+                        
+                        frames.forEach(frame => {
+                            console.log('CommentManager: Removing frame during deactivation');
+                            frame.remove();
+                        });
+                        
+                        scripts.forEach(script => {
+                            console.log('CommentManager: Removing script during deactivation');
+                            script.remove();
+                        });
+                        
+                        
+                        giscusContainer.innerHTML = '<div class="giscus-loading">加载评论中...</div>';
+                    }
+                }
+                
+                
+                this.activeInstance.isActive = false;
+                this.activeInstance.isLoading = false;
+                
+                
+                this.activeInstance = null;
+                
+                console.log('CommentManager: Asynchronous deactivation completed');
+                
+                
+                return Promise.resolve();
             } else {
-                console.log('CommentManager: Instance already active for thought:', thoughtId);
+                console.log('CommentManager: No active instance to deactivate');
+                return Promise.resolve();
             }
+        }
+        
+        
+        setLoadingState(thoughtId, isLoading) {
+            const button = document.querySelector(`.thought-action.comment-btn[data-thought-id="${thoughtId}"]`);
+            if (button) {
+                if (isLoading) {
+                    button.classList.add('loading');
+                    
+                } else {
+                    button.classList.remove('loading');
+                }
+            }
+        }
+        
+        
+        updateButtonState(thoughtId, isActive) {
+            const button = document.querySelector(`.thought-action.comment-btn[data-thought-id="${thoughtId}"]`);
+            if (button) {
+                if (isActive) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            }
+        }
+        
+        
+        showNotification(message, type = 'info') {
             
-            instance.show();
-            console.log('CommentManager: Instance activated for thought:', thoughtId);
-            console.log('CommentManager: Final state - activeInstance.thoughtId:', this.activeInstance.thoughtId);
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.textContent = message;
+            
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 14px 22px;
+                border-radius: 8px;
+                color: white;
+                font-size: 14px;
+                z-index: 1000;
+                opacity: 0;
+                transform: translateX(100%);
+                transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+                max-width: 320px;
+                word-wrap: break-word;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                font-weight: 500;
+            `;
+            
+            
+            const colors = {
+                success: '#4CAF50',
+                warning: '#FF9800',
+                error: '#F44336',
+                info: '#2196F3'
+            };
+            
+            notification.style.backgroundColor = colors[type] || colors.info;
+            
+            
+            document.body.appendChild(notification);
+            
+            
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateX(0)';
+            }, 10);
+            
+            
+            const hideDelay = type === 'error' ? 5000 : 3000;
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, hideDelay);
         }
         
         
@@ -720,6 +873,91 @@
         }
     }
 
+    
+    async function updateCommentCountFromGiscus(thoughtId) {
+        console.log('Comments.html: Updating comment count from Giscus for thought:', thoughtId);
+        
+        try {
+            
+            const pagePath = window.location.pathname;
+            const uniqueId = `${pagePath}#${thoughtId}`;
+            
+            
+            const repo = 'litianfugt\/litianfugt.github.io';
+            const categoryId = 'DIC_kwDOPkZVNc4Cv3cN';
+            
+            if (!repo || !categoryId) {
+                console.warn('Comments.html: Giscus configuration not found');
+                return;
+            }
+            
+            
+            const query = `
+                query {
+                    repository(owner: "${repo.split('/')[0]}", name: "${repo.split('/')[1]}") {
+                        discussions(categoryId: "${categoryId}", first: 100) {
+                            nodes {
+                                title
+                                comments {
+                                    totalCount
+                                }
+                            }
+                        }
+                    }
+                }
+            `;
+            
+            
+            const response = await fetch('https://api.github.com/graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'bearer '
+                },
+                body: JSON.stringify({ query })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`GitHub API request failed: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            const discussions = data.data.repository.discussions.nodes;
+            
+            
+            const discussion = discussions.find(d => d.title === uniqueId || d.title.includes(thoughtId));
+            
+            if (discussion) {
+                const count = discussion.comments.totalCount;
+                
+                const commentButtons = document.querySelectorAll(`.thought-action.comment-btn[data-thought-id="${thoughtId}"]`);
+                commentButtons.forEach(button => {
+                    const countSpan = button.querySelector('.comment-count');
+                    if (countSpan) {
+                        countSpan.textContent = count;
+                        
+                        localStorage.setItem(`comment-count-${thoughtId}`, count);
+                        console.log('Comments.html: Updated comment count for', thoughtId, 'to', count);
+                    }
+                });
+            } else {
+                console.log('Comments.html: No discussion found for thought:', thoughtId);
+                
+                const commentButtons = document.querySelectorAll(`.thought-action.comment-btn[data-thought-id="${thoughtId}"]`);
+                commentButtons.forEach(button => {
+                    const countSpan = button.querySelector('.comment-count');
+                    if (countSpan) {
+                        countSpan.textContent = '0';
+                        
+                        localStorage.setItem(`comment-count-${thoughtId}`, '0');
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Comments.html: Error updating comment count from GitHub API:', error);
+        }
+    }
+    
     
     window.CommentManager = CommentManager;
     window.commentManager = new CommentManager();

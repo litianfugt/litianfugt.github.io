@@ -64,9 +64,13 @@
 <script>
     console.log('Post-comments: Starting to load Giscus for blog post...');
     
+    // 重试计数器
+    let retryCount = 0;
+    const maxRetries = 3;
+    
     // 博客文章评论加载函数
     function loadPostComments() {
-        console.log('Post-comments: Loading Giscus for blog post');
+        console.log('Post-comments: Loading Giscus for blog post, attempt:', retryCount + 1);
         
         const giscusWrapper = document.getElementById('giscus-comments');
         if (!giscusWrapper) {
@@ -131,15 +135,32 @@
             if (loading) {
                 loading.style.display = 'none';
             }
+            // 重置重试计数器
+            retryCount = 0;
         });
         
         // 设置错误事件
         script.addEventListener('error', () => {
             console.error('Post-comments: Giscus load error');
-            const loading = document.querySelector('.post-comments-loading');
-            if (loading) {
-                loading.textContent = '评论加载失败，请刷新页面重试';
-                loading.style.color = '#F44336';
+            retryCount++;
+            
+            if (retryCount < maxRetries) {
+                console.log('Post-comments: Retrying to load Giscus, attempt:', retryCount + 1);
+                const loading = document.querySelector('.post-comments-loading');
+                if (loading) {
+                    loading.textContent = `评论加载失败，正在重试 (${retryCount}/${maxRetries})...`;
+                    loading.style.color = '#FF9800';
+                }
+                // 延迟重试
+                setTimeout(() => {
+                    loadPostComments();
+                }, 2000);
+            } else {
+                const loading = document.querySelector('.post-comments-loading');
+                if (loading) {
+                    loading.textContent = '评论加载失败，请刷新页面重试';
+                    loading.style.color = '#F44336';
+                }
             }
         });
         
@@ -148,20 +169,71 @@
         console.log('Post-comments: Giscus script added to page');
     }
     
+    // 检查页面是否完全加载
+    function waitForPageLoad(callback, maxAttempts = 10, interval = 500) {
+        let attempts = 0;
+        
+        function check() {
+            attempts++;
+            console.log('Post-comments: Checking if page is fully loaded, attempt:', attempts);
+            
+            // 检查页面是否完全加载
+            if (document.readyState === 'complete') {
+                console.log('Post-comments: Page is fully loaded');
+                callback();
+            } else if (attempts < maxAttempts) {
+                setTimeout(check, interval);
+            } else {
+                console.warn('Post-comments: Page did not fully load after maximum attempts');
+                callback();
+            }
+        }
+        
+        check();
+    }
+    
     // 页面加载完成后自动加载评论
     document.addEventListener('DOMContentLoaded', function() {
         console.log('Post-comments: DOM loaded, preparing to load comments...');
         
-        // 延迟一点时间确保页面完全加载
-        setTimeout(() => {
+        // 等待页面完全加载后再加载评论
+        waitForPageLoad(() => {
+            console.log('Post-comments: Page is ready, loading comments...');
             loadPostComments();
-        }, 100);
+        });
+    });
+    
+    // 使用 window.onload 作为备用加载机制
+    window.addEventListener('load', function() {
+        console.log('Post-comments: Window loaded, checking if comments need to be loaded...');
+        
+        // 检查评论是否已经加载
+        const giscusFrame = document.querySelector('#giscus-comments iframe.giscus-frame');
+        if (!giscusFrame) {
+            console.log('Post-comments: Comments not loaded yet, loading now...');
+            loadPostComments();
+        }
     });
     
     // 监听页面变化（例如：SPA导航）
     if (typeof window.addEventListener !== 'undefined') {
         window.addEventListener('popstate', function() {
             console.log('Post-comments: Page navigation detected, reloading comments...');
+            // 重置重试计数器
+            retryCount = 0;
+            setTimeout(() => {
+                loadPostComments();
+            }, 100);
+        });
+    }
+    
+    // 监听主题变化，重新加载评论以适应新主题
+    if (window.matchMedia) {
+        const colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        colorSchemeQuery.addEventListener('change', (e) => {
+            console.log('Post-comments: Color scheme changed, reloading comments...');
+            // 重置重试计数器
+            retryCount = 0;
             setTimeout(() => {
                 loadPostComments();
             }, 100);

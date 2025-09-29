@@ -310,292 +310,246 @@
 </ul>
 
   </footer>
-<div class="giscus-container">
-    
-    <div class="giscus-loading">加载评论中...</div>
+<div class="post-comments-container">
+    <div class="post-comments-header">
+        <h3 class="post-comments-title">评论</h3>
+        <div class="post-comments-loading">加载评论中...</div>
+    </div>
+    <div class="giscus-wrapper" id="giscus-comments">
+        
+    </div>
 </div>
 
 <style>
-    .giscus-container {
-        margin-top: 2rem;
+    .post-comments-container {
+        margin-top: 3rem;
         padding-top: 2rem;
         border-top: 1px solid var(--border);
     }
     
-    .giscus-loading {
-        text-align: center;
-        padding: 20px;
-        color: var(--secondary);
-        font-size: 14px;
+    .post-comments-header {
+        margin-bottom: 1.5rem;
     }
     
-    .giscus-frame {
+    .post-comments-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem 0;
+        color: var(--primary);
+    }
+    
+    .post-comments-loading {
+        color: var(--secondary);
+        font-size: 14px;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .giscus-wrapper {
         border-radius: 8px;
-        box-shadow: 0 2px 8px var(--shadow-light);
+        overflow: hidden;
     }
     
      
     @media (prefers-color-scheme: dark) {
-        .giscus-frame {
+        .giscus-wrapper {
             filter: brightness(0.9);
         }
     }
     
      
     @media (max-width: 768px) {
-        .giscus-container {
-            margin-top: 1.5rem;
+        .post-comments-container {
+            margin-top: 2rem;
             padding-top: 1.5rem;
         }
+        
+        .post-comments-title {
+            font-size: 1.25rem;
+        }
     }
-</style><script>
-    console.log('Comments.html: Starting to load CommentManager...');
-    
-    
-    window.addEventListener('error', function(e) {
-        if (e.message.includes('commentManager') || e.message.includes('CommentManager')) {
-            console.error('Global error handler caught CommentManager error:', e);
-        }
-    });
+</style>
 
+<script>
+    console.log('Post-comments: Starting to load Giscus for blog post...');
     
-    window.addEventListener('unhandledrejection', function(e) {
-        if (e.reason && e.reason.message && e.reason.message.includes('commentManager')) {
-            console.error('Unhandled promise rejection related to CommentManager:', e.reason);
-        }
-    });
-
     
-    class CommentManager {
-        constructor() {
-            this.instances = new Map();
-            this.activeInstance = null;
-            this.initialized = true;
-            console.log('CommentManager: Initialized successfully');
+    let retryCount = 0;
+    const maxRetries = 3;
+    
+    
+    function loadPostComments() {
+        console.log('Post-comments: Loading Giscus for blog post, attempt:', retryCount + 1);
+        
+        const giscusWrapper = document.getElementById('giscus-comments');
+        if (!giscusWrapper) {
+            console.error('Post-comments: Giscus wrapper not found');
+            return;
         }
         
         
-        getInstance(thoughtId) {
-            if (!this.instances.has(thoughtId)) {
-                console.log('CommentManager: Creating new instance for thought:', thoughtId);
-                this.instances.set(thoughtId, {
-                    thoughtId: thoughtId,
-                    containerId: `comments-${thoughtId}`,
-                    container: null,
-                    isActive: false,
-                    isLoading: false,
-                    
-                    
-                    createContainer: function() {
-                        const placeholder = document.getElementById(`comments-placeholder-${this.thoughtId}`);
-                        if (!placeholder) {
-                            console.error('CommentInstance: Placeholder not found for thought:', this.thoughtId);
-                            return;
-                        }
-                        
-                        this.container = document.createElement('div');
-                        this.container.id = this.containerId;
-                        this.container.className = 'thought-comments';
-                        this.container.style.display = 'block';
-                        
-                        this.container.innerHTML = `
-                            <div class="giscus-container">
-                                <div class="giscus-loading">加载评论中...</div>
-                            </div>
-                        `;
-                        
-                        placeholder.parentNode.replaceChild(this.container, placeholder);
-                        console.log('CommentInstance: Created container for thought:', this.thoughtId);
-                    },
-                    
-                    
-                    loadGiscus: function() {
-                        console.log('CommentInstance: loadGiscus called for thought:', this.thoughtId);
-                        const giscusContainer = this.container.querySelector('.giscus-container');
-                        if (!giscusContainer) {
-                            console.error('CommentInstance: Giscus container not found for thought:', this.thoughtId);
-                            return;
-                        }
-                        
-                        
-                        const existingFrame = giscusContainer.querySelector('iframe.giscus-frame');
-                        if (existingFrame) {
-                            console.log('CommentInstance: Removing existing frame for thought:', this.thoughtId);
-                            existingFrame.remove();
-                        }
-                        
-                        const existingScript = giscusContainer.querySelector('script[src="https://giscus.app/client.js"]');
-                        if (existingScript) {
-                            console.log('CommentInstance: Removing existing script for thought:', this.thoughtId);
-                            existingScript.remove();
-                        }
-                        
-                        
-                        const loading = giscusContainer.querySelector('.giscus-loading');
-                        if (loading) {
-                            loading.style.display = 'block';
-                            loading.textContent = '加载评论中...';
-                            loading.style.color = '';
-                        }
-                        
-                        
-                        const thoughtCard = document.querySelector(`.thought-card[data-thought-id="${this.thoughtId}"]`);
-                        let thoughtContent = '';
-                        let thoughtTitle = `随想 ${this.thoughtId}`;
-                        
-                        if (thoughtCard) {
-                            const contentElement = thoughtCard.querySelector('.thought-content');
-                            if (contentElement) {
-                                const contentText = contentElement.textContent.trim();
-                                thoughtContent = contentText;
-                                thoughtTitle = contentText.substring(0, 50) + (contentText.length > 50 ? '...' : '');
-                            }
-                        }
-                        
-                        
-                        const script = document.createElement('script');
-                        script.src = 'https://giscus.app/client.js';
-                        
-                        const pagePath = window.location.pathname;
-                        const uniqueId = `${pagePath}#${this.thoughtId}`;
-                        
-                        script.setAttribute('data-repo', 'litianfugt\/litianfugt.github.io');
-                        script.setAttribute('data-repo-id', 'R_kgDOPkZVNQ');
-                        script.setAttribute('data-category', 'General');
-                        script.setAttribute('data-category-id', 'DIC_kwDOPkZVNc4Cv3cN');
-                        script.setAttribute('data-mapping', 'specific');
-                        script.setAttribute('data-term', uniqueId);
-                        script.setAttribute('data-title', thoughtTitle);
-                        if (thoughtContent) {
-                            script.setAttribute('data-description', thoughtContent);
-                        }
-                        script.setAttribute('data-strict', '0');
-                        script.setAttribute('data-reactions-enabled', '1');
-                        script.setAttribute('data-emit-metadata', '1');
-                        script.setAttribute('data-input-position', 'bottom');
-                        script.setAttribute('data-theme', 'preferred_color_scheme');
-                        script.setAttribute('data-lang', 'zh-CN');
-                        script.setAttribute('data-loading', 'lazy');
-                        script.setAttribute('crossorigin', 'anonymous');
-                        script.setAttribute('async', '');
-                        
-                        
-                        script.addEventListener('load', () => {
-                            console.log('CommentInstance: Giscus loaded for thought:', this.thoughtId);
-                            const loading = giscusContainer.querySelector('.giscus-loading');
-                            if (loading) {
-                                loading.style.display = 'none';
-                            }
-                        });
-                        
-                        script.addEventListener('error', () => {
-                            console.error('CommentInstance: Giscus load error for thought:', this.thoughtId);
-                            const loading = giscusContainer.querySelector('.giscus-loading');
-                            if (loading) {
-                                loading.textContent = '评论加载失败，请刷新页面重试';
-                                loading.style.color = '#F44336';
-                            }
-                        });
-                        
-                        giscusContainer.appendChild(script);
-                        console.log('CommentInstance: Loading Giscus for thought:', this.thoughtId);
-                    },
-                    
-                    
-                    show: function() {
-                        if (this.container) {
-                            this.container.style.display = 'block';
-                            console.log('CommentInstance: Showing comments for thought:', this.thoughtId);
-                        }
-                    },
-                    
-                    
-                    hide: function() {
-                        if (this.container) {
-                            this.container.style.display = 'none';
-                            console.log('CommentInstance: Hiding comments for thought:', this.thoughtId);
-                        }
-                    },
-                    
-                    
-                    load: async function() {
-                        if (this.isActive) return;
-                        
-                        this.isLoading = true;
-                        this.createContainer();
-                        this.loadGiscus();
-                        this.isActive = true;
-                        this.isLoading = false;
-                    },
-                    
-                    
-                    destroy: function() {
-                        console.log('CommentInstance: Destroying instance for thought:', this.thoughtId);
-                        
-                        if (this.container && this.container.parentNode) {
-                            const placeholder = document.createElement('div');
-                            placeholder.id = `comments-placeholder-${this.thoughtId}`;
-                            placeholder.className = 'thought-comments-placeholder';
-                            placeholder.setAttribute('data-thought-id', this.thoughtId);
-                            
-                            this.container.parentNode.replaceChild(placeholder, this.container);
-                            this.container = null;
-                        }
-                        
-                        this.isActive = false;
-                        this.isLoading = false;
-                    }
-                });
-            }
-            return this.instances.get(thoughtId);
+        const existingFrame = giscusWrapper.querySelector('iframe.giscus-frame');
+        const existingScript = giscusWrapper.querySelector('script[src="https://giscus.app/client.js"]');
+        
+        if (existingFrame) {
+            console.log('Post-comments: Removing existing frame');
+            existingFrame.remove();
+        }
+        
+        if (existingScript) {
+            console.log('Post-comments: Removing existing script');
+            existingScript.remove();
         }
         
         
-        async activateInstance(thoughtId) {
-            console.log('CommentManager: Activating instance for thought:', thoughtId);
-            console.log('CommentManager: Current active instance:', this.activeInstance ? this.activeInstance.thoughtId : 'none');
-            
-            
-            if (this.activeInstance && this.activeInstance.thoughtId !== thoughtId) {
-                console.log('CommentManager: Deactivating current instance for thought:', this.activeInstance.thoughtId);
-                this.activeInstance.hide();
+        const loading = document.querySelector('.post-comments-loading');
+        if (loading) {
+            loading.style.display = 'block';
+            loading.textContent = '加载评论中...';
+            loading.style.color = '';
+        }
+        
+        
+        const pageTitle = document.title;
+        const pagePath = window.location.pathname;
+        const pageUrl = window.location.href;
+        
+        
+        const script = document.createElement('script');
+        script.src = 'https://giscus.app/client.js';
+        
+        
+        script.setAttribute('data-repo', 'litianfugt\/litianfugt.github.io');
+        script.setAttribute('data-repo-id', 'R_kgDOPkZVNQ');
+        script.setAttribute('data-category', 'General');
+        script.setAttribute('data-category-id', 'DIC_kwDOPkZVNc4Cv3cN');
+        script.setAttribute('data-mapping', 'pathname');
+        script.setAttribute('data-term', pagePath);
+        script.setAttribute('data-title', pageTitle);
+        script.setAttribute('data-url', pageUrl);
+        script.setAttribute('data-strict', '0');
+        script.setAttribute('data-reactions-enabled', '1');
+        script.setAttribute('data-emit-metadata', '1');
+        script.setAttribute('data-input-position', 'bottom');
+        script.setAttribute('data-theme', 'preferred_color_scheme');
+        script.setAttribute('data-lang', 'zh-CN');
+        script.setAttribute('data-loading', 'lazy');
+        script.setAttribute('crossorigin', 'anonymous');
+        script.setAttribute('async', '');
+        
+        
+        script.addEventListener('load', () => {
+            console.log('Post-comments: Giscus loaded successfully');
+            const loading = document.querySelector('.post-comments-loading');
+            if (loading) {
+                loading.style.display = 'none';
             }
             
-            const instance = this.getInstance(thoughtId);
-            console.log('CommentManager: Got instance for thought:', thoughtId, 'isActive:', instance.isActive);
-            this.activeInstance = instance;
+            retryCount = 0;
+        });
+        
+        
+        script.addEventListener('error', () => {
+            console.error('Post-comments: Giscus load error');
+            retryCount++;
             
-            if (!instance.isActive) {
-                console.log('CommentManager: Loading new instance for thought:', thoughtId);
-                await instance.load();
-                console.log('CommentManager: Instance loaded for thought:', thoughtId);
+            if (retryCount < maxRetries) {
+                console.log('Post-comments: Retrying to load Giscus, attempt:', retryCount + 1);
+                const loading = document.querySelector('.post-comments-loading');
+                if (loading) {
+                    loading.textContent = `评论加载失败，正在重试 (${retryCount}/${maxRetries})...`;
+                    loading.style.color = '#FF9800';
+                }
+                
+                setTimeout(() => {
+                    loadPostComments();
+                }, 2000);
             } else {
-                console.log('CommentManager: Instance already active for thought:', thoughtId);
+                const loading = document.querySelector('.post-comments-loading');
+                if (loading) {
+                    loading.textContent = '评论加载失败，请刷新页面重试';
+                    loading.style.color = '#F44336';
+                }
             }
-            
-            instance.show();
-            console.log('CommentManager: Instance activated for thought:', thoughtId);
-        }
+        });
         
         
-        deactivateCurrentInstance() {
-            if (this.activeInstance) {
-                console.log('CommentManager: Deactivating current instance for thought:', this.activeInstance.thoughtId);
-                this.activeInstance.hide();
-                this.activeInstance = null;
-            }
-        }
+        giscusWrapper.appendChild(script);
+        console.log('Post-comments: Giscus script added to page');
     }
-
-    
-    window.CommentManager = CommentManager;
-    window.commentManager = new CommentManager();
-    
-    console.log('Giscus: Comment system initialized successfully');
-    console.log('Comments.html: CommentManager instance created and attached to window object');
     
     
-    window.commentManagerLoaded = true;
+    function waitForPageLoad(callback, maxAttempts = 10, interval = 500) {
+        let attempts = 0;
+        
+        function check() {
+            attempts++;
+            console.log('Post-comments: Checking if page is fully loaded, attempt:', attempts);
+            
+            
+            if (document.readyState === 'complete') {
+                console.log('Post-comments: Page is fully loaded');
+                callback();
+            } else if (attempts < maxAttempts) {
+                setTimeout(check, interval);
+            } else {
+                console.warn('Post-comments: Page did not fully load after maximum attempts');
+                callback();
+            }
+        }
+        
+        check();
+    }
+    
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Post-comments: DOM loaded, preparing to load comments...');
+        
+        
+        waitForPageLoad(() => {
+            console.log('Post-comments: Page is ready, loading comments...');
+            loadPostComments();
+        });
+    });
+    
+    
+    window.addEventListener('load', function() {
+        console.log('Post-comments: Window loaded, checking if comments need to be loaded...');
+        
+        
+        const giscusFrame = document.querySelector('#giscus-comments iframe.giscus-frame');
+        if (!giscusFrame) {
+            console.log('Post-comments: Comments not loaded yet, loading now...');
+            loadPostComments();
+        }
+    });
+    
+    
+    if (typeof window.addEventListener !== 'undefined') {
+        window.addEventListener('popstate', function() {
+            console.log('Post-comments: Page navigation detected, reloading comments...');
+            
+            retryCount = 0;
+            setTimeout(() => {
+                loadPostComments();
+            }, 100);
+        });
+    }
+    
+    
+    if (window.matchMedia) {
+        const colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        colorSchemeQuery.addEventListener('change', (e) => {
+            console.log('Post-comments: Color scheme changed, reloading comments...');
+            
+            retryCount = 0;
+            setTimeout(() => {
+                loadPostComments();
+            }, 100);
+        });
+    }
+    
+    console.log('Post-comments: Comment system initialized for blog post');
 </script>
 </article>
     </main>

@@ -1782,8 +1782,12 @@ refactor/user-service
     console.log('Post-comments: Starting to load Giscus for blog post...');
     
     
+    let retryCount = 0;
+    const maxRetries = 3;
+    
+    
     function loadPostComments() {
-        console.log('Post-comments: Loading Giscus for blog post');
+        console.log('Post-comments: Loading Giscus for blog post, attempt:', retryCount + 1);
         
         const giscusWrapper = document.getElementById('giscus-comments');
         if (!giscusWrapper) {
@@ -1848,15 +1852,32 @@ refactor/user-service
             if (loading) {
                 loading.style.display = 'none';
             }
+            
+            retryCount = 0;
         });
         
         
         script.addEventListener('error', () => {
             console.error('Post-comments: Giscus load error');
-            const loading = document.querySelector('.post-comments-loading');
-            if (loading) {
-                loading.textContent = '评论加载失败，请刷新页面重试';
-                loading.style.color = '#F44336';
+            retryCount++;
+            
+            if (retryCount < maxRetries) {
+                console.log('Post-comments: Retrying to load Giscus, attempt:', retryCount + 1);
+                const loading = document.querySelector('.post-comments-loading');
+                if (loading) {
+                    loading.textContent = `评论加载失败，正在重试 (${retryCount}/${maxRetries})...`;
+                    loading.style.color = '#FF9800';
+                }
+                
+                setTimeout(() => {
+                    loadPostComments();
+                }, 2000);
+            } else {
+                const loading = document.querySelector('.post-comments-loading');
+                if (loading) {
+                    loading.textContent = '评论加载失败，请刷新页面重试';
+                    loading.style.color = '#F44336';
+                }
             }
         });
         
@@ -1866,19 +1887,70 @@ refactor/user-service
     }
     
     
+    function waitForPageLoad(callback, maxAttempts = 10, interval = 500) {
+        let attempts = 0;
+        
+        function check() {
+            attempts++;
+            console.log('Post-comments: Checking if page is fully loaded, attempt:', attempts);
+            
+            
+            if (document.readyState === 'complete') {
+                console.log('Post-comments: Page is fully loaded');
+                callback();
+            } else if (attempts < maxAttempts) {
+                setTimeout(check, interval);
+            } else {
+                console.warn('Post-comments: Page did not fully load after maximum attempts');
+                callback();
+            }
+        }
+        
+        check();
+    }
+    
+    
     document.addEventListener('DOMContentLoaded', function() {
         console.log('Post-comments: DOM loaded, preparing to load comments...');
         
         
-        setTimeout(() => {
+        waitForPageLoad(() => {
+            console.log('Post-comments: Page is ready, loading comments...');
             loadPostComments();
-        }, 100);
+        });
+    });
+    
+    
+    window.addEventListener('load', function() {
+        console.log('Post-comments: Window loaded, checking if comments need to be loaded...');
+        
+        
+        const giscusFrame = document.querySelector('#giscus-comments iframe.giscus-frame');
+        if (!giscusFrame) {
+            console.log('Post-comments: Comments not loaded yet, loading now...');
+            loadPostComments();
+        }
     });
     
     
     if (typeof window.addEventListener !== 'undefined') {
         window.addEventListener('popstate', function() {
             console.log('Post-comments: Page navigation detected, reloading comments...');
+            
+            retryCount = 0;
+            setTimeout(() => {
+                loadPostComments();
+            }, 100);
+        });
+    }
+    
+    
+    if (window.matchMedia) {
+        const colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        colorSchemeQuery.addEventListener('change', (e) => {
+            console.log('Post-comments: Color scheme changed, reloading comments...');
+            
+            retryCount = 0;
             setTimeout(() => {
                 loadPostComments();
             }, 100);
