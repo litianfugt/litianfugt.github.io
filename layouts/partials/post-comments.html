@@ -109,21 +109,33 @@
         const script = document.createElement('script');
         script.src = 'https://giscus.app/client.js';
         
-        // 设置Giscus配置
-        script.setAttribute('data-repo', '{{ .Site.Params.comments.giscus.repo }}');
-        script.setAttribute('data-repo-id', '{{ .Site.Params.comments.giscus.repoId }}');
-        script.setAttribute('data-category', '{{ .Site.Params.comments.giscus.category }}');
-        script.setAttribute('data-category-id', '{{ .Site.Params.comments.giscus.categoryId }}');
+        // 设置Giscus配置 - 使用硬编码值作为GitHub Pages环境的备用方案
+        const giscusRepo = '{{ .Site.Params.comments.giscus.repo }}' || 'litianfugt/litianfugt.github.io';
+        const giscusRepoId = '{{ .Site.Params.comments.giscus.repoId }}' || 'R_kgDOPkZVNQ';
+        const giscusCategory = '{{ .Site.Params.comments.giscus.category }}' || 'General';
+        const giscusCategoryId = '{{ .Site.Params.comments.giscus.categoryId }}' || 'DIC_kwDOPkZVNc4Cv3cN';
+        
+        console.log('Post-comments: Using Giscus config:', {
+            repo: giscusRepo,
+            repoId: giscusRepoId,
+            category: giscusCategory,
+            categoryId: giscusCategoryId
+        });
+        
+        script.setAttribute('data-repo', giscusRepo);
+        script.setAttribute('data-repo-id', giscusRepoId);
+        script.setAttribute('data-category', giscusCategory);
+        script.setAttribute('data-category-id', giscusCategoryId);
         script.setAttribute('data-mapping', 'pathname');
         script.setAttribute('data-term', pagePath);
         script.setAttribute('data-title', pageTitle);
         script.setAttribute('data-url', pageUrl);
-        script.setAttribute('data-strict', '{{ .Site.Params.comments.giscus.strict | default "0" }}');
-        script.setAttribute('data-reactions-enabled', '{{ .Site.Params.comments.giscus.reactionsEnabled | default "1" }}');
-        script.setAttribute('data-emit-metadata', '{{ .Site.Params.comments.giscus.emitMetadata | default "0" }}');
-        script.setAttribute('data-input-position', '{{ .Site.Params.comments.giscus.inputPosition | default "bottom" }}');
-        script.setAttribute('data-theme', '{{ .Site.Params.comments.giscus.theme | default "preferred_color_scheme" }}');
-        script.setAttribute('data-lang', '{{ .Site.Params.comments.giscus.lang | default "zh-CN" }}');
+        script.setAttribute('data-strict', '0');
+        script.setAttribute('data-reactions-enabled', '1');
+        script.setAttribute('data-emit-metadata', '0');
+        script.setAttribute('data-input-position', 'bottom');
+        script.setAttribute('data-theme', 'preferred_color_scheme');
+        script.setAttribute('data-lang', 'zh-CN');
         script.setAttribute('data-loading', 'eager'); // GitHub Pages环境下使用eager加载
         script.setAttribute('crossorigin', 'anonymous');
         script.setAttribute('async', '');
@@ -220,6 +232,18 @@
         }
     });
     
+    // 延迟加载作为最后的备用方案 - 特别针对GitHub Pages
+    setTimeout(() => {
+        console.log('Post-comments: Delayed load check for GitHub Pages...');
+        const giscusFrame = document.querySelector('#giscus-comments iframe.giscus-frame');
+        if (!giscusFrame) {
+            console.log('Post-comments: Comments still not loaded after delay, trying again...');
+            // 重置重试计数器
+            retryCount = 0;
+            loadPostComments();
+        }
+    }, 3000); // 3秒后检查
+    
     // 监听页面变化（例如：SPA导航）
     if (typeof window.addEventListener !== 'undefined') {
         window.addEventListener('popstate', function() {
@@ -294,7 +318,7 @@
             if (!response.ok) {
                 console.warn('Post-comments: GraphQL request failed, trying REST API');
                 // 如果GraphQL失败，尝试REST API作为备用
-                await this.updateCommentCountFromREST(pagePath, pageTitle, repo, categoryId);
+                await updateCommentCountFromREST(pagePath, pageTitle, repo, categoryId);
                 return;
             }
             
@@ -303,7 +327,7 @@
             // 检查GraphQL响应中的错误
             if (data.errors) {
                 console.warn('Post-comments: GraphQL errors detected, trying REST API:', data.errors);
-                await this.updateCommentCountFromREST(pagePath, pageTitle, repo, categoryId);
+                await updateCommentCountFromREST(pagePath, pageTitle, repo, categoryId);
                 return;
             }
             
@@ -350,7 +374,7 @@
                 const pageTitle = document.title;
                 const repo = '{{ .Site.Params.comments.giscus.repo }}';
                 const categoryId = '{{ .Site.Params.comments.giscus.categoryId }}';
-                await this.updateCommentCountFromREST(pagePath, pageTitle, repo, categoryId);
+                await updateCommentCountFromREST(pagePath, pageTitle, repo, categoryId);
             } catch (restError) {
                 console.error('Post-comments: REST API also failed:', restError);
             }
