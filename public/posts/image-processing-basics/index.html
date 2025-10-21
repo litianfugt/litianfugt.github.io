@@ -1018,7 +1018,7 @@
         script.setAttribute('data-input-position', 'bottom');
         script.setAttribute('data-theme', 'preferred_color_scheme');
         script.setAttribute('data-lang', 'zh-CN');
-        script.setAttribute('data-loading', 'lazy');
+        script.setAttribute('data-loading', 'eager'); 
         script.setAttribute('crossorigin', 'anonymous');
         script.setAttribute('async', '');
         
@@ -1186,10 +1186,21 @@
             });
             
             if (!response.ok) {
-                throw new Error(`GitHub API request failed: ${response.status}`);
+                console.warn('Post-comments: GraphQL request failed, trying REST API');
+                
+                await this.updateCommentCountFromREST(pagePath, pageTitle, repo, categoryId);
+                return;
             }
             
             const data = await response.json();
+            
+            
+            if (data.errors) {
+                console.warn('Post-comments: GraphQL errors detected, trying REST API:', data.errors);
+                await this.updateCommentCountFromREST(pagePath, pageTitle, repo, categoryId);
+                return;
+            }
+            
             const discussions = data.data.repository.discussions.nodes;
             
             
@@ -1227,6 +1238,82 @@
             }
         } catch (error) {
             console.error('Post-comments: Error updating comment count:', error);
+            
+            try {
+                const pagePath = window.location.pathname;
+                const pageTitle = document.title;
+                const repo = 'litianfugt\/litianfugt.github.io';
+                const categoryId = 'DIC_kwDOPkZVNc4Cv3cN';
+                await this.updateCommentCountFromREST(pagePath, pageTitle, repo, categoryId);
+            } catch (restError) {
+                console.error('Post-comments: REST API also failed:', restError);
+            }
+        }
+    }
+    
+    
+    async function updateCommentCountFromREST(pagePath, pageTitle, repo, categoryId) {
+        console.log('Post-comments: Using REST API to update comment count');
+        
+        try {
+            
+            const apiUrl = `https://api.github.com/repos/${repo}/discussions?category_id=${categoryId}&per_page=100`;
+            
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`GitHub REST API request failed: ${response.status}`);
+            }
+            
+            const discussions = await response.json();
+            
+            
+            let discussion = null;
+            
+            
+            discussion = discussions.find(d => d.url && d.url.includes(pagePath));
+            
+            
+            if (!discussion) {
+                discussion = discussions.find(d => d.title === pageTitle || (d.title && d.title.includes(pagePath)));
+            }
+            
+            if (discussion) {
+                const count = discussion.comments || 0;
+                console.log('Post-comments: Found discussion via REST API with', count, 'comments');
+                
+                
+                const commentCountElements = document.querySelectorAll('.post-comment-count');
+                commentCountElements.forEach(element => {
+                    element.textContent = count;
+                });
+                
+                
+                localStorage.setItem(`post-comment-count-${pagePath}`, count);
+            } else {
+                console.log('Post-comments: No discussion found for this page via REST API');
+                
+                const commentCountElements = document.querySelectorAll('.post-comment-count');
+                commentCountElements.forEach(element => {
+                    element.textContent = '0';
+                });
+                localStorage.setItem(`post-comment-count-${pagePath}`, '0');
+            }
+        } catch (error) {
+            console.error('Post-comments: REST API error:', error);
+            
+            const storedCount = localStorage.getItem(`post-comment-count-${pagePath}`);
+            const count = storedCount !== null ? storedCount : '0';
+            
+            const commentCountElements = document.querySelectorAll('.post-comment-count');
+            commentCountElements.forEach(element => {
+                element.textContent = count;
+            });
         }
     }
     

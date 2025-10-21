@@ -973,12 +973,12 @@ document.addEventListener('DOMContentLoaded', function() {
             // 立即执行乐观更新
             this.handleOptimisticUpdate(thoughtId);
             
-            // 延迟从 Giscus UI 同步计数
+            // 快速同步计数 - 减少延迟
             setTimeout(() => {
                 this.syncCommentCountFromGiscusUI(thoughtId);
-            }, 1000);
+            }, 300); // 减少延迟时间到300ms
             
-            // 主要的延迟更新，使用API确保获取准确计数
+            // 主要的延迟更新，使用API确保获取准确计数 - 加快速度
             setTimeout(async () => {
                 try {
                     // 直接从GitHub API获取计数
@@ -1002,7 +1002,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 } finally {
                     this.isProcessingComment = false; // 重置处理状态
                 }
-            }, 3000); // 适中的延迟时间
+            }, 800); // 减少延迟时间到800ms
             
             // 显示视觉反馈
             this.showCommentSubmissionFeedback(thoughtId);
@@ -1055,7 +1055,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         this.setCommentCount(thoughtId, currentCount);
                     }
                 }
-            }, 4000); // 适中的同步频率，平衡响应性和跳动
+            }, 2000); // 提高同步频率到2秒，加快评论计数更新速度
             
             this.syncIntervals.set(thoughtId, intervalId);
             
@@ -1551,7 +1551,21 @@ document.addEventListener('DOMContentLoaded', function() {
         setupVisibilityChangeHandler() {
             document.addEventListener('visibilitychange', () => {
                 if (!document.hidden) {
-                    console.log('Thought Comments: Page became visible, updating comment counts');
+                    console.log('Thought Comments: Page became visible, checking comment state');
+                    
+                    // 检查是否有之前打开的评论容器
+                    if (this.currentOpenThoughtId) {
+                        const commentsContainer = document.getElementById(`comments-${this.currentOpenThoughtId}`);
+                        if (commentsContainer) {
+                            // 确保评论容器保持打开状态
+                            commentsContainer.style.display = 'block';
+                            console.log('Thought Comments: Ensuring comment container stays open after visibility change');
+                            
+                            // 重新初始化Giscus，确保在OAuth重定向后正常工作
+                            this.reinitializeComments(this.currentOpenThoughtId);
+                        }
+                    }
+                    
                     // 页面重新可见时，更新所有评论计数
                     setTimeout(() => {
                         this.updateAllCommentCounts();
@@ -1561,11 +1575,123 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 监听窗口获得焦点事件
             window.addEventListener('focus', () => {
-                console.log('Thought Comments: Window gained focus, updating comment counts');
+                console.log('Thought Comments: Window gained focus, checking comment state');
+                
+                // 检查是否有之前打开的评论容器
+                if (this.currentOpenThoughtId) {
+                    const commentsContainer = document.getElementById(`comments-${this.currentOpenThoughtId}`);
+                    if (commentsContainer) {
+                        // 确保评论容器保持打开状态
+                        commentsContainer.style.display = 'block';
+                        console.log('Thought Comments: Ensuring comment container stays open after focus gain');
+                        
+                        // 重新初始化Giscus，确保在OAuth重定向后正常工作
+                        this.reinitializeComments(this.currentOpenThoughtId);
+                    }
+                }
+                
                 setTimeout(() => {
                     this.updateAllCommentCounts();
                 }, 1000);
             });
+            
+            // 监听存储变化，检测来自其他标签页的登录状态变化
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'giscus-session' || e.key === 'giscus-login') {
+                    console.log('Thought Comments: Detected Giscus session change, re-initializing comments');
+                    if (this.currentOpenThoughtId) {
+                        const commentsContainer = document.getElementById(`comments-${this.currentOpenThoughtId}`);
+                        if (commentsContainer) {
+                            // 确保评论容器保持打开状态
+                            commentsContainer.style.display = 'block';
+                            console.log('Thought Comments: Ensuring comment container stays open after login');
+                        }
+                        this.reinitializeComments(this.currentOpenThoughtId);
+                    }
+                }
+            });
+            
+            // 监听URL变化，检测OAuth重定向
+            let lastUrl = location.href;
+            new MutationObserver(() => {
+                const url = location.href;
+                if (url !== lastUrl) {
+                    lastUrl = url;
+                    console.log('Thought Comments: URL changed, checking if OAuth redirect occurred');
+                    
+                    // 检查URL中是否包含GitHub OAuth相关的参数
+                    if (url.includes('code=') || url.includes('state=')) {
+                        console.log('Thought Comments: OAuth redirect detected, ensuring comment container stays open');
+                        
+                        if (this.currentOpenThoughtId) {
+                            const commentsContainer = document.getElementById(`comments-${this.currentOpenThoughtId}`);
+                            if (commentsContainer) {
+                                // 确保评论容器保持打开状态
+                                commentsContainer.style.display = 'block';
+                                console.log('Thought Comments: Ensuring comment container stays open after OAuth redirect');
+                                
+                                // 延迟重新初始化Giscus，确保OAuth流程完成
+                                setTimeout(() => {
+                                    this.reinitializeComments(this.currentOpenThoughtId);
+                                }, 1000);
+                            }
+                        }
+                    }
+                }
+            }).observe(document, { subtree: true, childList: true });
+        }
+        
+        // 重新初始化评论系统
+        reinitializeComments(thoughtId) {
+            console.log('Thought Comments: Re-initializing comments for thought:', thoughtId);
+            
+            // 检查评论容器是否存在且可见
+            const commentsContainer = document.getElementById(`comments-${thoughtId}`);
+            if (!commentsContainer || commentsContainer.style.display === 'none') {
+                console.log('Thought Comments: Comments container not visible, skipping re-initialization');
+                return;
+            }
+            
+            // 检查Giscus是否已经加载
+            const giscusWrapper = document.getElementById(`giscus-${thoughtId}`);
+            if (!giscusWrapper) {
+                console.log('Thought Comments: Giscus wrapper not found, skipping re-initialization');
+                return;
+            }
+            
+            // 检查是否有Giscus iframe
+            const existingFrame = giscusWrapper.querySelector('iframe.giscus-frame');
+            
+            if (existingFrame) {
+                console.log('Thought Comments: Giscus iframe already exists, checking if it needs refresh');
+                
+                // 检查iframe是否正常工作（可能需要更复杂的检测）
+                try {
+                    // 尝试检查iframe的src或其他属性
+                    const iframeSrc = existingFrame.src;
+                    if (iframeSrc && iframeSrc.includes('giscus.app')) {
+                        console.log('Thought Comments: Giscus iframe appears to be working');
+                        return; // 如果iframe看起来正常，不需要重新初始化
+                    }
+                } catch (error) {
+                    console.warn('Thought Comments: Error checking Giscus iframe:', error);
+                }
+            }
+            
+            // 如果没有iframe或iframe有问题，重新加载Giscus
+            console.log('Thought Comments: Re-loading Giscus for thought:', thoughtId);
+            
+            // 清理现有的Giscus实例
+            this.cleanupGiscus(thoughtId);
+            
+            // 重置加载状态
+            this.giscusInstances.delete(thoughtId);
+            this.isLoading.delete(thoughtId);
+            
+            // 延迟一下再重新加载，确保清理完成
+            setTimeout(() => {
+                this.loadGiscusComments(thoughtId);
+            }, 500);
         }
         
         // 添加增强的评论提交监听方法

@@ -124,7 +124,7 @@
         script.setAttribute('data-input-position', '{{ .Site.Params.comments.giscus.inputPosition | default "bottom" }}');
         script.setAttribute('data-theme', '{{ .Site.Params.comments.giscus.theme | default "preferred_color_scheme" }}');
         script.setAttribute('data-lang', '{{ .Site.Params.comments.giscus.lang | default "zh-CN" }}');
-        script.setAttribute('data-loading', '{{ .Site.Params.comments.giscus.loading | default "eager" }}');
+        script.setAttribute('data-loading', 'eager'); // GitHub Pages环境下使用eager加载
         script.setAttribute('crossorigin', 'anonymous');
         script.setAttribute('async', '');
         
@@ -292,10 +292,21 @@
             });
             
             if (!response.ok) {
-                throw new Error(`GitHub API request failed: ${response.status}`);
+                console.warn('Post-comments: GraphQL request failed, trying REST API');
+                // 如果GraphQL失败，尝试REST API作为备用
+                await this.updateCommentCountFromREST(pagePath, pageTitle, repo, categoryId);
+                return;
             }
             
             const data = await response.json();
+            
+            // 检查GraphQL响应中的错误
+            if (data.errors) {
+                console.warn('Post-comments: GraphQL errors detected, trying REST API:', data.errors);
+                await this.updateCommentCountFromREST(pagePath, pageTitle, repo, categoryId);
+                return;
+            }
+            
             const discussions = data.data.repository.discussions.nodes;
             
             // 查找匹配的讨论
@@ -333,6 +344,82 @@
             }
         } catch (error) {
             console.error('Post-comments: Error updating comment count:', error);
+            // 尝试使用REST API作为备用方案
+            try {
+                const pagePath = window.location.pathname;
+                const pageTitle = document.title;
+                const repo = '{{ .Site.Params.comments.giscus.repo }}';
+                const categoryId = '{{ .Site.Params.comments.giscus.categoryId }}';
+                await this.updateCommentCountFromREST(pagePath, pageTitle, repo, categoryId);
+            } catch (restError) {
+                console.error('Post-comments: REST API also failed:', restError);
+            }
+        }
+    }
+    
+    // 使用REST API更新评论计数的备用方法
+    async function updateCommentCountFromREST(pagePath, pageTitle, repo, categoryId) {
+        console.log('Post-comments: Using REST API to update comment count');
+        
+        try {
+            // 使用GitHub REST API获取讨论信息
+            const apiUrl = `https://api.github.com/repos/${repo}/discussions?category_id=${categoryId}&per_page=100`;
+            
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`GitHub REST API request failed: ${response.status}`);
+            }
+            
+            const discussions = await response.json();
+            
+            // 查找匹配的讨论
+            let discussion = null;
+            
+            // 首先尝试通过路径匹配
+            discussion = discussions.find(d => d.url && d.url.includes(pagePath));
+            
+            // 如果没找到，尝试通过标题匹配
+            if (!discussion) {
+                discussion = discussions.find(d => d.title === pageTitle || (d.title && d.title.includes(pagePath)));
+            }
+            
+            if (discussion) {
+                const count = discussion.comments || 0;
+                console.log('Post-comments: Found discussion via REST API with', count, 'comments');
+                
+                // 更新页面上的评论计数
+                const commentCountElements = document.querySelectorAll('.post-comment-count');
+                commentCountElements.forEach(element => {
+                    element.textContent = count;
+                });
+                
+                // 保存到本地存储
+                localStorage.setItem(`post-comment-count-${pagePath}`, count);
+            } else {
+                console.log('Post-comments: No discussion found for this page via REST API');
+                // 设置评论数为0
+                const commentCountElements = document.querySelectorAll('.post-comment-count');
+                commentCountElements.forEach(element => {
+                    element.textContent = '0';
+                });
+                localStorage.setItem(`post-comment-count-${pagePath}`, '0');
+            }
+        } catch (error) {
+            console.error('Post-comments: REST API error:', error);
+            // 最后的备用方案：从本地存储恢复或设置为0
+            const storedCount = localStorage.getItem(`post-comment-count-${pagePath}`);
+            const count = storedCount !== null ? storedCount : '0';
+            
+            const commentCountElements = document.querySelectorAll('.post-comment-count');
+            commentCountElements.forEach(element => {
+                element.textContent = count;
+            });
         }
     }
     
