@@ -4,117 +4,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Thoughts.js: DOM loaded, initializing functionality...');
 
-    // 评论功能
-    function initializeCommentButtons() {
-        try {
-            // 使用更精确的选择器来查找评论按钮
-            const commentButtons = document.querySelectorAll('.thought-action.comment-btn');
-            
-            console.log('Thoughts.js: Looking for comment buttons with selector: .thought-action.comment-btn');
-            console.log('Thoughts.js: DOM fully loaded, document.readyState:', document.readyState);
-            console.log('Thoughts.js: CommentManager availability check:', {
-                commentManager: typeof window.commentManager,
-                CommentManager: typeof window.CommentManager
-            });
-            
-            if (commentButtons.length === 0) {
-                console.warn('Thoughts.js: No comment buttons found');
-                // 添加更多调试信息
-                console.log('Thoughts.js: Available thought-action elements:', document.querySelectorAll('.thought-action'));
-                console.log('Thoughts.js: Available comment-btn elements:', document.querySelectorAll('.comment-btn'));
-                return;
-            }
-            
-            console.log('Thoughts.js: Found', commentButtons.length, 'comment buttons');
-            
-            commentButtons.forEach(button => {
-                const thoughtId = button.dataset.thoughtId;
-                
-                if (!thoughtId) {
-                    console.warn('Thoughts.js: Comment button missing data-thought-id');
-                    return;
-                }
-                
-                button.addEventListener('click', async function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    const thoughtId = button.dataset.thoughtId;
-                    console.log('Thoughts.js: Comment button clicked for thought:', thoughtId);
-                    console.log('Thoughts.js: Button current active state:', button.classList.contains('active'));
-                    
-                    // Check if CommentManager is available
-                    let commentManager = window.commentManager;
-                    
-                    // If CommentManager is not available, try to create it
-                    if (!commentManager && window.CommentManager) {
-                        console.log('Thoughts.js: CommentManager class available but instance not found, creating instance...');
-                        commentManager = new window.CommentManager();
-                        window.commentManager = commentManager;
-                    }
-                    
-                    if (!commentManager) {
-                        console.error('Thoughts.js: CommentManager not available');
-                        console.log('Thoughts.js: window.commentManager type:', typeof window.commentManager);
-                        console.log('Thoughts.js: window.CommentManager type:', typeof window.CommentManager);
-                        showNotification('评论系统未正确加载，请刷新页面重试', 'error');
-                        return;
-                    }
-                    
-                    console.log('Thoughts.js: CommentManager available, instances count:', commentManager.instances.size);
-                    console.log('Thoughts.js: CommentManager active instance:', commentManager.activeInstance ? commentManager.activeInstance.thoughtId : 'none');
-                    
-                    // Check if comments are currently visible
-                    const isActive = button.classList.contains('active');
-                    
-                    try {
-                        if (isActive) {
-                            // Hide comments
-                            console.log('Thoughts.js: Hiding comments for thought:', thoughtId);
-                            
-                            // Use CommentManager to deactivate
-                            await commentManager.deactivateCurrentInstanceAsync();
-                            console.log('Thoughts.js: CommentManager deactivated for thought:', thoughtId);
-                        } else {
-                            // Show comments
-                            console.log('Thoughts.js: Showing comments for thought:', thoughtId);
-                            
-                            // Check if comments placeholder exists
-                            const placeholderId = `comments-placeholder-${thoughtId}`;
-                            const placeholder = document.getElementById(placeholderId);
-                            console.log('Thoughts.js: Comments placeholder exists:', !!placeholder, 'ID:', placeholderId);
-                            
-                            // Use CommentManager to activate
-                            console.log('Thoughts.js: Calling activateInstance for thought:', thoughtId);
-                            await commentManager.activateInstance(thoughtId);
-                            console.log('Thoughts.js: activateInstance completed for thought:', thoughtId);
-                            
-                            // Scroll to comments after a short delay
-                            setTimeout(() => {
-                                const commentsContainer = document.getElementById(`comments-${thoughtId}`);
-                                console.log('Thoughts.js: Comments container exists:', !!commentsContainer);
-                                if (commentsContainer) {
-                                    commentsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                                }
-                            }, 300);
-                        }
-                        
-                        console.log('Thoughts.js: Comment button click handler completed for thought:', thoughtId);
-                    } catch (error) {
-                        console.error('Thoughts.js: Error handling comment button click:', error);
-                        console.error('Thoughts.js: Error details:', error.message, error.stack);
-                        showNotification('评论加载失败，请刷新页面重试', 'error');
-                        
-                        // Reset button state
-                        button.classList.remove('active');
-                    }
-                });
-            });
-        } catch (error) {
-            console.error('Thoughts.js: Error initializing comment buttons:', error);
-        }
-    }
-
 
     // 显示通知
     function showNotification(message, type = 'info') {
@@ -355,8 +244,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function initializeAll() {
         console.log('Thoughts.js: Starting initialization...');
         try {
-            initializeCommentButtons();
-            console.log('Thoughts.js: Comment buttons initialized');
+            // 评论功能现在由 unified-comments.js 处理
+            console.log('Thoughts.js: Comment functionality handled by unified-comments.js');
             
             initializeCommentCounts();
             console.log('Thoughts.js: Comment counts initialized');

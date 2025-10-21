@@ -32,76 +32,75 @@
                 <div class="thought-content">
                     {{ .Content }}
                 </div>
-                <div class="thought-actions">
-                    <div class="thought-actions-left">
+                <div class="thought-meta">
+                    <span class="thought-date">{{ .Date.Format "01-02" }}</span>
+                    <div class="thought-actions">
                         <button class="thought-action comment-btn" data-thought-id="{{ .File.BaseFileName }}">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
                             </svg>
                             <span class="comment-count">0</span>
                         </button>
                     </div>
-                    <div class="thought-stats">
-                        <span class="thought-views">👁 {{ .ReadingTime }} 分钟阅读</span>
+                </div>
+                <!-- 评论容器 -->
+                <div class="thought-comments-container" id="comments-{{ .File.BaseFileName }}" style="display: none;">
+                    <div class="thought-comments-header">
+                        <h4>评论</h4>
+                        <button class="close-comments-btn" data-thought-id="{{ .File.BaseFileName }}">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="thought-giscus-wrapper" id="giscus-{{ .File.BaseFileName }}">
+                        <div class="giscus-loading">加载评论中...</div>
                     </div>
                 </div>
-                <div class="thought-comments-placeholder" id="comments-placeholder-{{ .File.BaseFileName }}" data-thought-id="{{ .File.BaseFileName }}">
-                    <!-- 评论将在这里动态加载 -->
-                </div>
             </article>
-            {{ end }}
-        </div>
-
-        <!-- Pagination -->
-        {{ if gt .Paginator.TotalPages 1 }}
-        <div class="load-more-container">
-            {{ if .Paginator.HasNext }}
-            <a href="{{ .Paginator.Next.URL }}" class="load-more-btn">
-                加载更多随想
-            </a>
-            {{ end }}
-        </div>
         {{ end }}
     </div>
 </main>
 
-<!-- Ensure CommentManager is loaded before thoughts.js -->
-{{ partial "comments.html" . }}
-
-<!-- Include the thoughts JavaScript at the end of the page -->
-<script src="/js/thoughts.js"></script>
-
-<!-- Debug script to check if CommentManager is loaded -->
-<script>
-    console.log('Thoughts list: Checking if CommentManager is available...');
-    console.log('Thoughts list: window.commentManager type:', typeof window.commentManager);
-    console.log('Thoughts list: window.CommentManager type:', typeof window.CommentManager);
-    console.log('Thoughts list: window.commentManagerLoaded:', typeof window.commentManagerLoaded);
+<!-- 右侧透明浮窗评论 -->
+<div class="comment-float-panel" id="comment-float-panel">
+    <!-- 展开状态 -->
+    <div class="comment-panel-expanded" id="comment-panel-expanded">
+        <div class="comment-panel-header">
+            <h3 class="comment-panel-title" id="comment-panel-title">评论</h3>
+            <div class="comment-panel-controls">
+                <button class="comment-panel-minimize" id="comment-panel-minimize" title="最小化">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 13H5v-2h14v2z"/>
+                    </svg>
+                </button>
+                <button class="comment-panel-close" id="comment-panel-close" title="关闭">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="comment-panel-body">
+            <div class="giscus-wrapper" id="float-giscus-comments">
+                <!-- Giscus评论将在这里加载 -->
+                <div class="giscus-loading">加载评论中...</div>
+            </div>
+        </div>
+    </div>
     
-    // If CommentManager is not available, try to initialize it
-    if (typeof window.commentManager === 'undefined' && typeof window.CommentManager !== 'undefined') {
-        console.log('Thoughts list: CommentManager class is available but instance is not, creating instance...');
-        window.commentManager = new window.CommentManager();
-    }
-    
-    // 添加一个延迟检查，确保所有脚本都已加载
-    setTimeout(() => {
-        console.log('Thoughts list: Delayed check - CommentManager availability:', {
-            commentManager: typeof window.commentManager,
-            CommentManager: typeof window.CommentManager,
-            commentManagerLoaded: typeof window.commentManagerLoaded
-        });
-        
-        // 检查评论按钮
-        const commentButtons = document.querySelectorAll('.thought-action.comment-btn');
-        console.log('Thoughts list: Found', commentButtons.length, 'comment buttons');
-        
-        if (commentButtons.length > 0) {
-            console.log('Thoughts list: First comment button data:', {
-                thoughtId: commentButtons[0].dataset.thoughtId,
-                hasClickListener: commentButtons[0].onclick !== null || commentButtons[0].addEventListener
-            });
-        }
-    }, 1000);
-</script>
+    <!-- 最小化状态 -->
+    <div class="comment-panel-minimized" id="comment-panel-minimized" style="display: none;">
+        <button class="comment-panel-restore" id="comment-panel-restore" title="展开评论">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+            </svg>
+            <span class="comment-badge" id="comment-badge">0</span>
+        </button>
+    </div>
+</div>
+
+<!-- Include the unified comments JavaScript -->
+<script src="/js/unified-comments.js"></script>
 {{ end }}

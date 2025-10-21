@@ -482,9 +482,29 @@ document.addEventListener('DOMContentLoaded', function() {
     // 更新评论计数
     async function updateCommentCount(thoughtId) {
         const comments = await storage.getComments(thoughtId);
-        const commentButton = document.querySelector(`.comment-btn[data-thought-id="${thoughtId}"]`);
-        const commentCount = commentButton.querySelector('.comment-count');
-        commentCount.textContent = comments.length;
+        // 更新所有匹配的评论按钮
+        const commentButtons = document.querySelectorAll(`.comment-btn[data-thought-id="${thoughtId}"]`);
+        commentButtons.forEach(button => {
+            const commentCount = button.querySelector('.comment-count');
+            if (commentCount) {
+                const oldCount = parseInt(commentCount.textContent) || 0;
+                commentCount.textContent = comments.length;
+                
+                // 添加更新动画效果
+                commentCount.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    commentCount.style.transform = 'scale(1)';
+                }, 200);
+                
+                // 如果计数增加，显示特殊动画
+                if (comments.length > oldCount) {
+                    commentCount.style.color = '#4CAF50';
+                    setTimeout(() => {
+                        commentCount.style.color = '';
+                    }, 1000);
+                }
+            }
+        });
     }
 
     // 显示通知
