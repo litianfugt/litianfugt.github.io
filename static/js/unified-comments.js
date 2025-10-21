@@ -1,5 +1,45 @@
 // unified-comments.js - 随想卡片内嵌评论系统
 
+// 添加必要的CSS动画样式
+const commentStyles = document.createElement('style');
+commentStyles.textContent = `
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+            opacity: 1;
+        }
+        50% {
+            transform: scale(1.2);
+            opacity: 0.8;
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes buttonPulse {
+        0% {
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 1;
+        }
+        100% {
+            transform: translate(-50%, -50%) scale(2);
+            opacity: 0;
+        }
+    }
+    
+    .thought-action.comment-btn {
+        position: relative;
+        overflow: visible;
+    }
+    
+    .comment-count {
+        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+`;
+document.head.appendChild(commentStyles);
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Thought Comments: Initializing...');
     
@@ -790,8 +830,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     // 使用 setCommentCount 方法确保一致的更新逻辑
                     this.setCommentCount(thoughtId, newCount);
                     
-                    // 显示乐观更新反馈
+                    // 显示乐观更新反馈 - 立即执行
                     this.showOptimisticUpdateFeedback(thoughtId, newCount);
+                    
+                    // 添加额外的视觉反馈，确保用户注意到变化
+                    this.addPulseEffect(commentButton);
                 }
             }
         }
@@ -801,25 +844,89 @@ document.addEventListener('DOMContentLoaded', function() {
             if (commentButton) {
                 const countSpan = commentButton.querySelector('.comment-count');
                 if (countSpan) {
-                    // 添加成功动画和样式
+                    // 添加成功动画和样式 - 更快速和明显
                     countSpan.style.background = '#4CAF50';
                     countSpan.style.color = 'white';
-                    countSpan.style.transform = 'scale(1.3)';
-                    countSpan.style.boxShadow = '0 2px 8px rgba(76, 175, 80, 0.4)';
+                    countSpan.style.transform = 'scale(1.5)'; // 增大缩放效果
+                    countSpan.style.boxShadow = '0 4px 12px rgba(76, 175, 80, 0.6)'; // 增强阴影
+                    countSpan.style.borderRadius = '50%'; // 圆形背景
+                    countSpan.style.transition = 'all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)'; // 弹性过渡
                     
-                    // 添加脉冲动画
-                    countSpan.style.animation = 'pulse 0.6s ease-in-out';
+                    // 添加脉冲动画 - 更明显
+                    countSpan.style.animation = 'pulse 0.8s ease-in-out';
                     
-                    // 恢复原始样式
+                    // 添加数字增加动画
+                    this.animateNumberChange(countSpan, newCount - 1, newCount);
+                    
+                    // 恢复原始样式 - 缩短恢复时间
                     setTimeout(() => {
                         countSpan.style.background = '';
                         countSpan.style.color = '';
                         countSpan.style.transform = 'scale(1)';
                         countSpan.style.boxShadow = '';
+                        countSpan.style.borderRadius = '';
                         countSpan.style.animation = '';
-                    }, 1500);
+                    }, 1000); // 缩短到1秒
                 }
             }
+        }
+        
+        // 添加数字增加动画
+        animateNumberChange(element, from, to) {
+            const duration = 300; // 动画持续时间
+            const startTime = performance.now();
+            
+            function updateNumber(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // 使用缓动函数
+                const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                const currentValue = Math.floor(from + (to - from) * easeOutQuart);
+                
+                element.textContent = currentValue;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateNumber);
+                }
+            }
+            
+            requestAnimationFrame(updateNumber);
+        }
+        
+        // 添加按钮脉冲效果
+        addPulseEffect(button) {
+            if (!button) return;
+            
+            // 创建脉冲元素
+            const pulse = document.createElement('div');
+            pulse.style.cssText = `
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 100%;
+                height: 100%;
+                background: rgba(76, 175, 80, 0.3);
+                border-radius: 50%;
+                transform: translate(-50%, -50%) scale(0);
+                animation: buttonPulse 0.6s ease-out;
+                pointer-events: none;
+                z-index: -1;
+            `;
+            
+            // 确保按钮有相对定位
+            if (getComputedStyle(button).position === 'static') {
+                button.style.position = 'relative';
+            }
+            
+            button.appendChild(pulse);
+            
+            // 动画结束后移除脉冲元素
+            setTimeout(() => {
+                if (pulse.parentNode) {
+                    pulse.parentNode.removeChild(pulse);
+                }
+            }, 600);
         }
         
         async validateCommentCount(thoughtId, expectedCount) {
@@ -973,12 +1080,17 @@ document.addEventListener('DOMContentLoaded', function() {
             // 立即执行乐观更新
             this.handleOptimisticUpdate(thoughtId);
             
-            // 快速同步计数 - 减少延迟
+            // 超快速同步计数 - 大幅减少延迟
+            setTimeout(() => {
+                this.syncCommentCountFromGiscusUI(thoughtId);
+            }, 100); // 减少延迟时间到100ms
+            
+            // 快速同步计数 - 第二次检查
             setTimeout(() => {
                 this.syncCommentCountFromGiscusUI(thoughtId);
             }, 300); // 减少延迟时间到300ms
             
-            // 主要的延迟更新，使用API确保获取准确计数 - 加快速度
+            // 主要的延迟更新，使用API确保获取准确计数 - 进一步加快速度
             setTimeout(async () => {
                 try {
                     // 直接从GitHub API获取计数
@@ -1002,7 +1114,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 } finally {
                     this.isProcessingComment = false; // 重置处理状态
                 }
-            }, 800); // 减少延迟时间到800ms
+            }, 500); // 减少延迟时间到500ms
             
             // 显示视觉反馈
             this.showCommentSubmissionFeedback(thoughtId);
@@ -1038,6 +1150,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.syncIntervals = new Map();
             }
             
+            // 快速同步阶段 - 评论提交后的前30秒
+            let fastSyncCount = 0;
+            const maxFastSyncs = 10; // 快速同步10次
+            
             const intervalId = setInterval(() => {
                 // 只在评论容器可见时进行同步
                 const commentsContainer = document.getElementById(`comments-${thoughtId}`);
@@ -1054,12 +1170,38 @@ document.addEventListener('DOMContentLoaded', function() {
                         this.lastCommentCounts.set(thoughtId, currentCount);
                         this.setCommentCount(thoughtId, currentCount);
                     }
+                    
+                    // 快速同步阶段计数递增
+                    fastSyncCount++;
+                    
+                    // 在快速同步阶段完成后，重新设置间隔时间
+                    if (fastSyncCount >= maxFastSyncs) {
+                        clearInterval(intervalId);
+                        
+                        // 启动慢速同步阶段
+                        const slowIntervalId = setInterval(() => {
+                            const slowCommentsContainer = document.getElementById(`comments-${thoughtId}`);
+                            if (slowCommentsContainer && slowCommentsContainer.style.display !== 'none') {
+                                this.syncCommentCountFromGiscusUI(thoughtId);
+                                
+                                const slowCurrentCount = this.getCurrentCommentCount(thoughtId);
+                                if (slowCurrentCount !== null && slowCurrentCount !== this.lastCommentCounts.get(thoughtId)) {
+                                    console.log('Thought Comments: Comment count changed from', this.lastCommentCounts.get(thoughtId), 'to', slowCurrentCount);
+                                    this.lastCommentCounts.set(thoughtId, slowCurrentCount);
+                                    this.setCommentCount(thoughtId, slowCurrentCount);
+                                }
+                            }
+                        }, 3000); // 慢速同步阶段：3秒间隔
+                        
+                        this.syncIntervals.set(thoughtId, slowIntervalId);
+                        console.log('Thought Comments: Switched to slow sync for thought:', thoughtId);
+                    }
                 }
-            }, 2000); // 提高同步频率到2秒，加快评论计数更新速度
+            }, 1000); // 快速同步阶段：1秒间隔，大幅提高更新速度
             
             this.syncIntervals.set(thoughtId, intervalId);
             
-            console.log('Thought Comments: Started periodic sync for thought:', thoughtId);
+            console.log('Thought Comments: Started fast periodic sync for thought:', thoughtId);
         }
         
         stopPeriodicSync(thoughtId) {

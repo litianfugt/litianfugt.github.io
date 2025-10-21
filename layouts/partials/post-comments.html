@@ -64,23 +64,55 @@
 <script>
     console.log('Post-comments: Starting to load Giscus for blog post...');
     
-    // 重试计数器
+    // 重试计数器和配置
     let retryCount = 0;
-    const maxRetries = 3;
+    const maxRetries = 5; // 增加重试次数
+    let isLoading = false;
     
-    // 博客文章评论加载函数
+    // 检测是否为GitHub Pages环境
+    const isGitHubPages = window.location.hostname.includes('github.io') ||
+                          window.location.hostname.includes('github.com');
+    
+    console.log('Post-comments: Environment detected:', isGitHubPages ? 'GitHub Pages' : 'Local/Other');
+    
+    // 验证Giscus配置
+    function validateGiscusConfig() {
+        const giscusRepo = '{{ .Site.Params.comments.giscus.repo }}';
+        const giscusRepoId = '{{ .Site.Params.comments.giscus.repoId }}';
+        const giscusCategory = '{{ .Site.Params.comments.giscus.category }}';
+        const giscusCategoryId = '{{ .Site.Params.comments.giscus.categoryId }}';
+        
+        const config = {
+            repo: giscusRepo || 'litianfugt/litianfugt.github.io',
+            repoId: giscusRepoId || 'R_kgDOPkZVNQ',
+            category: giscusCategory || 'General',
+            categoryId: giscusCategoryId || 'DIC_kwDOPkZVNc4Cv3cN'
+        };
+        
+        console.log('Post-comments: Giscus config validated:', config);
+        return config;
+    }
+    
+    // 博客文章评论加载函数 - 增强版
     function loadPostComments() {
+        if (isLoading) {
+            console.log('Post-comments: Already loading, skipping...');
+            return;
+        }
+        
+        isLoading = true;
         console.log('Post-comments: Loading Giscus for blog post, attempt:', retryCount + 1);
         
         const giscusWrapper = document.getElementById('giscus-comments');
         if (!giscusWrapper) {
             console.error('Post-comments: Giscus wrapper not found');
+            isLoading = false;
             return;
         }
         
         // 清理现有的Giscus实例
         const existingFrame = giscusWrapper.querySelector('iframe.giscus-frame');
-        const existingScript = giscusWrapper.querySelector('script[src="https://giscus.app/client.js"]');
+        const existingScript = giscusWrapper.querySelector('script[src*="giscus.app/client.js"]');
         
         if (existingFrame) {
             console.log('Post-comments: Removing existing frame');
@@ -105,27 +137,20 @@
         const pagePath = window.location.pathname;
         const pageUrl = window.location.href;
         
+        // 验证并获取Giscus配置
+        const config = validateGiscusConfig();
+        
         // 创建Giscus脚本
         const script = document.createElement('script');
         script.src = 'https://giscus.app/client.js';
         
-        // 设置Giscus配置 - 使用硬编码值作为GitHub Pages环境的备用方案
-        const giscusRepo = '{{ .Site.Params.comments.giscus.repo }}' || 'litianfugt/litianfugt.github.io';
-        const giscusRepoId = '{{ .Site.Params.comments.giscus.repoId }}' || 'R_kgDOPkZVNQ';
-        const giscusCategory = '{{ .Site.Params.comments.giscus.category }}' || 'General';
-        const giscusCategoryId = '{{ .Site.Params.comments.giscus.categoryId }}' || 'DIC_kwDOPkZVNc4Cv3cN';
+        console.log('Post-comments: Using Giscus config:', config);
         
-        console.log('Post-comments: Using Giscus config:', {
-            repo: giscusRepo,
-            repoId: giscusRepoId,
-            category: giscusCategory,
-            categoryId: giscusCategoryId
-        });
-        
-        script.setAttribute('data-repo', giscusRepo);
-        script.setAttribute('data-repo-id', giscusRepoId);
-        script.setAttribute('data-category', giscusCategory);
-        script.setAttribute('data-category-id', giscusCategoryId);
+        // 设置Giscus配置
+        script.setAttribute('data-repo', config.repo);
+        script.setAttribute('data-repo-id', config.repoId);
+        script.setAttribute('data-category', config.category);
+        script.setAttribute('data-category-id', config.categoryId);
         script.setAttribute('data-mapping', 'pathname');
         script.setAttribute('data-term', pagePath);
         script.setAttribute('data-title', pageTitle);
@@ -136,12 +161,21 @@
         script.setAttribute('data-input-position', 'bottom');
         script.setAttribute('data-theme', 'preferred_color_scheme');
         script.setAttribute('data-lang', 'zh-CN');
-        script.setAttribute('data-loading', 'eager'); // GitHub Pages环境下使用eager加载
+        
+        // GitHub Pages环境下使用eager加载，本地环境可以使用lazy
+        script.setAttribute('data-loading', isGitHubPages ? 'eager' : 'lazy');
         script.setAttribute('crossorigin', 'anonymous');
         script.setAttribute('async', '');
         
+        // 设置超时处理
+        const timeout = setTimeout(() => {
+            console.error('Post-comments: Giscus load timeout');
+            script.dispatchEvent(new Event('error'));
+        }, isGitHubPages ? 15000 : 10000); // GitHub Pages环境下增加超时时间
+        
         // 设置加载事件
         script.addEventListener('load', () => {
+            clearTimeout(timeout);
             console.log('Post-comments: Giscus loaded successfully');
             const loading = document.querySelector('.post-comments-loading');
             if (loading) {
@@ -149,6 +183,7 @@
             }
             // 重置重试计数器
             retryCount = 0;
+            isLoading = false;
             
             // 更新评论计数
             setTimeout(() => {
@@ -158,6 +193,7 @@
         
         // 设置错误事件
         script.addEventListener('error', () => {
+            clearTimeout(timeout);
             console.error('Post-comments: Giscus load error');
             retryCount++;
             
@@ -168,16 +204,26 @@
                     loading.textContent = `评论加载失败，正在重试 (${retryCount}/${maxRetries})...`;
                     loading.style.color = '#FF9800';
                 }
-                // 延迟重试
+                
+                // 延迟重试，GitHub Pages环境下使用更长的延迟
+                const retryDelay = isGitHubPages ? 3000 : 2000;
                 setTimeout(() => {
+                    isLoading = false;
                     loadPostComments();
-                }, 2000);
+                }, retryDelay);
             } else {
                 const loading = document.querySelector('.post-comments-loading');
                 if (loading) {
-                    loading.textContent = '评论加载失败，请刷新页面重试';
+                    loading.innerHTML = `
+                        评论加载失败，请尝试以下解决方案：<br>
+                        1. 刷新页面重试<br>
+                        2. 检查网络连接<br>
+                        3. 确认已登录GitHub账户<br>
+                        <button onclick="loadPostComments()" style="margin-top: 10px; padding: 5px 10px; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer;">手动重试</button>
+                    `;
                     loading.style.color = '#F44336';
                 }
+                isLoading = false;
             }
         });
         
@@ -186,8 +232,8 @@
         console.log('Post-comments: Giscus script added to page');
     }
     
-    // 检查页面是否完全加载
-    function waitForPageLoad(callback, maxAttempts = 10, interval = 500) {
+    // 检查页面是否完全加载 - 增强版
+    function waitForPageLoad(callback, maxAttempts = 20, interval = 500) {
         let attempts = 0;
         
         function check() {
@@ -201,7 +247,7 @@
             } else if (attempts < maxAttempts) {
                 setTimeout(check, interval);
             } else {
-                console.warn('Post-comments: Page did not fully load after maximum attempts');
+                console.warn('Post-comments: Page did not fully load after maximum attempts, proceeding anyway');
                 callback();
             }
         }
@@ -209,14 +255,27 @@
         check();
     }
     
-    // 页面加载完成后自动加载评论
+    // 检查Giscus是否已成功加载
+    function isGiscusLoaded() {
+        const giscusFrame = document.querySelector('#giscus-comments iframe.giscus-frame');
+        const giscusScript = document.querySelector('#giscus-comments script[src*="giscus.app/client.js"]');
+        return !!(giscusFrame || giscusScript);
+    }
+    
+    // 页面加载完成后自动加载评论 - 增强版
     document.addEventListener('DOMContentLoaded', function() {
         console.log('Post-comments: DOM loaded, preparing to load comments...');
         
         // 等待页面完全加载后再加载评论
         waitForPageLoad(() => {
             console.log('Post-comments: Page is ready, loading comments...');
-            loadPostComments();
+            
+            // 检查是否已经加载
+            if (!isGiscusLoaded()) {
+                loadPostComments();
+            } else {
+                console.log('Post-comments: Giscus already loaded, skipping...');
+            }
         });
     });
     
@@ -225,24 +284,59 @@
         console.log('Post-comments: Window loaded, checking if comments need to be loaded...');
         
         // 检查评论是否已经加载
-        const giscusFrame = document.querySelector('#giscus-comments iframe.giscus-frame');
-        if (!giscusFrame) {
+        if (!isGiscusLoaded()) {
             console.log('Post-comments: Comments not loaded yet, loading now...');
             loadPostComments();
         }
     });
     
-    // 延迟加载作为最后的备用方案 - 特别针对GitHub Pages
+    // 多级延迟加载作为备用方案 - 特别针对GitHub Pages
     setTimeout(() => {
-        console.log('Post-comments: Delayed load check for GitHub Pages...');
-        const giscusFrame = document.querySelector('#giscus-comments iframe.giscus-frame');
-        if (!giscusFrame) {
-            console.log('Post-comments: Comments still not loaded after delay, trying again...');
+        console.log('Post-comments: First delayed load check for GitHub Pages...');
+        if (!isGiscusLoaded()) {
+            console.log('Post-comments: Comments still not loaded after first delay, trying again...');
             // 重置重试计数器
             retryCount = 0;
             loadPostComments();
         }
-    }, 3000); // 3秒后检查
+    }, 3000); // 3秒后第一次检查
+    
+    setTimeout(() => {
+        console.log('Post-comments: Second delayed load check for GitHub Pages...');
+        if (!isGiscusLoaded()) {
+            console.log('Post-comments: Comments still not loaded after second delay, trying with reset...');
+            // 重置所有状态并重试
+            retryCount = 0;
+            isLoading = false;
+            loadPostComments();
+        }
+    }, 6000); // 6秒后第二次检查
+    
+    setTimeout(() => {
+        console.log('Post-comments: Final delayed load check for GitHub Pages...');
+        if (!isGiscusLoaded()) {
+            console.log('Post-comments: Comments still not loaded after final delay, showing error...');
+            const loading = document.querySelector('.post-comments-loading');
+            if (loading) {
+                loading.innerHTML = `
+                    评论系统加载失败，请尝试以下解决方案：<br>
+                    1. 刷新页面重试<br>
+                    2. 检查网络连接<br>
+                    3. 确认已登录GitHub账户<br>
+                    <button onclick="retryLoadComments()" style="margin-top: 10px; padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer;">手动重试</button>
+                `;
+                loading.style.color = '#F44336';
+            }
+        }
+    }, 10000); // 10秒后最终检查
+    
+    // 提供手动重试函数
+    window.retryLoadComments = function() {
+        console.log('Post-comments: Manual retry triggered');
+        retryCount = 0;
+        isLoading = false;
+        loadPostComments();
+    };
     
     // 监听页面变化（例如：SPA导航）
     if (typeof window.addEventListener !== 'undefined') {

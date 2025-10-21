@@ -2737,21 +2737,53 @@
     
     
     let retryCount = 0;
-    const maxRetries = 3;
+    const maxRetries = 5; 
+    let isLoading = false;
+    
+    
+    const isGitHubPages = window.location.hostname.includes('github.io') ||
+                          window.location.hostname.includes('github.com');
+    
+    console.log('Post-comments: Environment detected:', isGitHubPages ? 'GitHub Pages' : 'Local/Other');
+    
+    
+    function validateGiscusConfig() {
+        const giscusRepo = 'litianfugt\/litianfugt.github.io';
+        const giscusRepoId = 'R_kgDOPkZVNQ';
+        const giscusCategory = 'General';
+        const giscusCategoryId = 'DIC_kwDOPkZVNc4Cv3cN';
+        
+        const config = {
+            repo: giscusRepo || 'litianfugt/litianfugt.github.io',
+            repoId: giscusRepoId || 'R_kgDOPkZVNQ',
+            category: giscusCategory || 'General',
+            categoryId: giscusCategoryId || 'DIC_kwDOPkZVNc4Cv3cN'
+        };
+        
+        console.log('Post-comments: Giscus config validated:', config);
+        return config;
+    }
     
     
     function loadPostComments() {
+        if (isLoading) {
+            console.log('Post-comments: Already loading, skipping...');
+            return;
+        }
+        
+        isLoading = true;
         console.log('Post-comments: Loading Giscus for blog post, attempt:', retryCount + 1);
         
         const giscusWrapper = document.getElementById('giscus-comments');
         if (!giscusWrapper) {
             console.error('Post-comments: Giscus wrapper not found');
+            isLoading = false;
             return;
         }
         
         
         const existingFrame = giscusWrapper.querySelector('iframe.giscus-frame');
-        const existingScript = giscusWrapper.querySelector('script[src="https://giscus.app/client.js"]');
+        const existingScript = giscusWrapper.querySelector('script[src*="giscus.app/client.js"]');
         
         if (existingFrame) {
             console.log('Post-comments: Removing existing frame');
@@ -2777,26 +2809,19 @@
         const pageUrl = window.location.href;
         
         
+        const config = validateGiscusConfig();
+        
+        
         const script = document.createElement('script');
         script.src = 'https://giscus.app/client.js';
         
+        console.log('Post-comments: Using Giscus config:', config);
         
-        const giscusRepo = 'litianfugt\/litianfugt.github.io' || 'litianfugt/litianfugt.github.io';
-        const giscusRepoId = 'R_kgDOPkZVNQ' || 'R_kgDOPkZVNQ';
-        const giscusCategory = 'General' || 'General';
-        const giscusCategoryId = 'DIC_kwDOPkZVNc4Cv3cN' || 'DIC_kwDOPkZVNc4Cv3cN';
         
-        console.log('Post-comments: Using Giscus config:', {
-            repo: giscusRepo,
-            repoId: giscusRepoId,
-            category: giscusCategory,
-            categoryId: giscusCategoryId
-        });
-        
-        script.setAttribute('data-repo', giscusRepo);
-        script.setAttribute('data-repo-id', giscusRepoId);
-        script.setAttribute('data-category', giscusCategory);
-        script.setAttribute('data-category-id', giscusCategoryId);
+        script.setAttribute('data-repo', config.repo);
+        script.setAttribute('data-repo-id', config.repoId);
+        script.setAttribute('data-category', config.category);
+        script.setAttribute('data-category-id', config.categoryId);
         script.setAttribute('data-mapping', 'pathname');
         script.setAttribute('data-term', pagePath);
         script.setAttribute('data-title', pageTitle);
@@ -2807,12 +2832,21 @@
         script.setAttribute('data-input-position', 'bottom');
         script.setAttribute('data-theme', 'preferred_color_scheme');
         script.setAttribute('data-lang', 'zh-CN');
-        script.setAttribute('data-loading', 'eager'); 
+        
+        
+        script.setAttribute('data-loading', isGitHubPages ? 'eager' : 'lazy');
         script.setAttribute('crossorigin', 'anonymous');
         script.setAttribute('async', '');
         
         
+        const timeout = setTimeout(() => {
+            console.error('Post-comments: Giscus load timeout');
+            script.dispatchEvent(new Event('error'));
+        }, isGitHubPages ? 15000 : 10000); 
+        
+        
         script.addEventListener('load', () => {
+            clearTimeout(timeout);
             console.log('Post-comments: Giscus loaded successfully');
             const loading = document.querySelector('.post-comments-loading');
             if (loading) {
@@ -2820,6 +2854,7 @@
             }
             
             retryCount = 0;
+            isLoading = false;
             
             
             setTimeout(() => {
@@ -2829,6 +2864,7 @@
         
         
         script.addEventListener('error', () => {
+            clearTimeout(timeout);
             console.error('Post-comments: Giscus load error');
             retryCount++;
             
@@ -2840,15 +2876,25 @@
                     loading.style.color = '#FF9800';
                 }
                 
+                
+                const retryDelay = isGitHubPages ? 3000 : 2000;
                 setTimeout(() => {
+                    isLoading = false;
                     loadPostComments();
-                }, 2000);
+                }, retryDelay);
             } else {
                 const loading = document.querySelector('.post-comments-loading');
                 if (loading) {
-                    loading.textContent = '评论加载失败，请刷新页面重试';
+                    loading.innerHTML = `
+                        评论加载失败，请尝试以下解决方案：<br>
+                        1. 刷新页面重试<br>
+                        2. 检查网络连接<br>
+                        3. 确认已登录GitHub账户<br>
+                        <button onclick="loadPostComments()" style="margin-top: 10px; padding: 5px 10px; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer;">手动重试</button>
+                    `;
                     loading.style.color = '#F44336';
                 }
+                isLoading = false;
             }
         });
         
@@ -2858,7 +2904,7 @@
     }
     
     
-    function waitForPageLoad(callback, maxAttempts = 10, interval = 500) {
+    function waitForPageLoad(callback, maxAttempts = 20, interval = 500) {
         let attempts = 0;
         
         function check() {
@@ -2872,12 +2918,19 @@
             } else if (attempts < maxAttempts) {
                 setTimeout(check, interval);
             } else {
-                console.warn('Post-comments: Page did not fully load after maximum attempts');
+                console.warn('Post-comments: Page did not fully load after maximum attempts, proceeding anyway');
                 callback();
             }
         }
         
         check();
+    }
+    
+    
+    function isGiscusLoaded() {
+        const giscusFrame = document.querySelector('#giscus-comments iframe.giscus-frame');
+        const giscusScript = document.querySelector('#giscus-comments script[src*="giscus.app/client.js"]');
+        return !!(giscusFrame || giscusScript);
     }
     
     
@@ -2887,7 +2940,13 @@
         
         waitForPageLoad(() => {
             console.log('Post-comments: Page is ready, loading comments...');
-            loadPostComments();
+            
+            
+            if (!isGiscusLoaded()) {
+                loadPostComments();
+            } else {
+                console.log('Post-comments: Giscus already loaded, skipping...');
+            }
         });
     });
     
@@ -2896,8 +2955,7 @@
         console.log('Post-comments: Window loaded, checking if comments need to be loaded...');
         
         
-        const giscusFrame = document.querySelector('#giscus-comments iframe.giscus-frame');
-        if (!giscusFrame) {
+        if (!isGiscusLoaded()) {
             console.log('Post-comments: Comments not loaded yet, loading now...');
             loadPostComments();
         }
@@ -2905,15 +2963,51 @@
     
     
     setTimeout(() => {
-        console.log('Post-comments: Delayed load check for GitHub Pages...');
-        const giscusFrame = document.querySelector('#giscus-comments iframe.giscus-frame');
-        if (!giscusFrame) {
-            console.log('Post-comments: Comments still not loaded after delay, trying again...');
+        console.log('Post-comments: First delayed load check for GitHub Pages...');
+        if (!isGiscusLoaded()) {
+            console.log('Post-comments: Comments still not loaded after first delay, trying again...');
             
             retryCount = 0;
             loadPostComments();
         }
     }, 3000); 
+    
+    setTimeout(() => {
+        console.log('Post-comments: Second delayed load check for GitHub Pages...');
+        if (!isGiscusLoaded()) {
+            console.log('Post-comments: Comments still not loaded after second delay, trying with reset...');
+            
+            retryCount = 0;
+            isLoading = false;
+            loadPostComments();
+        }
+    }, 6000); 
+    
+    setTimeout(() => {
+        console.log('Post-comments: Final delayed load check for GitHub Pages...');
+        if (!isGiscusLoaded()) {
+            console.log('Post-comments: Comments still not loaded after final delay, showing error...');
+            const loading = document.querySelector('.post-comments-loading');
+            if (loading) {
+                loading.innerHTML = `
+                    评论系统加载失败，请尝试以下解决方案：<br>
+                    1. 刷新页面重试<br>
+                    2. 检查网络连接<br>
+                    3. 确认已登录GitHub账户<br>
+                    <button onclick="retryLoadComments()" style="margin-top: 10px; padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer;">手动重试</button>
+                `;
+                loading.style.color = '#F44336';
+            }
+        }
+    }, 10000); 
+    
+    
+    window.retryLoadComments = function() {
+        console.log('Post-comments: Manual retry triggered');
+        retryCount = 0;
+        isLoading = false;
+        loadPostComments();
+    };
     
     
     if (typeof window.addEventListener !== 'undefined') {
