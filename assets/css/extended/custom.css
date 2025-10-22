@@ -429,9 +429,35 @@
     }
 }
 
-/* 深色主题支持 */
+/* 深色主题支持 - 支持手动切换 */
+[data-theme="dark"] {
+    --background: #1a1a1a;
+    --background-secondary: #2d2d2d;
+    --background-hover: #3a3a3a;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --border-color: #404040;
+    --primary-color: #4a9eff;
+    --primary-color-hover: #6bb3ff;
+    --error-color: #ff6b6b;
+}
+
+/* 浅色主题支持 - 支持手动切换 */
+[data-theme="light"] {
+    --background: #ffffff;
+    --background-secondary: #f8f9fa;
+    --background-hover: #e9ecef;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --border-color: #dee2e6;
+    --primary-color: #007bff;
+    --primary-color-hover: #0056b3;
+    --error-color: #dc3545;
+}
+
+/* 系统主题偏好支持（作为后备） */
 @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
         --background: #1a1a1a;
         --background-secondary: #2d2d2d;
         --background-hover: #3a3a3a;
@@ -444,9 +470,8 @@
     }
 }
 
-/* 浅色主题支持 */
 @media (prefers-color-scheme: light) {
-    :root {
+    :root:not([data-theme="dark"]) {
         --background: #ffffff;
         --background-secondary: #f8f9fa;
         --background-hover: #e9ecef;

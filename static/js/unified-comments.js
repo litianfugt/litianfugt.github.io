@@ -386,6 +386,12 @@ const GiscusManager = {
 
     // 生成唯一ID
     generateUniqueId(thoughtId) {
+        // 如果是文章页面（thoughtId以'post-'开头），直接返回pathname
+        if (thoughtId.startsWith('post-')) {
+            return window.location.pathname;
+        }
+        
+        // 随想页面使用pathname#thoughtId格式
         const pagePath = window.location.pathname;
         return `${pagePath}#${thoughtId}`;
     },
@@ -741,11 +747,15 @@ const CommentCounter = {
 // 主题切换监听
 const ThemeManager = {
     init() {
+        console.log('ThemeManager: Initializing theme management...');
+        
         // 监听主题变化
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+                    console.log('ThemeManager: Theme changed to:', mutation.target.getAttribute('data-theme'));
                     this.updateGiscusTheme();
+                    this.updateThoughtCardsTheme();
                 }
             });
         });
@@ -757,13 +767,20 @@ const ThemeManager = {
 
         // 监听系统主题变化
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            console.log('ThemeManager: System theme changed');
             this.updateGiscusTheme();
+            this.updateThoughtCardsTheme();
         });
+        
+        // 初始化时设置主题
+        this.updateThoughtCardsTheme();
     },
 
     updateGiscusTheme() {
         const theme = GiscusManager.getTheme();
         const giscusFrames = document.querySelectorAll('iframe.giscus-frame');
+        
+        console.log('ThemeManager: Updating Giscus theme to:', theme);
         
         giscusFrames.forEach(frame => {
             try {
@@ -778,6 +795,42 @@ const ThemeManager = {
                 console.warn('ThemeManager: Failed to update Giscus theme:', error);
             }
         });
+    },
+    
+    updateThoughtCardsTheme() {
+        console.log('ThemeManager: Updating thought cards theme');
+        
+        // 获取当前主题
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 
+                           (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+        // 为随想卡片添加主题切换动画
+        const thoughtCards = document.querySelectorAll('.thought-card');
+        thoughtCards.forEach((card, index) => {
+            // 添加过渡动画
+            card.style.transition = 'background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease';
+            
+            // 延迟应用动画效果，创建波浪效果
+            setTimeout(() => {
+                card.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    card.style.transform = 'scale(1)';
+                }, 150);
+            }, index * 50);
+        });
+        
+        // 更新所有使用CSS变量的元素
+        const themedElements = document.querySelectorAll('.thoughts-container, .thought-card, .thought-comments-container, .comment-float-panel');
+        themedElements.forEach(element => {
+            element.style.transition = 'background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease';
+        });
+        
+        // 触发自定义事件，通知其他组件主题已更改
+        window.dispatchEvent(new CustomEvent('themeChanged', {
+            detail: { theme: currentTheme }
+        }));
+        
+        console.log('ThemeManager: Theme update completed');
     }
 };
 
