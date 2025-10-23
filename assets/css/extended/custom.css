@@ -1,6 +1,6 @@
-/* 自定义CSS - 评论系统优化 */
+/* 自定义CSS - 使用PaperMod主题变量系统 */
 
-/* 评论系统基础样式 */
+/* 随想页面样式 - 完全使用PaperMod原生变量 */
 .thoughts-container {
     max-width: 800px;
     margin: 0 auto;
@@ -16,12 +16,12 @@
 .thoughts-title {
     font-size: 2.5rem;
     margin-bottom: 1rem;
-    color: var(--text-primary);
+    color: var(--primary);
 }
 
 .thoughts-description {
     font-size: 1.1rem;
-    color: var(--text-secondary);
+    color: var(--secondary);
     margin-bottom: 1.5rem;
     line-height: 1.6;
 }
@@ -32,27 +32,37 @@
     align-items: center;
     gap: 0.5rem;
     font-size: 0.9rem;
-    color: var(--text-secondary);
+    color: var(--secondary);
 }
 
 .thoughts-separator {
-    color: var(--border-color);
+    color: var(--tertiary);
 }
 
-/* 随想卡片样式 */
+/* 随想卡片样式 - 使用PaperMod主题变量 */
 .thought-card {
-    background: var(--background);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
+    background: var(--entry);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
     padding: 1.5rem;
     margin-bottom: 1.5rem;
     transition: all 0.3s ease;
     position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .thought-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     transform: translateY(-2px);
+    border-color: var(--primary);
+}
+
+.dark .thought-card {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dark .thought-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
 
 .thought-header {
@@ -66,7 +76,7 @@
     height: 48px;
     border-radius: 50%;
     margin-right: 1rem;
-    border: 2px solid var(--border-color);
+    border: 2px solid var(--border);
 }
 
 .thought-meta {
@@ -75,19 +85,19 @@
 
 .thought-author {
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--primary);
     margin-bottom: 0.25rem;
 }
 
 .thought-time {
     font-size: 0.875rem;
-    color: var(--text-secondary);
+    color: var(--secondary);
 }
 
 .thought-content {
     margin-bottom: 1rem;
     line-height: 1.7;
-    color: var(--text-primary);
+    color: var(--content);
 }
 
 .thought-content p {
@@ -105,12 +115,12 @@
     align-items: center;
     margin-top: 1rem;
     padding-top: 1rem;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--border);
 }
 
 .thought-date {
     font-size: 0.875rem;
-    color: var(--text-secondary);
+    color: var(--secondary);
 }
 
 .thought-action {
@@ -119,18 +129,18 @@
     gap: 0.5rem;
     padding: 0.5rem 1rem;
     background: none;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--secondary);
     cursor: pointer;
     transition: all 0.2s ease;
     font-size: 0.875rem;
 }
 
 .thought-action:hover {
-    background: var(--background-hover);
-    color: var(--primary-color);
-    border-color: var(--primary-color);
+    background: var(--theme);
+    color: var(--primary);
+    border-color: var(--primary);
 }
 
 .thought-action:active {
@@ -144,16 +154,16 @@
 
 .comment-count {
     font-weight: 600;
-    color: var(--primary-color);
+    color: var(--primary);
 }
 
 /* 内联评论容器 */
 .thought-comments-container {
     margin-top: 1rem;
     padding: 1rem;
-    background: var(--background-secondary);
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
+    background: var(--theme);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
 }
 
 .thought-comments-header {
@@ -162,13 +172,13 @@
     align-items: center;
     margin-bottom: 1rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border);
 }
 
 .thought-comments-header h4 {
     margin: 0;
     font-size: 1.1rem;
-    color: var(--text-primary);
+    color: var(--primary);
 }
 
 .close-comments-btn {
@@ -176,12 +186,12 @@
     border: none;
     cursor: pointer;
     padding: 0.25rem;
-    color: var(--text-secondary);
+    color: var(--secondary);
     transition: color 0.2s ease;
 }
 
 .close-comments-btn:hover {
-    color: var(--text-primary);
+    color: var(--primary);
 }
 
 .thought-giscus-wrapper {
@@ -197,9 +207,9 @@
     width: 400px;
     max-width: 90vw;
     max-height: 80vh;
-    background: var(--background);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
+    background: var(--theme);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     z-index: 1000;
     display: none;
@@ -216,7 +226,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border);
     cursor: grab;
     user-select: none;
 }
@@ -228,7 +238,7 @@
 .comment-panel-title {
     margin: 0;
     font-size: 1.1rem;
-    color: var(--text-primary);
+    color: var(--primary);
 }
 
 .comment-panel-controls {
@@ -242,15 +252,15 @@
     border: none;
     cursor: pointer;
     padding: 0.25rem;
-    color: var(--text-secondary);
+    color: var(--secondary);
     transition: color 0.2s ease;
     border-radius: 4px;
 }
 
 .comment-panel-minimize:hover,
 .comment-panel-close:hover {
-    color: var(--text-primary);
-    background: var(--background-hover);
+    color: var(--primary);
+    background: var(--entry);
 }
 
 .comment-panel-body {
@@ -275,23 +285,23 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1rem;
-    background: var(--primary-color);
-    color: white;
+    background: var(--primary);
+    color: var(--theme);
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius);
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .comment-panel-restore:hover {
-    background: var(--primary-color-hover);
+    background: var(--secondary);
     transform: translateY(-2px);
 }
 
 .comment-badge {
-    background: var(--background);
-    color: var(--primary-color);
+    background: var(--theme);
+    color: var(--primary);
     padding: 0.25rem 0.5rem;
     border-radius: 12px;
     font-size: 0.75rem;
@@ -303,12 +313,12 @@
 .giscus-error {
     text-align: center;
     padding: 2rem;
-    color: var(--text-secondary);
+    color: var(--secondary);
     font-size: 0.9rem;
 }
 
 .giscus-error {
-    color: var(--error-color);
+    color: #ff6b6b;
 }
 
 /* 通知样式 */
@@ -317,8 +327,8 @@
     top: 1rem;
     right: 1rem;
     padding: 1rem 1.5rem;
-    border-radius: 8px;
-    color: white;
+    border-radius: var(--radius);
+    color: var(--theme);
     font-size: 0.9rem;
     z-index: 10000;
     max-width: 320px;
@@ -426,61 +436,6 @@
     
     .thought-content {
         font-size: 0.95rem;
-    }
-}
-
-/* 深色主题支持 - 支持手动切换 */
-[data-theme="dark"] {
-    --background: #1a1a1a;
-    --background-secondary: #2d2d2d;
-    --background-hover: #3a3a3a;
-    --text-primary: #ffffff;
-    --text-secondary: #b0b0b0;
-    --border-color: #404040;
-    --primary-color: #4a9eff;
-    --primary-color-hover: #6bb3ff;
-    --error-color: #ff6b6b;
-}
-
-/* 浅色主题支持 - 支持手动切换 */
-[data-theme="light"] {
-    --background: #ffffff;
-    --background-secondary: #f8f9fa;
-    --background-hover: #e9ecef;
-    --text-primary: #212529;
-    --text-secondary: #6c757d;
-    --border-color: #dee2e6;
-    --primary-color: #007bff;
-    --primary-color-hover: #0056b3;
-    --error-color: #dc3545;
-}
-
-/* 系统主题偏好支持（作为后备） */
-@media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-        --background: #1a1a1a;
-        --background-secondary: #2d2d2d;
-        --background-hover: #3a3a3a;
-        --text-primary: #ffffff;
-        --text-secondary: #b0b0b0;
-        --border-color: #404040;
-        --primary-color: #4a9eff;
-        --primary-color-hover: #6bb3ff;
-        --error-color: #ff6b6b;
-    }
-}
-
-@media (prefers-color-scheme: light) {
-    :root:not([data-theme="dark"]) {
-        --background: #ffffff;
-        --background-secondary: #f8f9fa;
-        --background-hover: #e9ecef;
-        --text-primary: #212529;
-        --text-secondary: #6c757d;
-        --border-color: #dee2e6;
-        --primary-color: #007bff;
-        --primary-color-hover: #0056b3;
-        --error-color: #dc3545;
     }
 }
 

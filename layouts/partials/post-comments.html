@@ -1,13 +1,28 @@
-{{- /* 博客文章评论系统 - 简化版本，使用统一评论系统 */ -}}
+{{- /* 博客文章评论系统 - 直接集成Giscus，简化架构 */ -}}
 
 {{- if .Site.Params.comments.enable }}
 <div class="post-comments-container">
     <div class="post-comments-header">
         <h3 class="post-comments-title">评论</h3>
-        <div class="post-comments-loading">加载评论中...</div>
     </div>
-    <div class="giscus-wrapper" id="post-giscus-comments">
-        <!-- Giscus评论将通过统一评论系统加载 -->
+    <div class="giscus-wrapper">
+        <!-- 直接集成Giscus -->
+        <script src="https://giscus.app/client.js"
+                data-repo="{{ .Site.Params.comments.giscus.repo }}"
+                data-repo-id="{{ .Site.Params.comments.giscus.repoId }}"
+                data-category="{{ .Site.Params.comments.giscus.category }}"
+                data-category-id="{{ .Site.Params.comments.giscus.categoryId }}"
+                data-mapping="pathname"
+                data-strict="{{ .Site.Params.comments.giscus.strict | default "0" }}"
+                data-reactions-enabled="{{ .Site.Params.comments.giscus.reactionsEnabled | default "1" }}"
+                data-emit-metadata="1"
+                data-input-position="{{ .Site.Params.comments.giscus.inputPosition | default "bottom" }}"
+                data-theme="{{ .Site.Params.comments.giscus.theme | default "preferred_color_scheme" }}"
+                data-lang="{{ .Site.Params.comments.giscus.lang | default "zh-CN" }}"
+                data-loading="eager"
+                crossorigin="anonymous"
+                async>
+        </script>
     </div>
 </div>
 
@@ -29,24 +44,10 @@
         color: var(--primary);
     }
     
-    .post-comments-loading {
-        color: var(--secondary);
-        font-size: 14px;
-        text-align: center;
-        padding: 20px;
-    }
-    
     .giscus-wrapper {
         border-radius: 8px;
         overflow: hidden;
         min-height: 200px;
-    }
-    
-    /* Dark mode support */
-    @media (prefers-color-scheme: dark) {
-        .giscus-wrapper {
-            filter: brightness(0.9);
-        }
     }
     
     /* Responsive adjustments */
@@ -63,144 +64,24 @@
 </style>
 
 <script>
-    console.log('Post-comments: Initializing simplified post comments...');
-    
-    // 等待统一评论系统加载完成
-    function waitForUnifiedComments(callback, maxAttempts = 50, interval = 100) {
-        let attempts = 0;
-        
-        function check() {
-            attempts++;
-            
-            if (window.UnifiedComments && window.UnifiedComments.GiscusManager) {
-                console.log('Post-comments: Unified comments system is ready');
-                callback();
-            } else if (attempts < maxAttempts) {
-                setTimeout(check, interval);
-            } else {
-                console.warn('Post-comments: Unified comments system not found, falling back to manual loading');
-                fallbackLoadComments();
-            }
-        }
-        
-        check();
-    }
-    
-    // 后备加载方案
-    function fallbackLoadComments() {
-        console.log('Post-comments: Using fallback loading method');
-        
-        const container = document.getElementById('post-giscus-comments');
-        const loading = document.querySelector('.post-comments-loading');
-        
-        if (!container) {
-            console.error('Post-comments: Container not found');
-            return;
-        }
-        
-        // 设置Giscus配置
-        const config = {
-            repo: '{{ .Site.Params.comments.giscus.repo }}',
-            repoId: '{{ .Site.Params.comments.giscus.repoId }}',
-            category: '{{ .Site.Params.comments.giscus.category }}',
-            categoryId: '{{ .Site.Params.comments.giscus.categoryId }}',
-            mapping: 'pathname',
-            strict: '0',
-            reactionsEnabled: '1',
-            emitMetadata: '1',
-            inputPosition: 'bottom',
-            theme: 'preferred_color_scheme',
-            lang: 'zh-CN',
-            loading: 'eager'
-        };
-        
-        // 创建Giscus脚本
-        const script = document.createElement('script');
-        script.src = 'https://giscus.app/client.js';
-        
-        Object.entries(config).forEach(([key, value]) => {
-            script.setAttribute(`data-${key}`, value);
-        });
-        
-        script.setAttribute('data-term', window.location.pathname);
-        script.setAttribute('data-title', document.title);
-        script.setAttribute('crossorigin', 'anonymous');
-        script.setAttribute('async', '');
-        
-        script.addEventListener('load', () => {
-            console.log('Post-comments: Fallback Giscus loaded successfully');
-            if (loading) {
-                loading.style.display = 'none';
-            }
-        });
-        
-        script.addEventListener('error', () => {
-            console.error('Post-comments: Fallback Giscus load failed');
-            if (loading) {
-                loading.textContent = '评论加载失败，请刷新页面重试';
-                loading.style.color = '#F44336';
-            }
-        });
-        
-        container.appendChild(script);
-    }
-    
-    // 使用统一评论系统加载评论
-    function loadPostCommentsWithUnifiedSystem() {
-        console.log('Post-comments: Loading comments with unified system');
-        
-        const container = document.getElementById('post-giscus-comments');
-        const loading = document.querySelector('.post-comments-loading');
-        
-        if (!container) {
-            console.error('Post-comments: Container not found');
-            return;
-        }
-        
-        // 使用统一评论系统的Giscus管理器
-        try {
-            const result = window.UnifiedComments.GiscusManager.createInstance(container, 'post-' + window.location.pathname);
-            
-            if (result) {
-                console.log('Post-comments: Comments loading initiated');
-                
-                // 监听加载完成
-                setTimeout(() => {
-                    if (loading) {
-                        loading.style.display = 'none';
-                    }
-                }, 2000);
-            } else {
-                console.warn('Post-comments: Failed to create Giscus instance, using fallback');
-                fallbackLoadComments();
-            }
-        } catch (error) {
-            console.error('Post-comments: Error using unified system:', error);
-            fallbackLoadComments();
-        }
-    }
-    
-    // 页面加载完成后初始化
+    // 监听主题变化，更新Giscus主题
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('Post-comments: DOM loaded, waiting for unified comments system...');
+        console.log('Post-comments: Direct Giscus integration loaded');
         
-        waitForUnifiedComments(() => {
-            loadPostCommentsWithUnifiedSystem();
-        });
-    });
-    
     // 监听主题变化
-    window.addEventListener('themeChanged', function(event) {
-        console.log('Post-comments: Theme changed, updating comments');
+    const updateGiscusTheme = () => {
+        // 使用PaperMod的主题系统：检查body是否有dark类
+        const isDark = document.body.classList.contains('dark');
+        const theme = isDark ? 'dark' : 'light';
         
         // 更新Giscus主题
-        const giscusFrames = document.querySelectorAll('#post-giscus-comments iframe.giscus-frame');
+        const giscusFrames = document.querySelectorAll('.giscus-wrapper iframe.giscus-frame');
         giscusFrames.forEach(frame => {
             try {
                 frame.contentWindow.postMessage({
                     giscus: {
                         setConfig: {
-                            theme: event.detail.theme
+                            theme: theme
                         }
                     }
                 }, 'https://giscus.app');
@@ -208,8 +89,32 @@
                 console.warn('Post-comments: Failed to update Giscus theme:', error);
             }
         });
+    };
+        
+        // 监听PaperMod主题变化（通过body类的变化）
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    setTimeout(updateGiscusTheme, 100);
+                }
+            });
+        });
+        
+        observer.observe(document.body, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+        
+        // 监听系统主题变化
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateGiscusTheme);
+        
+        // 监听PaperMod主题切换按钮
+        const themeToggle = document.querySelector('.theme-toggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                setTimeout(updateGiscusTheme, 200);
+            });
+        }
     });
-    
-    console.log('Post-comments: Simplified comment system initialized');
 </script>
 {{- end }}

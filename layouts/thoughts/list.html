@@ -101,26 +101,663 @@
     </div>
 </div>
 
-<!-- Include the unified comments JavaScript -->
-<script src="/js/unified-comments.js"></script>
-
-<!-- Giscus配置传递 -->
+<!-- 销毁重建的随想评论系统 -->
 {{ if .Site.Params.comments.enable }}
 <script>
-    // 设置Giscus配置到全局变量
-    window.GISCUS_CONFIG = {
-        repo: '{{ .Site.Params.comments.giscus.repo }}',
-        repoId: '{{ .Site.Params.comments.giscus.repoId }}',
-        category: '{{ .Site.Params.comments.giscus.category }}',
-        categoryId: '{{ .Site.Params.comments.giscus.categoryId }}',
-        mapping: '{{ .Site.Params.comments.giscus.mapping | default "pathname" }}',
-        strict: '{{ .Site.Params.comments.giscus.strict | default "0" }}',
-        reactionsEnabled: '{{ .Site.Params.comments.giscus.reactionsEnabled | default "1" }}',
-        inputPosition: '{{ .Site.Params.comments.giscus.inputPosition | default "bottom" }}',
-        theme: '{{ .Site.Params.comments.giscus.theme | default "preferred_color_scheme" }}',
-        lang: '{{ .Site.Params.comments.giscus.lang | default "zh-CN" }}'
+    // 智能评论缓存管理器 - 解决API覆盖实时数据问题
+    const CommentCache = {
+        CACHE_KEY: 'thought-comments-cache-v2',
+        CACHE_VERSION: '2.0',
+        CACHE_DURATION: 3600000, // 1小时缓存
+        
+        get(thoughtId) {
+            try {
+                const cached = this.getAll();
+                if (cached && cached[thoughtId]) {
+                    const now = Date.now();
+                    
+                    // 检查缓存是否过期
+                    if (now - cached[thoughtId].timestamp < this.CACHE_DURATION) {
+                        console.log(`CommentCache: Retrieved cached count for ${thoughtId}: ${cached[thoughtId].count} (${cached[thoughtId].source})`);
+                        return cached[thoughtId].count;
+                    } else {
+                        console.log(`CommentCache: Cache expired for ${thoughtId}`);
+                    }
+                }
+            } catch (error) {
+                console.warn('CommentCache: Failed to get cached data:', error);
+            }
+            return null;
+        },
+        
+        getAll() {
+            try {
+                const cached = localStorage.getItem(this.CACHE_KEY);
+                if (cached) {
+                    const data = JSON.parse(cached);
+                    
+                    // 检查版本兼容性
+                    if (data.version !== this.CACHE_VERSION) {
+                        console.log('CommentCache: Cache version mismatch, clearing cache');
+                        this.clear();
+                        return null;
+                    }
+                    
+                    const now = Date.now();
+                    if (now - data.globalTimestamp < this.CACHE_DURATION) {
+                        return data.counts;
+                    } else {
+                        console.log('CommentCache: Global cache expired');
+                    }
+                }
+            } catch (error) {
+                console.warn('CommentCache: Failed to get all cached data:', error);
+            }
+            return null;
+        },
+        
+        set(counts, source = 'api') {
+            try {
+                const data = {
+                    version: this.CACHE_VERSION,
+                    counts: {},
+                    globalTimestamp: Date.now()
+                };
+                
+                // 转换旧格式为新格式（兼容性）
+                Object.entries(counts).forEach(([thoughtId, count]) => {
+                    data.counts[thoughtId] = {
+                        count,
+                        timestamp: Date.now(),
+                        source
+                    };
+                });
+                
+                localStorage.setItem(this.CACHE_KEY, JSON.stringify(data));
+                console.log(`CommentCache: Cached comment counts (${source}):`, counts);
+                
+                // 验证写入是否成功
+                this.verifyWrite(counts);
+                
+            } catch (error) {
+                console.error('CommentCache: Failed to cache data:', error);
+            }
+        },
+        
+        // 单个随想的计数更新（智能版本）
+        setSingle(thoughtId, count, source = 'giscus') {
+            try {
+                const cached = this.getAll() || {};
+                
+                // 检查是否需要更新（只有新数据更新时才更新）
+                const existing = cached[thoughtId];
+                if (existing) {
+                    if (existing.count === count && existing.source === source) {
+                        console.log(`CommentCache: No update needed for ${thoughtId}: ${count} (${source})`);
+                        return;
+                    }
+                    
+                    // 如果Giscus数据比API数据新，优先保留Giscus数据
+                    if (source === 'giscus' && existing.source === 'api') {
+                        console.log(`CommentCache: Giscus data newer than API for ${thoughtId}, keeping Giscus`);
+                    } else if (source === 'api' && existing.source === 'giscus') {
+                        // API数据比Giscus数据旧，不覆盖
+                        const timeDiff = Date.now() - existing.timestamp;
+                        if (timeDiff < 5 * 60 * 1000) { // 5分钟内的Giscus数据优先
+                            console.log(`CommentCache: API data older than recent Giscus for ${thoughtId}, keeping Giscus`);
+                            return;
+                        }
+                    }
+                }
+                
+                // 更新数据
+                cached[thoughtId] = {
+                    count,
+                    timestamp: Date.now(),
+                    source
+                };
+                
+                // 写入缓存
+                const data = {
+                    version: this.CACHE_VERSION,
+                    counts: cached,
+                    globalTimestamp: Date.now()
+                };
+                
+                localStorage.setItem(this.CACHE_KEY, JSON.stringify(data));
+                console.log(`✅ CommentCache: Updated ${thoughtId}: ${count} (${source})`);
+                
+                // 验证写入
+                const verify = this.get(thoughtId);
+                if (verify === count) {
+                    console.log(`✅ CommentCache: Write verification successful for ${thoughtId}`);
+                } else {
+                    console.error(`❌ CommentCache: Write verification failed for ${thoughtId}`);
+                }
+                
+            } catch (error) {
+                console.error('CommentCache: Failed to update single count:', error);
+            }
+        },
+        
+        // 验证写入是否成功
+        verifyWrite(expectedCounts) {
+            try {
+                const cached = this.getAll();
+                const success = Object.entries(expectedCounts).every(([thoughtId, count]) => {
+                    return cached && cached[thoughtId] && cached[thoughtId].count === count;
+                });
+                
+                if (success) {
+                    console.log('✅ CommentCache: All write operations verified successfully');
+                } else {
+                    console.error('❌ CommentCache: Write verification failed');
+                }
+                return success;
+            } catch (error) {
+                console.error('CommentCache: Verification error:', error);
+                return false;
+            }
+        },
+        
+        clear() {
+            try {
+                localStorage.removeItem(this.CACHE_KEY);
+                console.log('CommentCache: Cleared cache');
+            } catch (error) {
+                console.warn('CommentCache: Failed to clear cache:', error);
+            }
+        },
+        
+        // 调试信息
+        debug() {
+            console.group('🔍 CommentCache Debug Info');
+            try {
+                const raw = localStorage.getItem(this.CACHE_KEY);
+                console.log('Raw cache data:', raw);
+                
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    console.log('Parsed cache:', parsed);
+                    console.log('Cache age:', Date.now() - parsed.globalTimestamp, 'ms');
+                    console.log('Cache expired:', Date.now() - parsed.globalTimestamp > this.CACHE_DURATION);
+                    
+                    // 显示每个随想的详细信息
+                    Object.entries(parsed.counts || {}).forEach(([thoughtId, data]) => {
+                        const age = Date.now() - data.timestamp;
+                        console.log(`  ${thoughtId}: ${data.count} (${data.source}, ${Math.round(age/1000)}s old)`);
+                    });
+                }
+            } catch (error) {
+                console.error('Cache debug error:', error);
+            }
+            console.groupEnd();
+        }
     };
-    console.log('Giscus configuration set:', window.GISCUS_CONFIG);
+
+    // GitHub API 调用器
+    const GitHubAPI = {
+        repo: '{{ .Site.Params.comments.giscus.repo }}',
+        categoryId: '{{ .Site.Params.comments.giscus.categoryId }}',
+        
+        async fetchAllCommentCounts() {
+            const thoughts = document.querySelectorAll('.thought-card');
+            const counts = {};
+            const uniqueIds = [];
+            
+            // 收集所有随想的唯一ID
+            thoughts.forEach(thought => {
+                const thoughtId = thought.dataset.thoughtId;
+                const uniqueId = `${window.location.pathname}#${thoughtId}`;
+                uniqueIds.push({ thoughtId, uniqueId });
+            });
+            
+            console.log(`GitHubAPI: Fetching comment counts for ${uniqueIds.length} thoughts`);
+            
+            // 批量获取讨论数据
+            try {
+                const discussions = await this.fetchDiscussions();
+                
+                // 匹配讨论与随想
+                uniqueIds.forEach(({ thoughtId, uniqueId }) => {
+                    const discussion = discussions.find(d => d.title === uniqueId);
+                    counts[thoughtId] = discussion ? discussion.comments : 0;
+                });
+                
+                console.log('GitHubAPI: Fetched comment counts:', counts);
+                return counts;
+                
+            } catch (error) {
+                console.error('GitHubAPI: Failed to fetch comment counts:', error);
+                
+                // 返回默认值
+                uniqueIds.forEach(({ thoughtId }) => {
+                    counts[thoughtId] = 0;
+                });
+                
+                return counts;
+            }
+        },
+
+        // 获取特定随想的评论计数（用于优先加载）
+        async fetchSpecificCommentCounts(thoughtIds) {
+            const counts = {};
+            const uniqueIds = thoughtIds.map(thoughtId => ({
+                thoughtId,
+                uniqueId: `${window.location.pathname}#${thoughtId}`
+            }));
+            
+            console.log(`GitHubAPI: Fetching specific comment counts for ${thoughtIds.length} thoughts`);
+            
+            try {
+                const discussions = await this.fetchDiscussions();
+                
+                // 匹配讨论与随想
+                uniqueIds.forEach(({ thoughtId, uniqueId }) => {
+                    const discussion = discussions.find(d => d.title === uniqueId);
+                    counts[thoughtId] = discussion ? discussion.comments : 0;
+                });
+                
+                console.log(`GitHubAPI: Fetched specific comment counts:`, counts);
+                return counts;
+                
+            } catch (error) {
+                console.error('GitHubAPI: Failed to fetch specific comment counts:', error);
+                
+                // 返回默认值
+                thoughtIds.forEach(thoughtId => {
+                    counts[thoughtId] = 0;
+                });
+                
+                return counts;
+            }
+        },
+        
+        async fetchDiscussions() {
+            const url = `https://api.github.com/repos/${this.repo}/discussions?category_id=${this.categoryId}&per_page=100`;
+            
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Accept': 'application/vnd.github.v3+json',
+                        'X-GitHub-Api-Version': '2022-11-28'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`GitHub API request failed: ${response.status}`);
+                }
+                
+                const discussions = await response.json();
+                return discussions;
+                
+            } catch (error) {
+                console.error('GitHubAPI: API request failed:', error);
+                throw error;
+            }
+        }
+    };
+
+    // 随想评论管理器 - 销毁重建版本
+    const GiscusManager = {
+        currentInstance: null,
+        currentThoughtId: null,
+        
+        init() {
+            console.log('GiscusManager: Initializing...');
+            this.bindEvents();
+            this.initThemeWatcher();
+            this.loadInitialCommentCounts();
+        },
+
+        // 加载初始评论计数 - 性能优化版本
+        async loadInitialCommentCounts() {
+            console.log('GiscusManager: Loading initial comment counts...');
+            
+            // 1. 立即显示缓存数据（0ms）
+            const cachedCounts = CommentCache.getAll();
+            if (cachedCounts) {
+                console.log(`GiscusManager: Using cached comment counts (${Object.keys(cachedCounts).length} items)`);
+                Object.entries(cachedCounts).forEach(([thoughtId, data]) => {
+                    this.setCommentCount(thoughtId, data.count);
+                });
+            }
+            
+            // 2. 立即开始API预加载（100ms延迟，避免阻塞页面渲染）
+            setTimeout(() => {
+                this.preloadAPIData(cachedCounts);
+            }, 100);
+        },
+
+        // 并行预加载API数据
+        async preloadAPIData(cachedCounts) {
+            try {
+                console.log('GiscusManager: Starting parallel API preload...');
+                
+                // 获取可见的随想，优先加载
+                const visibleThoughts = this.getVisibleThoughts();
+                const priorityIds = visibleThoughts.map(t => t.dataset.thoughtId);
+                
+                console.log(`GiscusManager: Priority loading ${priorityIds.length} visible thoughts`);
+                
+                // 先加载可见随想的数据
+                if (priorityIds.length > 0) {
+                    const priorityCounts = await GitHubAPI.fetchSpecificCommentCounts(priorityIds);
+                    this.updateUIWithAPIData(priorityCounts, cachedCounts, 'priority');
+                }
+                
+                // 然后加载所有随想的数据
+                const allCounts = await GitHubAPI.fetchAllCommentCounts();
+                this.updateUIWithAPIData(allCounts, cachedCounts, 'all');
+                
+                console.log('GiscusManager: API preload completed');
+                
+            } catch (error) {
+                console.warn('GiscusManager: API preload failed, keeping cache:', error);
+            }
+        },
+
+        // 获取可见的随想
+        getVisibleThoughts() {
+            const thoughts = document.querySelectorAll('.thought-card');
+            const visible = [];
+            const viewportHeight = window.innerHeight;
+            
+            thoughts.forEach(thought => {
+                const rect = thought.getBoundingClientRect();
+                // 包含当前视口和下方200px的预加载区域
+                if (rect.top < viewportHeight + 200 && rect.bottom > -200) {
+                    visible.push(thought);
+                }
+            });
+            
+            return visible;
+        },
+
+        // 使用API数据更新UI
+        updateUIWithAPIData(apiCounts, cachedCounts, batch) {
+            let updatedCount = 0;
+            
+            Object.entries(apiCounts).forEach(([thoughtId, apiCount]) => {
+                const cachedData = cachedCounts?.[thoughtId];
+                let shouldUpdate = false;
+                
+                if (!cachedData) {
+                    // 没有缓存数据，使用API数据
+                    shouldUpdate = true;
+                    CommentCache.setSingle(thoughtId, apiCount, 'api');
+                    console.log(`GiscusManager: Set initial count for ${thoughtId}: ${apiCount} (API, ${batch})`);
+                } else {
+                    // 有缓存数据，检查是否需要更新
+                    const timeDiff = Date.now() - cachedData.timestamp;
+                    
+                    // 如果缓存是Giscus数据且在5分钟内，优先保留缓存
+                    if (cachedData.source === 'giscus' && timeDiff < 5 * 60 * 1000) {
+                        console.log(`GiscusManager: Keeping recent Giscus data for ${thoughtId}: ${cachedData.count}`);
+                        return;
+                    }
+                    
+                    // 如果API数据与缓存不同，且缓存较旧，则更新
+                    if (cachedData.count !== apiCount && timeDiff > 10 * 60 * 1000) {
+                        shouldUpdate = true;
+                        CommentCache.setSingle(thoughtId, apiCount, 'api');
+                        console.log(`GiscusManager: Updated stale cache for ${thoughtId}: ${cachedData.count} → ${apiCount} (API, ${batch})`);
+                    } else {
+                        console.log(`GiscusManager: Keeping cached data for ${thoughtId}: ${cachedData.count} (${cachedData.source})`);
+                    }
+                }
+                
+                if (shouldUpdate) {
+                    this.setCommentCount(thoughtId, apiCount);
+                    updatedCount++;
+                }
+            });
+            
+            if (updatedCount > 0) {
+                console.log(`GiscusManager: Updated ${updatedCount} comment counts (${batch} batch)`);
+            }
+        },
+
+
+        bindEvents() {
+            // 评论按钮点击事件
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.comment-btn')) {
+                    const btn = e.target.closest('.comment-btn');
+                    const thoughtId = btn.dataset.thoughtId;
+                    this.toggleComments(thoughtId);
+                }
+
+                // 关闭按钮点击事件
+                if (e.target.closest('.close-comments-btn')) {
+                    const btn = e.target.closest('.close-comments-btn');
+                    const thoughtId = btn.dataset.thoughtId;
+                    this.hideComments(thoughtId);
+                }
+            });
+        },
+
+        toggleComments(thoughtId) {
+            const container = document.getElementById(`comments-${thoughtId}`);
+            if (!container) return;
+
+            // 如果点击的是当前已打开的评论，直接关闭
+            if (this.currentThoughtId === thoughtId && container.style.display === 'block') {
+                this.hideComments(thoughtId);
+                return;
+            }
+
+            // 隐藏所有评论容器
+            this.hideAllComments();
+
+            // 显示目标评论容器
+            container.style.display = 'block';
+
+            // 创建新的Giscus实例
+            this.createGiscusInstance(thoughtId);
+
+            // 滚动到评论区域
+            setTimeout(() => {
+                container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        },
+
+        hideComments(thoughtId) {
+            const container = document.getElementById(`comments-${thoughtId}`);
+            if (container) {
+                container.style.display = 'none';
+            }
+            
+            // 如果隐藏的是当前活跃的评论，清理实例
+            if (this.currentThoughtId === thoughtId) {
+                this.destroyCurrentInstance();
+            }
+        },
+
+        hideAllComments() {
+            const allContainers = document.querySelectorAll('.thought-comments-container');
+            allContainers.forEach(container => {
+                container.style.display = 'none';
+            });
+            
+            // 销毁当前实例
+            this.destroyCurrentInstance();
+        },
+
+        destroyCurrentInstance() {
+            if (this.currentInstance && this.currentThoughtId) {
+                console.log(`GiscusManager: Destroying instance for ${this.currentThoughtId}`);
+                
+                // 清理Giscus容器
+                const giscusWrapper = document.getElementById(`giscus-${this.currentThoughtId}`);
+                if (giscusWrapper) {
+                    // 移除所有iframe和script
+                    giscusWrapper.innerHTML = '<div class="giscus-loading">加载评论中...</div>';
+                }
+                
+                // 清理全局变量
+                this.currentInstance = null;
+                this.currentThoughtId = null;
+            }
+        },
+
+        createGiscusInstance(thoughtId) {
+            // 先销毁之前的实例
+            this.destroyCurrentInstance();
+            
+            console.log(`GiscusManager: Creating instance for ${thoughtId}`);
+            
+            const giscusWrapper = document.getElementById(`giscus-${thoughtId}`);
+            if (!giscusWrapper) return;
+
+            this.currentThoughtId = thoughtId;
+            this.currentInstance = true; // 标记有活跃实例
+
+            // 启用metadata来获取评论计数
+            this.loadGiscus(giscusWrapper, thoughtId);
+        },
+
+        loadGiscus(container, thoughtId) {
+            const uniqueId = `${window.location.pathname}#${thoughtId}`;
+            
+            // 显示加载状态
+            container.innerHTML = '<div class="giscus-loading">加载评论中...</div>';
+            
+            // 创建Giscus容器
+            const giscusContainer = document.createElement('div');
+            container.innerHTML = '';
+            container.appendChild(giscusContainer);
+            
+            // 创建Giscus脚本
+            const script = document.createElement('script');
+            script.src = 'https://giscus.app/client.js';
+            script.setAttribute('data-repo', '{{ .Site.Params.comments.giscus.repo }}');
+            script.setAttribute('data-repo-id', '{{ .Site.Params.comments.giscus.repoId }}');
+            script.setAttribute('data-category', '{{ .Site.Params.comments.giscus.category }}');
+            script.setAttribute('data-category-id', '{{ .Site.Params.comments.giscus.categoryId }}');
+            script.setAttribute('data-mapping', 'specific');
+            script.setAttribute('data-term', uniqueId);
+            script.setAttribute('data-title', uniqueId);
+            script.setAttribute('data-strict', '0');
+            script.setAttribute('data-reactions-enabled', '1');
+            script.setAttribute('data-emit-metadata', '1'); // 启用metadata来获取评论数
+            script.setAttribute('data-input-position', 'bottom');
+            script.setAttribute('data-theme', this.getCurrentTheme());
+            script.setAttribute('data-lang', 'zh-CN');
+            script.setAttribute('data-loading', 'eager');
+            script.setAttribute('crossorigin', 'anonymous');
+            script.async = true;
+
+            script.addEventListener('load', () => {
+                console.log(`GiscusManager: Giscus loaded for ${thoughtId}`);
+            });
+
+            script.addEventListener('error', () => {
+                container.innerHTML = '<div class="giscus-error">评论加载失败，请刷新页面重试</div>';
+            });
+
+            giscusContainer.appendChild(script);
+        },
+
+        getCurrentTheme() {
+            // 使用PaperMod的主题系统：检查body是否有dark类
+            const isDark = document.body.classList.contains('dark');
+            return isDark ? 'dark' : 'light';
+        },
+
+        initThemeWatcher() {
+            // 监听Giscus的metadata事件来获取评论计数
+            window.addEventListener('message', (event) => {
+                if (event.origin === 'https://giscus.app' && event.data.giscus) {
+                    const data = event.data.giscus;
+                    
+                    // 完整打印metadata结构，便于调试
+                    console.log('GiscusManager: Full metadata structure:', data);
+                    
+                    // 更新评论计数
+                    if (data.discussion && this.currentThoughtId) {
+                        // 尝试获取完整的评论数据（评论数 + 回复数）
+                        const commentCount = data.discussion.totalCommentCount || 0;
+                        const replyCount = data.discussion.totalReplyCount || 0;
+                        const totalCount = commentCount + replyCount;
+                        
+                        console.log(`GiscusManager: Comment breakdown for ${this.currentThoughtId}:`);
+                        console.log(`  - Top-level comments: ${commentCount}`);
+                        console.log(`  - Replies: ${replyCount}`);
+                        console.log(`  - Total: ${totalCount}`);
+                        
+                        // 更新缓存和UI
+                        CommentCache.setSingle(this.currentThoughtId, totalCount);
+                        this.setCommentCount(this.currentThoughtId, totalCount);
+                    }
+                }
+            });
+
+            // 监听PaperMod主题变化（通过body类的变化）
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                        this.updateGiscusTheme();
+                    }
+                });
+            });
+
+            observer.observe(document.body, {
+                attributes: true,
+                attributeFilter: ['class']
+            });
+
+            // 监听系统主题变化
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                this.updateGiscusTheme();
+            });
+
+            // 监听PaperMod主题切换按钮
+            const themeToggle = document.querySelector('.theme-toggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', () => {
+                    setTimeout(() => {
+                        this.updateGiscusTheme();
+                    }, 200);
+                });
+            }
+        },
+
+        updateGiscusTheme() {
+            const theme = this.getCurrentTheme();
+            
+            // 只更新当前活跃的Giscus实例
+            if (this.currentThoughtId) {
+                const giscusFrame = document.querySelector(`#giscus-${this.currentThoughtId} iframe.giscus-frame`);
+                if (giscusFrame) {
+                    try {
+                        giscusFrame.contentWindow.postMessage({
+                            giscus: {
+                                setConfig: {
+                                    theme: theme
+                                }
+                            }
+                        }, 'https://giscus.app');
+                    } catch (error) {
+                        console.warn('GiscusManager: Failed to update Giscus theme:', error);
+                    }
+                }
+            }
+        },
+
+        setCommentCount(thoughtId, count) {
+            const countElement = document.querySelector(`.comment-count[data-thought-id="${thoughtId}"]`);
+            if (countElement) {
+                countElement.textContent = count > 0 ? count : '0';
+                console.log(`GiscusManager: Updated comment count for ${thoughtId}: ${count}`);
+            }
+        }
+    };
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        GiscusManager.init();
+    });
 </script>
 {{ end }}
 {{ end }}
