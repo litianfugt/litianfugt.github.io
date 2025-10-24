@@ -1642,6 +1642,11 @@ refactor/user-service
       <li><a href="http://localhost:1313/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/">开发工具</a></li>
     </ul>
 <nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/%E9%A2%84%E7%A0%94%E6%8A%A5%E5%91%8A%E6%A8%A1%E6%9D%BF/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>预研报告模板</span>
+  </a>
   <a class="next" href="http://localhost:1313/posts/computer-vision-basics/">
     <span class="title">下一页 »</span>
     <br>
@@ -1781,13 +1786,12 @@ refactor/user-service
 </style>
 
 <script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Post-comments: Simplified Giscus integration loaded');
     
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Post-comments: Direct Giscus integration loaded');
-        
     
     const updateGiscusTheme = () => {
-        
         const isDark = document.body.classList.contains('dark');
         const theme = isDark ? 'dark' : 'light';
         
@@ -1807,32 +1811,21 @@ refactor/user-service
             }
         });
     };
-        
-        
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                    setTimeout(updateGiscusTheme, 100);
-                }
-            });
+    
+    
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                setTimeout(updateGiscusTheme, 100);
+            }
         });
-        
-        observer.observe(document.body, {
-            attributes: true,
-            attributeFilter: ['class']
-        });
-        
-        
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateGiscusTheme);
-        
-        
-        const themeToggle = document.querySelector('.theme-toggle');
-        if (themeToggle) {
-            themeToggle.addEventListener('click', () => {
-                setTimeout(updateGiscusTheme, 200);
-            });
-        }
     });
+    
+    observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class']
+    });
+});
 </script>
 
 </article>
