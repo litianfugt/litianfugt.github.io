@@ -3,40 +3,28 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>http://localhost:1313/tags/</loc>
-    <lastmod>2025-09-24T10:30:00+08:00</lastmod>
+    <lastmod>2025-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/%E5%8D%9A%E5%AE%A2%E6%9B%B4%E6%96%B0/</loc>
-    <lastmod>2025-09-24T10:30:00+08:00</lastmod>
+    <lastmod>2025-10-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/thoughts/2025-09-24-first-thought/</loc>
-    <lastmod>2025-09-24T10:30:00+08:00</lastmod>
+    <loc>http://localhost:1313/thoughts/2025-10-24-first-thought/</loc>
+    <lastmod>2025-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/categories/</loc>
-    <lastmod>2025-09-24T10:30:00+08:00</lastmod>
+    <lastmod>2025-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/categories/%E7%94%9F%E6%B4%BB/</loc>
-    <lastmod>2025-09-24T10:30:00+08:00</lastmod>
+    <lastmod>2025-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/</loc>
-    <lastmod>2025-09-24T10:30:00+08:00</lastmod>
+    <lastmod>2025-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/%E9%9A%8F%E6%83%B3/</loc>
-    <lastmod>2025-09-24T10:30:00+08:00</lastmod>
+    <lastmod>2025-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/thoughts/</loc>
-    <lastmod>2025-09-24T10:30:00+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/thoughts/2025-09-23-meditation/</loc>
-    <lastmod>2025-09-23T15:45:00+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/%E5%86%A5%E6%83%B3/</loc>
-    <lastmod>2025-09-23T15:45:00+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/%E5%B9%B3%E8%A1%A1/</loc>
-    <lastmod>2025-09-23T15:45:00+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/%E7%94%9F%E6%B4%BB/</loc>
-    <lastmod>2025-09-23T15:45:00+08:00</lastmod>
+    <lastmod>2025-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/</loc>
     <lastmod>2025-09-11T16:09:21+08:00</lastmod>
