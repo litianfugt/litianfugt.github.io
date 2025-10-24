@@ -2675,9 +2675,10 @@
 <div class="post-comments-container">
     <div class="post-comments-header">
         <h3 class="post-comments-title">评论</h3>
+        <p class="post-comments-subtitle">欢迎在下方留下您的想法和见解</p>
     </div>
-    <div class="giscus-wrapper">
-        
+    
+    <div class="giscus-container">
         <script src="https://giscus.app/client.js"
                 data-repo="litianfugt/litianfugt.github.io"
                 data-repo-id="R_kgDOPkZVNQ"
@@ -2686,11 +2687,11 @@
                 data-mapping="pathname"
                 data-strict="0"
                 data-reactions-enabled="1"
-                data-emit-metadata="1"
+                data-emit-metadata="0"
                 data-input-position="bottom"
                 data-theme="preferred_color_scheme"
                 data-lang="zh-CN"
-                data-loading="eager"
+                data-loading="lazy"
                 crossorigin="anonymous"
                 async>
         </script>
@@ -2698,40 +2699,55 @@
 </div>
 
 <style>
+.post-comments-container {
+    margin-top: 3rem;
+    padding: 2rem;
+    background: var(--theme);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.post-comments-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.post-comments-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin: 0 0 0.5rem 0;
+}
+
+.post-comments-subtitle {
+    color: var(--secondary);
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.giscus-container {
+    min-height: 200px;
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+ 
+.dark .post-comments-container {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+ 
+@media (max-width: 768px) {
     .post-comments-container {
-        margin-top: 3rem;
-        padding-top: 2rem;
-        border-top: 1px solid var(--border);
-    }
-    
-    .post-comments-header {
-        margin-bottom: 1.5rem;
+        margin-top: 2rem;
+        padding: 1.5rem;
     }
     
     .post-comments-title {
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin: 0 0 0.5rem 0;
-        color: var(--primary);
+        font-size: 1.25rem;
     }
-    
-    .giscus-wrapper {
-        border-radius: 8px;
-        overflow: hidden;
-        min-height: 200px;
-    }
-    
-     
-    @media (max-width: 768px) {
-        .post-comments-container {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-        }
-        
-        .post-comments-title {
-            font-size: 1.25rem;
-        }
-    }
+}
 </style>
 
 <script>
@@ -2744,8 +2760,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const isDark = document.body.classList.contains('dark');
         const theme = isDark ? 'dark' : 'light';
         
+        console.log('Post-comments: Updating theme to:', theme);
         
-        const giscusFrames = document.querySelectorAll('.giscus-wrapper iframe.giscus-frame');
+        
+        const giscusFrames = document.querySelectorAll('.giscus-container iframe.giscus-frame');
         giscusFrames.forEach(frame => {
             try {
                 frame.contentWindow.postMessage({
@@ -2755,6 +2773,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     }
                 }, 'https://giscus.app');
+                console.log('Post-comments: Theme update sent to Giscus');
             } catch (error) {
                 console.warn('Post-comments: Failed to update Giscus theme:', error);
             }
@@ -2773,6 +2792,23 @@ document.addEventListener('DOMContentLoaded', function() {
     observer.observe(document.body, {
         attributes: true,
         attributeFilter: ['class']
+    });
+    
+    
+    setTimeout(updateGiscusTheme, 500);
+    
+    
+    window.addEventListener('message', (event) => {
+        if (event.origin !== 'https://giscus.app') return;
+        
+        if (event.data && event.data.giscus) {
+            console.log('Post-comments: Received Giscus message:', event.data.giscus);
+            
+            
+            if (event.data.giscus.discussion || event.data.giscus.error) {
+                setTimeout(updateGiscusTheme, 100);
+            }
+        }
     });
 });
 </script>
