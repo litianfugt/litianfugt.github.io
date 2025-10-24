@@ -80,7 +80,7 @@ pygmentsStyle = "monokai"
   author = "李石原"
   keywords = ["图像算法", "计算机视觉", "深度学习", "机器学习", "技术博客"]
   ShowReadingTime = true
-  ShowShareButtons = true
+  ShowShareButtons = false
   ShowPostNavLinks = true
   ShowBreadCrumbs = true
   ShowCodeCopyButtons = true
@@ -124,16 +124,8 @@ pygmentsStyle = "monokai"
   # 社交链接
   [params.social]
     GitHub = "litianfugt"
-    Linkedin = ""
-    Twitter = ""
-    Instagram = ""
-    Email = "your.email@example.com"
+    Email = "diego_litianfu@163.com"
     RSS = true
-    # 添加更多社交平台
-    Zhihu = ""
-    Weibo = ""
-    CSDN = ""
-    Juejin = ""
     
   # 标签页配置
   [params.label]
