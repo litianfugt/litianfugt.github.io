@@ -64,13 +64,12 @@
 </style>
 
 <script>
-    // 监听主题变化，更新Giscus主题
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Post-comments: Direct Giscus integration loaded');
-        
+// 简化的主题切换监听（与随想页面保持一致）
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Post-comments: Simplified Giscus integration loaded');
+    
     // 监听主题变化
     const updateGiscusTheme = () => {
-        // 使用PaperMod的主题系统：检查body是否有dark类
         const isDark = document.body.classList.contains('dark');
         const theme = isDark ? 'dark' : 'light';
         
@@ -90,31 +89,20 @@
             }
         });
     };
-        
-        // 监听PaperMod主题变化（通过body类的变化）
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                    setTimeout(updateGiscusTheme, 100);
-                }
-            });
+    
+    // 监听主题变化
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                setTimeout(updateGiscusTheme, 100);
+            }
         });
-        
-        observer.observe(document.body, {
-            attributes: true,
-            attributeFilter: ['class']
-        });
-        
-        // 监听系统主题变化
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateGiscusTheme);
-        
-        // 监听PaperMod主题切换按钮
-        const themeToggle = document.querySelector('.theme-toggle');
-        if (themeToggle) {
-            themeToggle.addEventListener('click', () => {
-                setTimeout(updateGiscusTheme, 200);
-            });
-        }
     });
+    
+    observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class']
+    });
+});
 </script>
 {{- end }}
