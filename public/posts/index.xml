@@ -6,8 +6,15 @@
     <description>Recent content in 文章 on 李石原的博客</description>
     <generator>Hugo -- 0.147.4</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Wed, 10 Sep 2025 00:00:00 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 11 Sep 2025 16:09:21 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>预研报告模板</title>
+      <link>http://localhost:1313/posts/%E9%A2%84%E7%A0%94%E6%8A%A5%E5%91%8A%E6%A8%A1%E6%9D%BF/</link>
+      <pubDate>Thu, 11 Sep 2025 16:09:21 +0800</pubDate>
+      <guid>http://localhost:1313/posts/%E9%A2%84%E7%A0%94%E6%8A%A5%E5%91%8A%E6%A8%A1%E6%9D%BF/</guid>
+      <description>本博客主要结合多年的工作经验，总结了整个预研报告的模板，之后预研可以参考这个模板开展下去</description>
+    </item>
     <item>
       <title>Git一些学习和使用记录</title>
       <link>http://localhost:1313/posts/git-workflow/</link>
