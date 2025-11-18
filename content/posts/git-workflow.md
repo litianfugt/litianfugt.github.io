@@ -1,11 +1,11 @@
 ---
-title: "Git工作流程：从入门到精通"
+title: "Git一些学习和使用记录"
 date: 2025-09-10T00:00:00+08:00
 draft: false
-description: "本文详细介绍了Git的工作流程，包括基本概念、常用命令、分支管理、常见问题解决方案以及最佳实践，特别适合Git新手学习。"
+description: "本文详细介绍了Git的基本概念和一些基本使用方式，后续还在不断总结更新"
 keywords: ["Git", "版本控制", "工作流程", "分支管理", "新手教程"]
-tags: ["Git", "版本控制", "开发工具"]
-categories: ["技术分享"]
+tags: ["Git"]
+categories: ["技术总结"]
 author: "李石原"
 showToc: true
 hidemeta: false
@@ -24,7 +24,7 @@ comments: true
 
 # Git工作流程：从入门到精通
 
-Git是目前最流行的分布式版本控制系统，它不仅能够帮助开发者管理代码版本，还能促进团队协作。本文将从新手的角度出发，详细介绍Git的核心概念和实用技巧。
+Git是目前最流行的分布式版本控制系统，它不仅能够帮助开发者管理代码版本，还能促进团队协作。本文将详细介绍一下git的基础概念和在使用过程中的一些实用技巧。
 
 ## Git基础概念
 
@@ -63,17 +63,17 @@ Git有四个主要的工作区，理解这四个区域是掌握Git的关键：
 
 #### 2. 暂存区(Staging Area)
 - **定义**：也称为"索引(Index)"，是一个临时保存修改的地方
-- **作用**：在提交前，可以在这里选择要包含的修改
+- **作用**：在提交前，可以在这里选择要包含的修改（git add后存储的区域）
 - **比喻**：就像购物车，你可以把想买的东西先放进去，最后一起结账
 
 #### 3. 本地仓库(Local Repository)
 - **定义**：Git保存项目元数据和对象数据库的地方
-- **作用**：存储提交历史和文件快照
+- **作用**：存储提交历史和文件快照（git commit）
 - **位置**：在项目目录的`.git`文件夹中
 
 #### 4. 远程仓库(Remote Repository)
 - **定义**：托管在GitHub、GitLab等平台上的仓库
-- **作用**：团队协作和备份
+- **作用**：团队协作和备份（git push的地方）
 - **特点**：多个开发者可以共享同一个远程仓库
 
 ### Git的基本工作流程
@@ -264,29 +264,121 @@ git diff commit1 commit2
 #### 撤销操作
 
 ```bash
-# 撤销工作区的修改（恢复到暂存区状态）
+# 1. 撤销工作区的修改（恢复到最近一次提交状态）
 git checkout -- filename
+git checkout -- .  # 撤销所有文件的修改
 
-# 撤销暂存区的修改（恢复到工作区状态）
+# 2. 撤销暂存区的修改（取消暂存，但保留工作区修改）
 git reset HEAD filename
+git reset HEAD .   # 取消所有文件的暂存
 
-# 撤销最后一次提交（保留修改在工作区）
+# 3. 撤销最后一次提交（保留修改在工作区）
 git reset --soft HEAD~1
 
-# 撤销最后一次提交（丢弃修改）
+# 4. 撤销最后一次提交（丢弃修改）
 git reset --hard HEAD~1
 
-# 撤销多次提交（保留修改）
+# 5. 撤销多次提交（保留修改在工作区）
 git reset --soft HEAD~n
 
-# 撤销多次提交（丢弃修改）
+# 6. 撤销多次提交（丢弃修改）
 git reset --hard HEAD~n
 ```
 
-**撤销操作的选择**：
-- `git checkout --`：撤销文件修改，不涉及提交
-- `git reset --soft`：撤销提交，但保留修改
-- `git reset --hard`：撤销提交并丢弃修改（危险操作）
+**撤销操作的详细说明**：
+
+#### 1. `git checkout -- <file>` 
+
+**作用**：恢复工作区文件到HEAD状态，撤销文件的修改
+
+**用法**：
+```bash
+# 撤销单个文件的修改
+git checkout -- README.md
+
+# 撤销所有文件的修改  
+git checkout -- .
+```
+
+**说明**：只影响工作区，不能恢复未跟踪的新文件
+
+#### 2. `git reset HEAD <file>`
+
+**作用**：取消文件的暂存，但保留工作区的修改
+
+**用法**：
+```bash
+# 取消暂存特定文件
+git reset HEAD src/index.js
+
+# 取消所有文件的暂存
+git reset HEAD .
+```
+
+**说明**：只影响暂存区，工作区和提交历史不变
+
+#### 3. `git reset --soft HEAD~1`
+
+**作用**：撤销最后一次提交，保留所有修改在工作区
+
+**用法**：
+```bash
+# 撤销最后一次提交，保留修改
+git reset --soft HEAD~1
+
+# 重新编辑提交信息后提交
+git commit -m "更正的提交信息"
+```
+
+**说明**：安全撤销提交，修改和暂存状态都保留
+
+#### 4. `git reset --hard HEAD~1`
+
+**作用**：彻底回到上一个提交，丢弃所有修改
+
+**用法**：
+```bash
+# 彻底回到上一个提交（危险操作）
+git reset --hard HEAD~1
+
+# 回到特定提交
+git reset --hard abc1234
+```
+
+**⚠️ 警告**：会丢失所有修改，执行前建议备份：
+```bash
+git stash  # 备份修改
+```
+
+#### 5. `git reset --soft/--hard HEAD~n`
+
+**作用**：撤销多个提交
+
+**用法**：
+```bash
+# 撤销最近3次提交，保留修改
+git reset --soft HEAD~3
+
+# 撤销最近5次提交，丢弃修改
+git reset --hard HEAD~5
+```
+
+**说明**：n是要回退的提交数量
+
+### 撤销操作选择指南
+
+| 需求 | 命令 | 安全性 |
+|------|------|---------|
+| 撤销文件修改 | `git checkout -- <file>` | 安全 |
+| 取消文件暂存 | `git reset HEAD <file>` | 安全 |
+| 撤销提交但保留修改 | `git reset --soft HEAD~1` | 安全 |
+| 完全回到某状态 | `git reset --hard <commit>` | 危险 |
+
+**记忆技巧**：
+- `checkout` → 工作区
+- `reset HEAD` → 暂存区  
+- `reset --soft` → 提交历史（安全）
+- `reset --hard` → 全部重置（危险）
 
 ### 远程仓库操作
 
@@ -892,6 +984,8 @@ git push --force origin main
 
 ### 7. 工作区混乱需要清理
 
+#### 储藏功能(Stash)
+
 **储藏当前修改**：
 ```bash
 # 储藏所有修改
@@ -911,6 +1005,72 @@ git stash apply stash@{1}
 
 # 清除所有储藏
 git stash clear
+```
+
+#### 完全恢复工作区到初始状态
+
+**场景描述**：
+刚刚 `git clone` 下来的仓库，进行了修改后想要完全恢复到最初状态，但运行 `git checkout -- .` 后发现有些文件没有被恢复。
+
+**问题原因**：
+`git checkout -- .` 只能恢复**已跟踪文件**的修改，但无法删除**新创建的文件和目录**。这些新文件仍然存在于工作区中，可能导致项目运行异常。
+
+**解决方案**：
+```bash
+# 步骤1：恢复已跟踪文件的修改
+git checkout -- .
+
+# 步骤2：清理所有未跟踪的文件和目录
+git clean -fd
+```
+
+**完整流程示例**：
+```bash
+# 查看当前状态
+git status
+# 输出：Untracked files: (use "git add <file>..." to include in what will be committed)
+#         layouts/_default/
+
+# 第一步：恢复已跟踪文件
+git checkout -- .
+
+# 第二步：清理未跟踪文件
+git clean -fd
+
+# 验证结果
+git status
+# 输出：On branch main
+#       Your branch is up to date with 'origin/main'.
+#       nothing to commit, working tree clean
+```
+
+**命令参数说明**：
+- `git checkout -- .`：恢复所有已跟踪文件的修改到最近一次提交状态
+- `git clean -f`：强制删除所有未跟踪的文件（`-f` = force）
+- `git clean -fd`：删除所有未跟踪的文件和目录（`-d` = directory）
+
+**其他相关命令**：
+```bash
+# 查看将要删除的文件（不实际删除）
+git clean -n
+
+# 只删除忽略的文件
+git clean -fx
+
+# 删除忽略和非忽略的文件，但不删除目录
+git clean -fX
+
+# 手动删除特定目录
+rm -rf layouts/_default/
+```
+
+**注意事项**：
+- `git clean` 是一个**破坏性操作**，删除的文件无法通过Git恢复
+- 建议先使用 `git clean -n` 预览将要删除的文件
+- 确保新创建的文件确实不需要了再执行清理
+
+**记忆口诀**：
+> "先 checkout，再 clean，恢复完美如初见"
 ```
 
 ### 8. 提交信息写错了

@@ -9,11 +9,11 @@
     <lastBuildDate>Wed, 10 Sep 2025 00:00:00 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Git工作流程：从入门到精通</title>
+      <title>Git一些学习和使用记录</title>
       <link>http://localhost:1313/posts/git-workflow/</link>
       <pubDate>Wed, 10 Sep 2025 00:00:00 +0800</pubDate>
       <guid>http://localhost:1313/posts/git-workflow/</guid>
-      <description>本文详细介绍了Git的工作流程，包括基本概念、常用命令、分支管理、常见问题解决方案以及最佳实践，特别适合Git新手学习。</description>
+      <description>本文详细介绍了Git的基本概念和一些基本使用方式，后续还在不断总结更新</description>
     </item>
     <item>
       <title>计算机视觉基础：从像素到理解</title>
