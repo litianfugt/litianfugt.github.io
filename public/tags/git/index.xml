@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Git on 李石原的博客</title>
-    <link>http://localhost:56595/tags/git/</link>
+    <link>http://localhost:57288/tags/git/</link>
     <description>Recent content in Git on 李石原的博客</description>
     <generator>Hugo -- 0.147.4</generator>
     <language>zh-CN</language>
     <lastBuildDate>Wed, 10 Sep 2025 00:00:00 +0800</lastBuildDate>
-    <atom:link href="http://localhost:56595/tags/git/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:57288/tags/git/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Git一些学习和使用记录</title>
-      <link>http://localhost:56595/posts/git-workflow/</link>
+      <link>http://localhost:57288/posts/git-workflow/</link>
       <pubDate>Wed, 10 Sep 2025 00:00:00 +0800</pubDate>
-      <guid>http://localhost:56595/posts/git-workflow/</guid>
+      <guid>http://localhost:57288/posts/git-workflow/</guid>
       <description>本文详细介绍了Git的基本概念和一些基本使用方式，后续还在不断总结更新</description>
     </item>
   </channel>
