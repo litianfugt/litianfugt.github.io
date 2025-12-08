@@ -2,99 +2,99 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:57288/tags/</loc>
+    <loc>http://localhost:13141/tags/</loc>
     <lastmod>2025-10-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/tags/%E5%8D%9A%E5%AE%A2%E6%9B%B4%E6%96%B0/</loc>
+    <loc>http://localhost:13141/tags/%E5%8D%9A%E5%AE%A2%E6%9B%B4%E6%96%B0/</loc>
     <lastmod>2025-10-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/thoughts/2025-10-24-first-thought/</loc>
+    <loc>http://localhost:13141/thoughts/2025-10-24-first-thought/</loc>
     <lastmod>2025-10-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/categories/</loc>
+    <loc>http://localhost:13141/categories/</loc>
     <lastmod>2025-10-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/categories/%E7%94%9F%E6%B4%BB/</loc>
+    <loc>http://localhost:13141/categories/%E7%94%9F%E6%B4%BB/</loc>
     <lastmod>2025-10-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/</loc>
+    <loc>http://localhost:13141/</loc>
     <lastmod>2025-10-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/tags/%E9%9A%8F%E6%83%B3/</loc>
+    <loc>http://localhost:13141/tags/%E9%9A%8F%E6%83%B3/</loc>
     <lastmod>2025-10-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/thoughts/</loc>
+    <loc>http://localhost:13141/thoughts/</loc>
     <lastmod>2025-10-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/tags/%E6%8A%80%E6%9C%AF%E5%86%99%E4%BD%9C/</loc>
+    <loc>http://localhost:13141/tags/%E6%8A%80%E6%9C%AF%E5%86%99%E4%BD%9C/</loc>
     <lastmod>2025-09-11T16:09:21+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/categories/%E7%BB%8F%E9%AA%8C%E6%80%BB%E7%BB%93/</loc>
+    <loc>http://localhost:13141/categories/%E7%BB%8F%E9%AA%8C%E6%80%BB%E7%BB%93/</loc>
     <lastmod>2025-09-11T16:09:21+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/posts/</loc>
+    <loc>http://localhost:13141/posts/</loc>
     <lastmod>2025-09-11T16:09:21+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/posts/%E9%A2%84%E7%A0%94%E6%8A%A5%E5%91%8A%E6%A8%A1%E6%9D%BF/</loc>
+    <loc>http://localhost:13141/posts/%E9%A2%84%E7%A0%94%E6%8A%A5%E5%91%8A%E6%A8%A1%E6%9D%BF/</loc>
     <lastmod>2025-09-11T16:09:21+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/tags/git/</loc>
+    <loc>http://localhost:13141/tags/git/</loc>
     <lastmod>2025-09-10T00:00:00+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/posts/git-workflow/</loc>
+    <loc>http://localhost:13141/posts/git-workflow/</loc>
     <lastmod>2025-09-10T00:00:00+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/tags/vision-transformer/</loc>
+    <loc>http://localhost:13141/tags/vision-transformer/</loc>
     <lastmod>2025-09-10T00:00:00+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/posts/vision_transformer_summarys/</loc>
+    <loc>http://localhost:13141/posts/vision_transformer_summarys/</loc>
     <lastmod>2025-09-10T00:00:00+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/tags/%E7%BC%96%E7%A8%8B%E6%8A%80%E5%B7%A7/</loc>
+    <loc>http://localhost:13141/tags/%E7%BC%96%E7%A8%8B%E6%8A%80%E5%B7%A7/</loc>
     <lastmod>2025-09-10T00:00:00+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/</loc>
+    <loc>http://localhost:13141/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/</loc>
     <lastmod>2025-09-10T00:00:00+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/posts/computer-vision-basics/</loc>
+    <loc>http://localhost:13141/posts/computer-vision-basics/</loc>
     <lastmod>2025-09-10T00:00:00+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/categories/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB/</loc>
+    <loc>http://localhost:13141/categories/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB/</loc>
     <lastmod>2025-09-10T00:00:00+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/categories/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/</loc>
+    <loc>http://localhost:13141/categories/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/</loc>
     <lastmod>2025-09-10T00:00:00+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/</loc>
+    <loc>http://localhost:13141/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/</loc>
     <lastmod>2025-09-10T00:00:00+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</loc>
+    <loc>http://localhost:13141/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</loc>
     <lastmod>2025-09-10T00:00:00+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/posts/deep-learning-image-processing/</loc>
+    <loc>http://localhost:13141/posts/deep-learning-image-processing/</loc>
     <lastmod>2025-09-10T00:00:00+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/tags/%E7%AE%97%E6%B3%95/</loc>
+    <loc>http://localhost:13141/tags/%E7%AE%97%E6%B3%95/</loc>
     <lastmod>2025-09-10T00:00:00+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/posts/algorithm-optimization/</loc>
+    <loc>http://localhost:13141/posts/algorithm-optimization/</loc>
     <lastmod>2025-09-10T00:00:00+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/</loc>
+    <loc>http://localhost:13141/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/</loc>
     <lastmod>2025-09-10T00:00:00+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/posts/image-processing-basics/</loc>
+    <loc>http://localhost:13141/posts/image-processing-basics/</loc>
     <lastmod>2025-09-10T00:00:00+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/</loc>
+    <loc>http://localhost:13141/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/</loc>
     <lastmod>2025-09-10T00:00:00+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:57288/404/</loc>
+    <loc>http://localhost:13141/404/</loc>
   </url><url>
-    <loc>http://localhost:57288/about/</loc>
+    <loc>http://localhost:13141/about/</loc>
   </url><url>
-    <loc>http://localhost:57288/search/</loc>
+    <loc>http://localhost:13141/search/</loc>
   </url><url>
-    <loc>http://localhost:57288/archives/</loc>
+    <loc>http://localhost:13141/archives/</loc>
   </url>
 </urlset>

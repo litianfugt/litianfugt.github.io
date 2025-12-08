@@ -1,85 +1,107 @@
-/* 自定义CSS - 使用PaperMod主题变量系统 */
-/* 注意：此文件包含特定功能样式，通用样式请使用redesign.css */
+/* 自定义CSS - 特定功能样式 */
+/* 注意：通用样式已整合到redesign.css中 */
 
-/* 随想页面样式 - 完全使用PaperMod原生变量 */
+/* ===== 随想页面优化 ===== */
+/* 简洁、美观、紧凑的设计原则 */
+
+/* 页面容器 */
 .thoughts-container {
-    max-width: 800px;
+    max-width: 680px; /* 更紧凑的宽度 */
     margin: 0 auto;
     padding: 0 var(--gap);
 }
 
+/* 页面头部 - 简洁设计 */
 .thoughts-header {
     text-align: center;
-    margin-bottom: 2rem;
-    padding: 2rem 0;
+    margin-bottom: 2.5rem;
+    padding: 2rem 0 1.5rem;
+    border-bottom: 1px solid var(--border);
 }
 
 .thoughts-title {
-    font-size: 2rem;
-    margin-bottom: 1rem;
+    font-size: 1.8rem; /* 更合适的标题大小 */
+    margin-bottom: 0.75rem;
     color: var(--primary);
     font-weight: 700;
-    line-height: var(--line-height-tight);
+    line-height: 1.3;
 }
 
 .thoughts-description {
     font-size: var(--font-size-base);
     color: var(--secondary);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
     line-height: var(--line-height-base);
+    opacity: 0.9;
 }
 
 .thoughts-stats {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-    color: var(--secondary);
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--tertiary);
+    font-weight: 500;
 }
 
 .thoughts-separator {
-    color: var(--tertiary);
+    opacity: 0.5;
 }
 
-/* 随想卡片样式 - 使用PaperMod主题变量 */
+/* 随想卡片 - 紧凑设计 */
 .thought-card {
     background: var(--entry);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    transition: all 0.3s ease;
+    padding: 1.25rem; /* 更紧凑的内边距 */
+    margin-bottom: 1.25rem; /* 更紧凑的间距 */
+    transition: all 0.25s ease;
     position: relative;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
 }
 
 .thought-card:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px);
     border-color: var(--primary);
-}
-
-.dark .thought-card {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .dark .thought-card:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
-.thought-header {
+/* 卡片头部 - 简洁布局 */
+.thought-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.thought-author-info {
     display: flex;
     align-items: center;
-    margin-bottom: 1rem;
+    gap: 0.75rem;
 }
 
 .thought-avatar {
-    width: 48px;
-    height: 48px;
+    width: 36px; /* 更小的头像 */
+    height: 36px;
     border-radius: 50%;
-    margin-right: 1rem;
-    border: 2px solid var(--border);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.thought-avatar svg {
+    width: 18px;
+    height: 18px;
 }
 
 .thought-meta {
@@ -89,55 +111,91 @@
 .thought-author {
     font-weight: 600;
     color: var(--primary);
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.125rem;
+    font-size: 0.95rem;
 }
 
 .thought-time {
-    font-size: 0.875rem;
-    color: var(--secondary);
+    font-size: 0.8rem;
+    color: var(--tertiary);
+    opacity: 0.8;
 }
 
-.thought-content {
+.thought-date-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary);
+    background: var(--theme);
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+/* 卡片内容 - 紧凑排版 */
+.thought-card-content {
     margin-bottom: 1rem;
-    line-height: 1.7;
+    line-height: 1.6;
     color: var(--content);
+    font-size: 0.95rem;
 }
 
-.thought-content p {
-    margin-bottom: 1rem;
+.thought-card-content p {
+    margin-bottom: 0.75rem;
 }
 
-.thought-content p:last-child {
+.thought-card-content p:last-child {
     margin-bottom: 0;
 }
 
-/* 随想操作按钮 */
-.thought-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.thought-card-content h1,
+.thought-card-content h2,
+.thought-card-content h3,
+.thought-card-content h4 {
     margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border);
+    margin-bottom: 0.5rem;
+    color: var(--primary);
 }
 
-.thought-date {
-    font-size: 0.875rem;
-    color: var(--secondary);
+.thought-card-content code {
+    font-size: 0.85em;
+    padding: 0.125rem 0.375rem;
+    background: var(--code-bg);
+    border-radius: 3px;
+    color: var(--primary);
+}
+
+.thought-card-content pre {
+    padding: 0.75rem;
+    border-radius: calc(var(--radius) - 2px);
+    overflow-x: auto;
+    margin: 0.75rem 0;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    font-size: 0.85rem;
+}
+
+/* 卡片底部 - 简洁操作栏 */
+.thought-card-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
 }
 
 .thought-action {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
     background: none;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     color: var(--secondary);
     cursor: pointer;
     transition: all 0.2s ease;
-    font-size: 0.875rem;
+    font-size: 0.85rem;
+    font-weight: 500;
 }
 
 .thought-action:hover {
@@ -151,13 +209,20 @@
 }
 
 .action-icon {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
 }
 
 .comment-count {
     font-weight: 600;
     color: var(--primary);
+}
+
+/* 随想列表布局 */
+.thoughts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem; /* 更紧凑的间距 */
 }
 
 /* 内联评论容器 */
@@ -371,11 +436,11 @@
         margin-bottom: 1rem;
     }
     
-    .thought-header {
+    .thought-card .thought-header {
         margin-bottom: 0.75rem;
     }
     
-    .thought-avatar {
+    .thought-card .thought-avatar {
         width: 40px;
         height: 40px;
     }
@@ -437,25 +502,9 @@
         padding: 0.75rem;
     }
     
-    .thought-content {
+    .thought-card .thought-content {
         font-size: 0.95rem;
     }
-}
-
-/* 动画效果 */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.thought-card {
-    animation: fadeIn 0.3s ease-out;
 }
 
 /* 触摸设备优化 */

@@ -2,94 +2,94 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>标签 on 李石原的博客</title>
-    <link>http://localhost:57288/tags/</link>
+    <link>http://localhost:13141/tags/</link>
     <description>Recent content in 标签 on 李石原的博客</description>
     <generator>Hugo -- 0.147.4</generator>
     <language>zh-CN</language>
     <lastBuildDate>Fri, 24 Oct 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:57288/tags/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:13141/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>博客更新</title>
-      <link>http://localhost:57288/tags/%E5%8D%9A%E5%AE%A2%E6%9B%B4%E6%96%B0/</link>
+      <link>http://localhost:13141/tags/%E5%8D%9A%E5%AE%A2%E6%9B%B4%E6%96%B0/</link>
       <pubDate>Fri, 24 Oct 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:57288/tags/%E5%8D%9A%E5%AE%A2%E6%9B%B4%E6%96%B0/</guid>
+      <guid>http://localhost:13141/tags/%E5%8D%9A%E5%AE%A2%E6%9B%B4%E6%96%B0/</guid>
       <description></description>
     </item>
     <item>
       <title>随想</title>
-      <link>http://localhost:57288/tags/%E9%9A%8F%E6%83%B3/</link>
+      <link>http://localhost:13141/tags/%E9%9A%8F%E6%83%B3/</link>
       <pubDate>Fri, 24 Oct 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:57288/tags/%E9%9A%8F%E6%83%B3/</guid>
+      <guid>http://localhost:13141/tags/%E9%9A%8F%E6%83%B3/</guid>
       <description></description>
     </item>
     <item>
       <title>技术写作</title>
-      <link>http://localhost:57288/tags/%E6%8A%80%E6%9C%AF%E5%86%99%E4%BD%9C/</link>
+      <link>http://localhost:13141/tags/%E6%8A%80%E6%9C%AF%E5%86%99%E4%BD%9C/</link>
       <pubDate>Thu, 11 Sep 2025 16:09:21 +0800</pubDate>
-      <guid>http://localhost:57288/tags/%E6%8A%80%E6%9C%AF%E5%86%99%E4%BD%9C/</guid>
+      <guid>http://localhost:13141/tags/%E6%8A%80%E6%9C%AF%E5%86%99%E4%BD%9C/</guid>
       <description></description>
     </item>
     <item>
       <title>Git</title>
-      <link>http://localhost:57288/tags/git/</link>
+      <link>http://localhost:13141/tags/git/</link>
       <pubDate>Wed, 10 Sep 2025 00:00:00 +0800</pubDate>
-      <guid>http://localhost:57288/tags/git/</guid>
+      <guid>http://localhost:13141/tags/git/</guid>
       <description></description>
     </item>
     <item>
       <title>Vision Transformer</title>
-      <link>http://localhost:57288/tags/vision-transformer/</link>
+      <link>http://localhost:13141/tags/vision-transformer/</link>
       <pubDate>Wed, 10 Sep 2025 00:00:00 +0800</pubDate>
-      <guid>http://localhost:57288/tags/vision-transformer/</guid>
+      <guid>http://localhost:13141/tags/vision-transformer/</guid>
       <description></description>
     </item>
     <item>
       <title>编程技巧</title>
-      <link>http://localhost:57288/tags/%E7%BC%96%E7%A8%8B%E6%8A%80%E5%B7%A7/</link>
+      <link>http://localhost:13141/tags/%E7%BC%96%E7%A8%8B%E6%8A%80%E5%B7%A7/</link>
       <pubDate>Wed, 10 Sep 2025 00:00:00 +0800</pubDate>
-      <guid>http://localhost:57288/tags/%E7%BC%96%E7%A8%8B%E6%8A%80%E5%B7%A7/</guid>
+      <guid>http://localhost:13141/tags/%E7%BC%96%E7%A8%8B%E6%8A%80%E5%B7%A7/</guid>
       <description></description>
     </item>
     <item>
       <title>计算机视觉</title>
-      <link>http://localhost:57288/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/</link>
+      <link>http://localhost:13141/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/</link>
       <pubDate>Wed, 10 Sep 2025 00:00:00 +0800</pubDate>
-      <guid>http://localhost:57288/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/</guid>
+      <guid>http://localhost:13141/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/</guid>
       <description></description>
     </item>
     <item>
       <title>人工智能</title>
-      <link>http://localhost:57288/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/</link>
+      <link>http://localhost:13141/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/</link>
       <pubDate>Wed, 10 Sep 2025 00:00:00 +0800</pubDate>
-      <guid>http://localhost:57288/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/</guid>
+      <guid>http://localhost:13141/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/</guid>
       <description></description>
     </item>
     <item>
       <title>深度学习</title>
-      <link>http://localhost:57288/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</link>
+      <link>http://localhost:13141/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</link>
       <pubDate>Wed, 10 Sep 2025 00:00:00 +0800</pubDate>
-      <guid>http://localhost:57288/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</guid>
+      <guid>http://localhost:13141/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</guid>
       <description></description>
     </item>
     <item>
       <title>算法</title>
-      <link>http://localhost:57288/tags/%E7%AE%97%E6%B3%95/</link>
+      <link>http://localhost:13141/tags/%E7%AE%97%E6%B3%95/</link>
       <pubDate>Wed, 10 Sep 2025 00:00:00 +0800</pubDate>
-      <guid>http://localhost:57288/tags/%E7%AE%97%E6%B3%95/</guid>
+      <guid>http://localhost:13141/tags/%E7%AE%97%E6%B3%95/</guid>
       <description></description>
     </item>
     <item>
       <title>图像处理</title>
-      <link>http://localhost:57288/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/</link>
+      <link>http://localhost:13141/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/</link>
       <pubDate>Wed, 10 Sep 2025 00:00:00 +0800</pubDate>
-      <guid>http://localhost:57288/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/</guid>
+      <guid>http://localhost:13141/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/</guid>
       <description></description>
     </item>
     <item>
       <title>性能优化</title>
-      <link>http://localhost:57288/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/</link>
+      <link>http://localhost:13141/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/</link>
       <pubDate>Wed, 10 Sep 2025 00:00:00 +0800</pubDate>
-      <guid>http://localhost:57288/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/</guid>
+      <guid>http://localhost:13141/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/</guid>
       <description></description>
     </item>
   </channel>

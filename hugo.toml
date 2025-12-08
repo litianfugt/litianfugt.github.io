@@ -22,7 +22,7 @@ pygmentsStyle = "monokai"
   [mediaTypes."text/javascript"]
     suffixes = ["js"]
 
-# 主菜单配置
+# 主菜单配置 - 优化版
 [[menu.main]]
   identifier = "home"
   name = "首页"
@@ -36,42 +36,29 @@ pygmentsStyle = "monokai"
   weight = 2
 
 [[menu.main]]
-  identifier = "categories"
-  name = "分类"
-  url = "/categories/"
-  weight = 3
-
-[[menu.main]]
   identifier = "archives"
   name = "归档"
   url = "/archives/"
-  weight = 4
+  weight = 3
 
 [[menu.main]]
   identifier = "thoughts"
   name = "随想"
   url = "/thoughts/"
-  weight = 5
+  weight = 4
 
 [[menu.main]]
   identifier = "about"
   name = "关于"
   url = "/about/"
-  weight = 6
+  weight = 5
 
-# 搜索菜单项
+# 搜索菜单项 - 放在最后，权重最高
 [[menu.main]]
   identifier = "search"
   name = "搜索"
   url = "/search/"
-  weight = 7
-
-# 标签菜单项
-[[menu.main]]
-  identifier = "tags"
-  name = "标签"
-  url = "/tags/"
-  weight = 8
+  weight = 10
 
 # PaperMod 主题配置
 [params]
