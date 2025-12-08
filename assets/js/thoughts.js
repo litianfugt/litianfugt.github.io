@@ -1,252 +1,134 @@
 
-// thoughts.js - 随想页面交互功能
+// thoughts.js - 简洁高效的评论功能
+// 设计原则：简洁、高效、可维护、紧凑
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Thoughts.js: DOM loaded, initializing functionality...');
+(function() {
+    'use strict';
     
-    // 初始化存储系统
-    const storage = {
-        // GitHub Gist 配置
-        // 创建个人访问令牌: https://github.com/settings/tokens
-        // 需要勾选 'gist' 权限
-        gistConfig: {
-            // 尝试从环境变量获取配置，如果没有则使用空值
-            token: typeof window !== 'undefined' && window.GITHUB_GIST_TOKEN ? window.GITHUB_GIST_TOKEN : '',
-            gistId: typeof window !== 'undefined' && window.GITHUB_GIST_ID ? window.GITHUB_GIST_ID : '',
-            filename: 'blog-likes-and-comments.json'
-        },
-        
-        // 获取点赞数据
-        getLikes: async function() {
-            try {
-                // 首先尝试从本地存储获取
-                const localLikes = localStorage.getItem('thoughts-likes');
-                if (localLikes) {
-                    return JSON.parse(localLikes);
-                }
-                
-                // 如果本地没有，尝试从GitHub Gist获取
-                const data = await this.fetchGistData();
-                if (data && data.likes) {
-                    localStorage.setItem('thoughts-likes', JSON.stringify(data.likes));
-                    return data.likes;
-                }
-            } catch (error) {
-                console.warn('Thoughts.js: Failed to fetch likes from GitHub Gist:', error);
-            }
-            
-            return {};
-        },
-        
-        // 保存点赞数据
-        setLikes: async function(likes) {
-            // 保存到本地存储
-            localStorage.setItem('thoughts-likes', JSON.stringify(likes));
-            
-            // 尝试保存到GitHub Gist
-            try {
-                const data = await this.fetchGistData() || {};
-                data.likes = likes;
-                await this.saveGistData(data);
-            } catch (error) {
-                console.error('Thoughts.js: Failed to save likes to GitHub Gist:', error);
-                showNotification('点赞数据已保存到本地，但无法同步到GitHub', 'warning');
-            }
-        },
-        
-        // 获取评论数据
-        getComments: async function(thoughtId) {
-            try {
-                // 首先尝试从本地存储获取
-                const localComments = localStorage.getItem(`thoughts-comments-${thoughtId}`);
-                if (localComments) {
-                    return JSON.parse(localComments);
-                }
-                
-                // 如果本地没有，尝试从GitHub Gist获取
-                const data = await this.fetchGistData();
-                if (data && data.comments && data.comments[thoughtId]) {
-                    localStorage.setItem(`thoughts-comments-${thoughtId}`, JSON.stringify(data.comments[thoughtId]));
-                    return data.comments[thoughtId];
-                }
-            } catch (error) {
-                console.warn('Thoughts.js: Failed to fetch comments from GitHub Gist:', error);
-            }
-            
-            return [];
-        },
-        
-        // 保存评论数据
-        setComments: async function(thoughtId, comments) {
-            // 保存到本地存储
-            localStorage.setItem(`thoughts-comments-${thoughtId}`, JSON.stringify(comments));
-            
-            // 尝试保存到GitHub Gist
-            try {
-                const data = await this.fetchGistData() || {};
-                if (!data.comments) {
-                    data.comments = {};
-                }
-                data.comments[thoughtId] = comments;
-                await this.saveGistData(data);
-            } catch (error) {
-                console.error('Thoughts.js: Failed to save comments to GitHub Gist:', error);
-                showNotification('评论已保存到本地，但无法同步到GitHub', 'warning');
-            }
-        },
-        
-        // 从GitHub Gist获取数据
-        fetchGistData: async function() {
-            // 如果没有配置Gist，返回空对象
-            if (!this.gistConfig.token || !this.gistConfig.gistId) {
-                console.warn('Thoughts.js: GitHub Gist not configured, using local storage only');
-                return {};
-            }
-            
-            try {
-                const response = await fetch(`https://api.github.com/gists/${this.gistConfig.gistId}`, {
-                    headers: {
-                        'Authorization': `token ${this.gistConfig.token}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch gist: ${response.status} ${response.statusText}`);
-                }
-                
-                const gist = await response.json();
-                const content = gist.files[this.gistConfig.filename].content;
-                return JSON.parse(content);
-            } catch (error) {
-                console.error('Thoughts.js: Error fetching Gist data:', error);
-                throw error;
-            }
-        },
-        
-        // 保存数据到GitHub Gist
-        saveGistData: async function(data) {
-            // 如果没有配置Gist，只保存到本地
-            if (!this.gistConfig.token || !this.gistConfig.gistId) {
-                console.warn('Thoughts.js: GitHub Gist not configured, saving to local storage only');
-                return;
-            }
-            
-            try {
-                const response = await fetch(`https://api.github.com/gists/${this.gistConfig.gistId}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Authorization': `token ${this.gistConfig.token}`,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/vnd.github.v3+json'
-                    },
-                    body: JSON.stringify({
-                        files: {
-                            [this.gistConfig.filename]: {
-                                content: JSON.stringify(data, null, 2)
-                            }
-                        }
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`Failed to save gist: ${response.status} ${response.statusText}`);
-                }
-                
-                return await response.json();
-            } catch (error) {
-                console.error('Thoughts.js: Error saving Gist data:', error);
-                throw error;
-            }
+    // 配置常量
+    const CONFIG = {
+        STORAGE_PREFIX: 'thoughts-comments-',
+        NOTIFICATION_DURATION: {
+            SUCCESS: 3000,
+            WARNING: 3000,
+            ERROR: 5000,
+            INFO: 3000
         }
     };
 
-    // 初始化点赞状态
-    async function initializeLikes() {
-        try {
-            const likes = await storage.getLikes();
-            const likeButtons = document.querySelectorAll('.like-btn');
-            
-            if (likeButtons.length === 0) {
-                console.warn('Thoughts.js: No like buttons found');
-                return;
+    // 工具函数
+    const utils = {
+        // 安全获取本地存储数据
+        getStorage: (key, defaultValue = null) => {
+            try {
+                const item = localStorage.getItem(key);
+                return item ? JSON.parse(item) : defaultValue;
+            } catch (error) {
+                console.warn('读取存储失败:', key, error);
+                return defaultValue;
             }
-            
-            likeButtons.forEach(button => {
-                const thoughtId = button.dataset.thoughtId;
-                const likeCount = button.querySelector('.like-count');
-                
-                if (!thoughtId) {
-                    console.warn('Thoughts.js: Like button missing data-thought-id');
-                    return;
-                }
-                
-                if (!likeCount) {
-                    console.warn('Thoughts.js: Like button missing like-count element');
-                    return;
-                }
-                
-                // 恢复点赞状态
-                if (likes[thoughtId] !== undefined) {
-                    // 检查是否已点赞
-                    const userLikes = JSON.parse(localStorage.getItem('thoughts-user-likes') || '{}');
-                    if (userLikes[thoughtId]) {
-                        button.classList.add('liked');
-                    }
-                    likeCount.textContent = likes[thoughtId];
-                } else {
-                    // 初始化随机点赞数
-                    const initialLikes = Math.floor(Math.random() * 10) + 1;
-                    likes[thoughtId] = initialLikes;
-                    likeCount.textContent = initialLikes;
-                }
-            });
-            
-            storage.setLikes(likes);
-        } catch (error) {
-            console.error('Thoughts.js: Error initializing likes:', error);
-        }
-    }
-
-    // 点赞功能
-    async function initializeLikeButtons() {
-        const likeButtons = document.querySelectorAll('.like-btn');
+        },
         
-        likeButtons.forEach(button => {
-            button.addEventListener('click', async function() {
-                const thoughtId = this.dataset.thoughtId;
-                const likeCount = this.querySelector('.like-count');
-                const likes = await storage.getLikes();
-                const userLikes = JSON.parse(localStorage.getItem('thoughts-user-likes') || '{}');
-                
-                // 切换点赞状态
-                if (this.classList.contains('liked')) {
-                    this.classList.remove('liked');
-                    likes[thoughtId] = Math.max(0, likes[thoughtId] - 1);
-                    userLikes[thoughtId] = false;
-                    likeCount.textContent = likes[thoughtId];
-                } else {
-                    this.classList.add('liked');
-                    likes[thoughtId] = (likes[thoughtId] || 0) + 1;
-                    userLikes[thoughtId] = true;
-                    likeCount.textContent = likes[thoughtId];
-                }
-                
-                // 保存到本地存储
-                storage.setLikes(likes);
-                localStorage.setItem('thoughts-user-likes', JSON.stringify(userLikes));
-                
-                // 添加动画效果
-                this.style.transform = 'scale(1.2)';
-                setTimeout(() => {
-                    this.style.transform = 'scale(1)';
-                }, 150);
-                
-                // 显示点赞反馈
-                showNotification(this.classList.contains('liked') ? '已点赞！' : '已取消点赞', 'success');
+        // 安全设置本地存储数据
+        setStorage: (key, value) => {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+                return true;
+            } catch (error) {
+                console.error('写入存储失败:', key, error);
+                return false;
+            }
+        },
+        
+        // 格式化时间
+        formatTime: (timestamp) => {
+            const now = Date.now();
+            const diff = now - new Date(timestamp).getTime();
+            
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 1) return '刚刚';
+            if (minutes < 60) return `${minutes}分钟前`;
+            if (hours < 24) return `${hours}小时前`;
+            if (days < 7) return `${days}天前`;
+            
+            return new Date(timestamp).toLocaleDateString('zh-CN');
+        },
+        
+        // 防抖函数
+        debounce: (func, wait) => {
+            let timeout;
+            return (...args) => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func(...args), wait);
+            };
+        }
+    };
+
+    // 存储管理器
+    const storage = {
+        getComments: (thoughtId) => utils.getStorage(CONFIG.STORAGE_PREFIX + thoughtId, []),
+        setComments: (thoughtId, comments) => utils.setStorage(CONFIG.STORAGE_PREFIX + thoughtId, comments)
+    };
+
+    // 通知系统
+    const notification = {
+        show: (message, type = 'info') => {
+            // 移除已存在的通知
+            document.querySelectorAll('.notification').forEach(n => n.remove());
+            
+            const element = document.createElement('div');
+            element.className = `notification notification-${type}`;
+            element.textContent = message;
+            
+            // 设置样式
+            Object.assign(element.style, {
+                position: 'fixed',
+                top: '20px',
+                right: '20px',
+                padding: '12px 20px',
+                borderRadius: '6px',
+                color: 'white',
+                fontSize: '14px',
+                zIndex: '1000',
+                opacity: '0',
+                transform: 'translateX(100%)',
+                transition: 'all 0.3s ease',
+                maxWidth: '300px',
+                wordWrap: 'break-word',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                fontWeight: '500'
             });
-        });
-    }
+            
+            // 设置背景色
+            const colors = {
+                success: '#4CAF50',
+                warning: '#FF9800',
+                error: '#F44336',
+                info: '#2196F3'
+            };
+            
+            element.style.backgroundColor = colors[type] || colors.info;
+            
+            document.body.appendChild(element);
+            
+            // 显示动画
+            requestAnimationFrame(() => {
+                element.style.opacity = '1';
+                element.style.transform = 'translateX(0)';
+            });
+            
+            // 自动隐藏
+            setTimeout(() => {
+                element.style.opacity = '0';
+                element.style.transform = 'translateX(100%)';
+                setTimeout(() => element.remove(), 300);
+            }, CONFIG.NOTIFICATION_DURATION[type.toUpperCase()] || 3000);
+        }
+    };
+
 
     // 评论功能
     function initializeCommentButtons() {
@@ -620,7 +502,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (isMobile) {
             // 优化触摸反馈
-            const touchElements = document.querySelectorAll('.like-btn, .comment-btn, .comment-submit');
+            const touchElements = document.querySelectorAll('.comment-btn, .comment-submit');
             touchElements.forEach(element => {
                 element.addEventListener('touchstart', function() {
                     this.style.transform = 'scale(0.95)';
@@ -654,35 +536,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 初始化所有功能
     async function initializeAll() {
-        console.log('Thoughts.js: Starting initialization...');
+        console.log('Thoughts.js: 开始初始化...');
         try {
-            await initializeLikes();
-            console.log('Thoughts.js: Likes initialized');
-            
-            await initializeLikeButtons();
-            console.log('Thoughts.js: Like buttons initialized');
-            
             initializeCommentButtons();
-            console.log('Thoughts.js: Comment buttons initialized');
+            console.log('Thoughts.js: 评论按钮初始化完成');
             
             initializeCommentSubmission();
-            console.log('Thoughts.js: Comment submission initialized');
+            console.log('Thoughts.js: 评论提交功能初始化完成');
             
             await initializeCommentCounts();
-            console.log('Thoughts.js: Comment counts initialized');
+            console.log('Thoughts.js: 评论计数初始化完成');
             
             initializeCommentInputHandlers();
-            console.log('Thoughts.js: Comment input handlers initialized');
+            console.log('Thoughts.js: 评论输入处理初始化完成');
             
             initializePostComments();
-            console.log('Thoughts.js: Post comments initialized');
+            console.log('Thoughts.js: 文章评论初始化完成');
             
             optimizeForMobile();
-            console.log('Thoughts.js: Mobile optimization initialized');
+            console.log('Thoughts.js: 移动端优化完成');
             
-            console.log('Thoughts.js: All functionality initialized successfully!');
+            console.log('Thoughts.js: 所有功能初始化成功！');
         } catch (error) {
-            console.error('Thoughts.js: Error during initialization:', error);
+            console.error('Thoughts.js: 初始化过程中出错:', error);
         }
     }
     

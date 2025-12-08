@@ -175,28 +175,6 @@
       </section>
     </aside>
   </div>
-
-  <!-- 统计数据 -->
-  <section class="stats-section">
-    <div class="stats-grid">
-      <div class="stat-item">
-        <div class="stat-number">{{ len (where site.RegularPages "Type" "in" "posts") }}</div>
-        <div class="stat-label">技术文章</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number">{{ len (where site.RegularPages "Type" "in" "thoughts") }}</div>
-        <div class="stat-label">随想笔记</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number">{{ now.Format "2006" }}</div>
-        <div class="stat-label">始于年份</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number">∞</div>
-        <div class="stat-label">持续更新</div>
-      </div>
-    </div>
-  </section>
 </div>
 
 {{- end }}{{/* end profileMode */}}

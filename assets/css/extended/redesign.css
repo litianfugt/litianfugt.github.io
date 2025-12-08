@@ -35,6 +35,60 @@ body {
     color: var(--content);
 }
 
+/* ===== 性能优化 ===== */
+/* 减少不必要的动画和过渡 */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* 优化图片加载 */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* 优化链接样式 */
+a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--secondary);
+}
+
+/* 优化按钮样式 */
+button {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+}
+
+/* 优化表单元素 */
+input,
+textarea,
+select {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+}
+
 /* ===== 头部优化 ===== */
 .header {
     padding: 10px 0;

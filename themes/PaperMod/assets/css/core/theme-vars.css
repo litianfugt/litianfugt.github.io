@@ -1,16 +1,19 @@
 :root {
-    --gap: 24px;
-    --content-gap: 20px;
+    /* 紧凑间距系统 */
+    --gap: 20px;
+    --content-gap: 16px;
     --nav-width: 1024px;
     --main-width: 720px;
-    --header-height: 60px;
-    --footer-height: 60px;
-    --radius: 8px;
+    --header-height: 56px;
+    --footer-height: 56px;
+    --radius: 6px;
+    
+    /* 优化颜色系统 */
     --theme: rgb(255, 255, 255);
     --entry: rgb(255, 255, 255);
     --primary: rgb(30, 30, 30);
-    --secondary: rgb(108, 108, 108);
-    --tertiary: rgb(214, 214, 214);
+    --secondary: rgb(96, 96, 96);
+    --tertiary: rgb(224, 224, 224);
     --content: rgb(31, 31, 31);
     --code-block-bg: rgb(28, 29, 33);
     --code-bg: rgb(245, 245, 245);
