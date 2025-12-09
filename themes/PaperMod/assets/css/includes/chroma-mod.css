@@ -7,18 +7,40 @@
 }
 
 .chroma .lnt {
-    padding: 0 0 0 12px;
+    padding: 0 12px 0 16px;
+    border-right: 1px solid var(--border);
+    background: rgba(128, 128, 128, 0.05);
+    min-width: 2.5em;
+    text-align: right;
+    line-height: 1.6;
+    font-weight: 400;
+    font-size: 0.9em;
+    opacity: 0.7;
 }
 
 .highlight pre.chroma code {
-    padding: 8px 0;
-}
-
-.highlight pre.chroma .line .cl,
-.chroma .ln {
-    padding: 0 10px;
+    padding: 18px 20px;
+    line-height: 1.6;
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', 'Consolas', 'Menlo', monospace;
+    letter-spacing: 0.01em;
 }
 
 .chroma .lntd:last-of-type {
     width: 100%;
+}
+
+.chroma .line {
+    display: flex;
+    white-space: pre;
+    line-height: 1.6;
+    min-height: 1.6em;
+}
+
+.highlight pre.chroma .line .cl,
+.chroma .ln {
+    padding: 0 16px 0 16px;
+    flex: 1;
+    overflow-x: auto;
+    line-height: 1.6;
+    min-height: 1.6em;
 }

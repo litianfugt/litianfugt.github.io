@@ -78,43 +78,7 @@
     </div>
 </main>
 
-<!-- 右侧透明浮窗评论 -->
-<div class="comment-float-panel" id="comment-float-panel">
-    <!-- 展开状态 -->
-    <div class="comment-panel-expanded" id="comment-panel-expanded">
-        <div class="comment-panel-header">
-            <h3 class="comment-panel-title" id="comment-panel-title">评论</h3>
-            <div class="comment-panel-controls">
-                <button class="comment-panel-minimize" id="comment-panel-minimize" title="最小化">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 13H5v-2h14v2z"/>
-                    </svg>
-                </button>
-                <button class="comment-panel-close" id="comment-panel-close" title="关闭">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        <div class="comment-panel-body">
-            <div class="giscus-wrapper" id="float-giscus-comments">
-                <!-- Giscus评论将在这里加载 -->
-                <div class="giscus-loading">加载评论中...</div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- 最小化状态 -->
-    <div class="comment-panel-minimized" id="comment-panel-minimized" style="display: none;">
-        <button class="comment-panel-restore" id="comment-panel-restore" title="展开评论">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
-            </svg>
-            <span class="comment-badge" id="comment-badge">0</span>
-        </button>
-    </div>
-</div>
+<!-- 右侧透明浮窗评论已移除 -->
 
 <!-- 销毁重建的随想评论系统 -->
 {{ if .Site.Params.comments.enable }}
