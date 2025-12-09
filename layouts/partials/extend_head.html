@@ -1,6 +1,6 @@
-{{- /* 自定义头部内容 */ -}}
-<link rel="stylesheet" href="{{ .Site.BaseURL }}css/extended/custom.css">
-<link rel="stylesheet" href="{{ .Site.BaseURL }}css/extended/redesign.css">
+{{- /* 优化版头部内容 */ -}}
+{{- /* 加载优化版CSS，替换原有的custom.css和redesign.css */ -}}
+{{- $css := resources.Get "css/extended/optimized.css" }}{{- if $css }}<link rel="stylesheet" href="{{ $css.RelPermalink }}">{{- end }}
 
 {{- /* 添加Google Analytics（如果配置了ID） */ -}}
 {{- with .Site.Config.Services.GoogleAnalytics.ID }}
@@ -12,6 +12,9 @@
   gtag('config', '{{ . }}');
 </script>
 {{- end }}
+
+{{- /* 添加优化的JavaScript功能 */ -}}
+<script src="{{ .Site.BaseURL }}js/optimized.js" defer></script>
 
 {{- /* 添加页面右侧滚动条功能 */ -}}
 <script src="/js/progress-bar.js" defer></script>

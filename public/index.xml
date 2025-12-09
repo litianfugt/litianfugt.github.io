@@ -17,25 +17,11 @@
 &lt;p&gt;最近逐渐完善这个博客，希望后续自己能够多总结，多反思，拓展自己知识的广度和深度；&lt;/p&gt;</description>
     </item>
     <item>
-      <title>预研报告模板</title>
-      <link>http://localhost:1313/posts/%E9%A2%84%E7%A0%94%E6%8A%A5%E5%91%8A%E6%A8%A1%E6%9D%BF/</link>
-      <pubDate>Thu, 11 Sep 2025 16:09:21 +0800</pubDate>
-      <guid>http://localhost:1313/posts/%E9%A2%84%E7%A0%94%E6%8A%A5%E5%91%8A%E6%A8%A1%E6%9D%BF/</guid>
-      <description>本博客主要结合多年的工作经验，总结了整个预研报告的模板，之后预研可以参考这个模板开展下去</description>
-    </item>
-    <item>
       <title>Git一些学习和使用记录</title>
       <link>http://localhost:1313/posts/git-workflow/</link>
       <pubDate>Wed, 10 Sep 2025 00:00:00 +0800</pubDate>
       <guid>http://localhost:1313/posts/git-workflow/</guid>
       <description>本文详细介绍了Git的基本概念和一些基本使用方式，后续还在不断总结更新</description>
-    </item>
-    <item>
-      <title>vision transformer summary</title>
-      <link>http://localhost:1313/posts/vision_transformer_summarys/</link>
-      <pubDate>Wed, 10 Sep 2025 00:00:00 +0800</pubDate>
-      <guid>http://localhost:1313/posts/vision_transformer_summarys/</guid>
-      <description>本文主要总结一些优秀的视觉transformer，包括其实现原理，或是基于什么模型进行了哪些改进，一来便于后续做一些任务时的模型选型，同时也可以帮助后续优化模型提供一些方向，比如底层视觉任务中，需要模型更好的感知一些细节或者全局结构，这时候可以考虑在频域或者DCT余弦域做attention或者细节提取。</description>
     </item>
     <item>
       <title>计算机视觉基础：从像素到理解</title>

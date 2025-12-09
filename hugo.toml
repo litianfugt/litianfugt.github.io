@@ -105,8 +105,8 @@ pygmentsStyle = "monokai"
   
   # 主页信息设置
   [params.homeInfoParams]
-    Title = "欢迎来到李石原的技术博客"
-    Content = "图像算法工程师，专注于计算机视觉与深度学习技术。在这里分享技术心得、学习笔记和项目经验。"
+    Title = "李石原的技术博客"
+    Content = "图像算法工程师 | 计算机视觉 | 深度学习 | 技术分享"
     
   # 社交链接
   [params.social]
