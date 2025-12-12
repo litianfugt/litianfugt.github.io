@@ -2,84 +2,77 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>首页 on 李石原的博客</title>
-    <link>http://localhost:1314/</link>
+    <link>http://localhost:1313/</link>
     <description>Recent content in 首页 on 李石原的博客</description>
     <generator>Hugo -- 0.147.4</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Fri, 24 Oct 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1314/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 12 Dec 2025 15:58:49 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>最近心态的转变</title>
+      <link>http://localhost:1313/thoughts/202512/12/</link>
+      <pubDate>Fri, 12 Dec 2025 15:58:49 +0800</pubDate>
+      <guid>http://localhost:1313/thoughts/202512/12/</guid>
+      <description>&lt;p&gt;在当前公司工作将近5年了，今年开始对工作开始间接性厌倦，年前开始，五一小长假去自驾游回来又好一些，但是过了一段时间又开始厌倦。所以下半年下定决心要换个工作，顺便换一个方向，比如当前比较流行的多模态大模型，自动驾驶以及具身智能等，一方面这些方向是当前以及将来的趋势，相比于底层视觉算法更有前景，另一方面自己确实也比较感兴趣。然而在成都这方面的岗位相对于一线城市要少很多，同时各个公司都需要在这些方面有实际经验的候选人，要求会比一线城市更高，由此竞争也更大，所以投了很多大厂都不匹配。因此下半年陷入了非常内耗的状态，一方面因为自己工作上没啥积极性而内疚，另一方面因自己无法找到好的机会而气馁，甚至怀疑自己能力。后来慢慢随着时间推移，以及成家后一直有老婆的支持，陆陆续续面试了几家公司，积累了一些面试技巧，包括自我介绍等等，同时也知道自己哪些方面不足，也去学习尽力补了一些知识。这样一方面对transformer以及打模型有了更深入的理解，自己也增加了一些信心。年底拿到了一个多模态相关的offer，但是真的要离开现在的公司，又有很多不舍，一是目前薪资性价比在成都算很好了，另一方面跟同时关系很好，但是想到如果不换方向/公司，几年后被淘汰可能很难找到合适的工作了，更别说换一个方向了。基于这一点，下定了决心要换工作。另一个纠结的点在于，offer要求尽快年前入职，意味着拿不到当前公司的年终奖，虽然换方向有好的前景更重要，但是对于刚买了车又还有一些房贷的我，这个年终奖在当前来说还是很诱人的。于是就慢慢跟候选下家公司沟通，等待他们那边消息，有点担心搞砸了，因为之前以年终奖为由要了更高一点的薪资，这导致前段时间有点内耗。不过最近慢慢的把这些说出来，跟老婆也好，跟朋友也好，心态慢慢的好起来了，当前可以再看看其他机会，发现还是有很多可能性，不要局限于当前的一个offer，即便搞砸了，拿到年终奖后，年后也可以再看看机会，平时增强自身的竞争力后面总有的是机会，或者放弃年终奖，入职下家换方向，快速积累经验当跳板。当这些所有的结果我都能接受的时候，心态自然就好起来了，真的要变得更强，心态和能力都要变强。&lt;/p&gt;</description>
+    </item>
     <item>
       <title>博客随想功能上线了</title>
-      <link>http://localhost:1314/thoughts/2025-10-24-first-thought/</link>
+      <link>http://localhost:1313/thoughts/2025-10-24-first-thought/</link>
       <pubDate>Fri, 24 Oct 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1314/thoughts/2025-10-24-first-thought/</guid>
+      <guid>http://localhost:1313/thoughts/2025-10-24-first-thought/</guid>
       <description>&lt;p&gt;今天对博客进行了一些优化，增加了这个&amp;quot;随想&amp;quot;页面，希望可以更方便地记录日常的想法和感悟。&lt;/p&gt;
 &lt;p&gt;最近逐渐完善这个博客，希望后续自己能够多总结，多反思，拓展自己知识的广度和深度；&lt;/p&gt;</description>
     </item>
     <item>
-      <title>预研报告模板</title>
-      <link>http://localhost:1314/posts/%E9%A2%84%E7%A0%94%E6%8A%A5%E5%91%8A%E6%A8%A1%E6%9D%BF/</link>
-      <pubDate>Thu, 11 Sep 2025 16:09:21 +0800</pubDate>
-      <guid>http://localhost:1314/posts/%E9%A2%84%E7%A0%94%E6%8A%A5%E5%91%8A%E6%A8%A1%E6%9D%BF/</guid>
-      <description>本博客主要结合多年的工作经验，总结了整个预研报告的模板，之后预研可以参考这个模板开展下去</description>
-    </item>
-    <item>
       <title>Git一些学习和使用记录</title>
-      <link>http://localhost:1314/posts/git-workflow/</link>
+      <link>http://localhost:1313/posts/git-workflow/</link>
       <pubDate>Wed, 10 Sep 2025 00:00:00 +0800</pubDate>
-      <guid>http://localhost:1314/posts/git-workflow/</guid>
+      <guid>http://localhost:1313/posts/git-workflow/</guid>
       <description>本文详细介绍了Git的基本概念和一些基本使用方式，后续还在不断总结更新</description>
     </item>
     <item>
-      <title>vision transformer summary</title>
-      <link>http://localhost:1314/posts/vision_transformer_summarys/</link>
-      <pubDate>Wed, 10 Sep 2025 00:00:00 +0800</pubDate>
-      <guid>http://localhost:1314/posts/vision_transformer_summarys/</guid>
-      <description>本文主要总结一些优秀的视觉transformer，包括其实现原理，或是基于什么模型进行了哪些改进，一来便于后续做一些任务时的模型选型，同时也可以帮助后续优化模型提供一些方向，比如底层视觉任务中，需要模型更好的感知一些细节或者全局结构，这时候可以考虑在频域或者DCT余弦域做attention或者细节提取。</description>
-    </item>
-    <item>
       <title>计算机视觉基础：从像素到理解</title>
-      <link>http://localhost:1314/posts/computer-vision-basics/</link>
+      <link>http://localhost:1313/posts/computer-vision-basics/</link>
       <pubDate>Wed, 10 Sep 2025 00:00:00 +0800</pubDate>
-      <guid>http://localhost:1314/posts/computer-vision-basics/</guid>
+      <guid>http://localhost:1313/posts/computer-vision-basics/</guid>
       <description>本文全面介绍了计算机视觉的基础知识，从图像表示、基本处理到高级特征提取和目标检测，帮助读者理解计算机如何看懂图像。</description>
     </item>
     <item>
       <title>深度学习在图像处理中的应用</title>
-      <link>http://localhost:1314/posts/deep-learning-image-processing/</link>
+      <link>http://localhost:1313/posts/deep-learning-image-processing/</link>
       <pubDate>Wed, 10 Sep 2025 00:00:00 +0800</pubDate>
-      <guid>http://localhost:1314/posts/deep-learning-image-processing/</guid>
+      <guid>http://localhost:1313/posts/deep-learning-image-processing/</guid>
       <description>探讨深度学习技术在图像处理领域的应用，包括卷积神经网络、图像分类、目标检测和图像分割等前沿技术。</description>
     </item>
     <item>
       <title>算法优化：提升代码性能的实用技巧</title>
-      <link>http://localhost:1314/posts/algorithm-optimization/</link>
+      <link>http://localhost:1313/posts/algorithm-optimization/</link>
       <pubDate>Wed, 10 Sep 2025 00:00:00 +0800</pubDate>
-      <guid>http://localhost:1314/posts/algorithm-optimization/</guid>
+      <guid>http://localhost:1313/posts/algorithm-optimization/</guid>
       <description>探讨算法优化的基本原则和实用技巧，包括时间复杂度分析、空间优化和常见算法的优化方法。</description>
     </item>
     <item>
       <title>图像处理基础：从像素到滤波</title>
-      <link>http://localhost:1314/posts/image-processing-basics/</link>
+      <link>http://localhost:1313/posts/image-processing-basics/</link>
       <pubDate>Wed, 10 Sep 2025 00:00:00 +0800</pubDate>
-      <guid>http://localhost:1314/posts/image-processing-basics/</guid>
+      <guid>http://localhost:1313/posts/image-processing-basics/</guid>
       <description>本文介绍了图像处理的基础知识，包括图像表示、基本操作、滤波器设计和图像增强技术，为计算机视觉学习打下基础。</description>
     </item>
     <item>
       <title>404 页面不存在</title>
-      <link>http://localhost:1314/404/</link>
+      <link>http://localhost:1313/404/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1314/404/</guid>
+      <guid>http://localhost:1313/404/</guid>
       <description>&lt;h1 id=&#34;404---页面不存在&#34;&gt;404 - 页面不存在&lt;/h1&gt;
 &lt;p&gt;抱歉，您访问的页面不存在。&lt;/p&gt;
 &lt;h2 id=&#34;您可以尝试&#34;&gt;您可以尝试：&lt;/h2&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://localhost:1314/&#34;&gt;返回首页&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://localhost:1314/posts/&#34;&gt;查看文章列表&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://localhost:1314/search/&#34;&gt;使用搜索功能&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://localhost:1314/sitemap.xml&#34;&gt;查看网站地图&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/&#34;&gt;返回首页&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/posts/&#34;&gt;查看文章列表&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/search/&#34;&gt;使用搜索功能&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/sitemap.xml&#34;&gt;查看网站地图&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;如果问题仍然存在，请通过&lt;a href=&#34;http://localhost:1314/about/&#34;&gt;关于页面&lt;/a&gt;中的联系方式与我联系。&lt;/p&gt;</description>
+&lt;p&gt;如果问题仍然存在，请通过&lt;a href=&#34;http://localhost:1313/about/&#34;&gt;关于页面&lt;/a&gt;中的联系方式与我联系。&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

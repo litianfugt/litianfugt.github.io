@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>深度学习 on 李石原的博客</title>
-    <link>http://localhost:1314/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</link>
+    <link>http://localhost:1313/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</link>
     <description>Recent content in 深度学习 on 李石原的博客</description>
     <generator>Hugo -- 0.147.4</generator>
     <language>zh-CN</language>
     <lastBuildDate>Wed, 10 Sep 2025 00:00:00 +0800</lastBuildDate>
-    <atom:link href="http://localhost:1314/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>深度学习在图像处理中的应用</title>
-      <link>http://localhost:1314/posts/deep-learning-image-processing/</link>
+      <link>http://localhost:1313/posts/deep-learning-image-processing/</link>
       <pubDate>Wed, 10 Sep 2025 00:00:00 +0800</pubDate>
-      <guid>http://localhost:1314/posts/deep-learning-image-processing/</guid>
+      <guid>http://localhost:1313/posts/deep-learning-image-processing/</guid>
       <description>探讨深度学习技术在图像处理领域的应用，包括卷积神经网络、图像分类、目标检测和图像分割等前沿技术。</description>
     </item>
   </channel>
