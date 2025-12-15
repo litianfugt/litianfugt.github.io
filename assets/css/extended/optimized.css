@@ -895,6 +895,26 @@ button {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
+/* 锚点定位高亮效果 */
+.thought-card.highlighted {
+    border-color: var(--primary);
+    background: var(--theme);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+    animation: highlightPulse 2s ease-in-out;
+}
+
+@keyframes highlightPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 6px rgba(var(--primary-rgb), 0.1);
+    }
+    100% {
+        box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+    }
+}
+
 /* 卡片头部 */
 .thought-card-header {
     display: flex;

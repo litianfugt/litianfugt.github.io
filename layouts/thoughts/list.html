@@ -733,9 +733,40 @@
         }
     };
 
+    // 处理URL锚点定位
+    function handleAnchorScroll() {
+        const hash = window.location.hash;
+        if (hash) {
+            const thoughtId = hash.substring(1); // 移除 # 符号
+            const targetElement = document.querySelector(`[data-thought-id="${thoughtId}"]`);
+            
+            if (targetElement) {
+                // 等待页面完全加载后再滚动
+                setTimeout(() => {
+                    targetElement.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
+                    });
+                    
+                    // 添加高亮效果
+                    targetElement.classList.add('highlighted');
+                    setTimeout(() => {
+                        targetElement.classList.remove('highlighted');
+                    }, 2000);
+                }, 500);
+            }
+        }
+    }
+
     // 初始化
     document.addEventListener('DOMContentLoaded', function() {
         GiscusManager.init();
+        handleAnchorScroll();
+    });
+
+    // 监听浏览器前进后退按钮
+    window.addEventListener('popstate', function() {
+        handleAnchorScroll();
     });
 </script>
 {{ end }}

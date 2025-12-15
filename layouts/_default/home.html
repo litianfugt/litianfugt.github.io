@@ -114,7 +114,7 @@
               <span class="thought-date">{{ .Date.Format "01/02" }}</span>
             </div>
             <div class="thought-content">
-              <a href="{{ .Permalink }}" class="thought-text">{{ .Content | plainify | truncate 40 }}</a>
+              <a href="/thoughts/#{{ .File.BaseFileName }}" class="thought-text">{{ .Content | plainify | truncate 40 }}</a>
             </div>
           </article>
           {{- end }}
