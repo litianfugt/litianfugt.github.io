@@ -1,7 +1,7 @@
 ---
 title: "How-to-Config-Llamafactory-Env-on-Huawei910b"
 date: 2026-01-21T10:47:06+08:00
-draft: true
+draft: false
 description: "主要介绍如何基于移动AI开发平台的基础昇腾910b的镜像构建LlamaFactory的运行环境"
 keywords: []
 tags: [‘llamafactory’，‘huawei910b’]
