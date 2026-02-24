@@ -23,14 +23,14 @@
 <div class="hero-banner">
   <div class="hero-content">
     <div class="hero-avatar">
-      <img src="https://github.com/{{ site.Params.social.GitHub }}.png" alt="{{ site.Author.name }}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <img src="https://github.com/{{ site.Params.social.GitHub }}.png" alt="{{ site.Params.author }}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
       <svg class="avatar-fallback" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
         <circle cx="12" cy="7" r="4"></circle>
       </svg>
     </div>
     <div class="hero-info">
-      <h1 class="hero-name">{{ site.Author.name | default "李石原" }}</h1>
+      <h1 class="hero-name">{{ site.Params.author | default "李石原" }}</h1>
       <p class="hero-slogan">{{ site.Params.homeInfoParams.Content | default "图像算法工程师 | 计算机视觉 | 深度学习" }}</p>
       <div class="hero-social">
         <a href="https://github.com/{{ site.Params.social.GitHub }}" target="_blank" rel="noopener" class="social-link">
