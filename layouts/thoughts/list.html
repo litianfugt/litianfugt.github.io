@@ -33,7 +33,7 @@
                             </svg>
                         </div>
                         <div class="thought-meta">
-                            <div class="thought-author">{{ .Site.Author.name | default "李石原" }}</div>
+                            <div class="thought-author">{{ site.Params.author | default "李石原" }}</div>
                             <div class="thought-time">{{ .Date.Format "2006-01-02 15:04" }}</div>
                         </div>
                     </div>
