@@ -22,7 +22,7 @@ pygmentsStyle = "monokai"
   [mediaTypes."text/javascript"]
     suffixes = ["js"]
 
-# 主菜单配置 - 优化版
+# 主菜单配置
 [[menu.main]]
   identifier = "home"
   name = "首页"
@@ -53,7 +53,6 @@ pygmentsStyle = "monokai"
   url = "/about/"
   weight = 5
 
-# 搜索菜单项 - 放在最后，权重最高
 [[menu.main]]
   identifier = "search"
   name = "搜索"
@@ -66,6 +65,8 @@ pygmentsStyle = "monokai"
   description = "李石原的个人技术博客，专注于图像算法、计算机视觉和深度学习技术分享"
   author = "李石原"
   keywords = ["图像算法", "计算机视觉", "深度学习", "机器学习", "技术博客"]
+
+  # 文章显示选项
   ShowReadingTime = true
   ShowShareButtons = false
   ShowPostNavLinks = true
@@ -74,21 +75,19 @@ pygmentsStyle = "monokai"
   ShowWordCount = true
   ShowRssButtonInSectionTermList = true
   UseHugoToc = true
-  disableSpecial1stPost = false
-  disableScrollToTop = false
-  hidemeta = false
-  hideSummary = false
   showtoc = true
   tocopen = false
-  
-  # 启用搜索功能
+
+  # 滚动与动画
+  disableScrollToTop = false
+
+  # 搜索配置
   [params.search]
     enable = true
     maxResults = 10
     contentLength = 1000
     highlight = true
-    
-  # Fuse.js 搜索选项
+
   [params.fuseOpts]
     isCaseSensitive = false
     shouldSort = true
@@ -98,76 +97,60 @@ pygmentsStyle = "monokai"
     minMatchCharLength = 2
     keys = ["title", "permalink", "summary", "content"]
     limit = 10
-    
-  # 深色模式设置
+
+  # 深色模式
   defaultTheme = "auto"
   disableThemeToggle = false
-  
-  # 主页信息设置
+
+  # 主页信息
   [params.homeInfoParams]
     Title = "李石原的技术博客"
     Content = "图像算法工程师 | 计算机视觉 | 深度学习 | 技术分享"
-    
+
   # 社交链接
   [params.social]
     GitHub = "litianfugt"
     Email = "diego_litianfu@163.com"
     RSS = true
-    
-  # 标签页配置
+
+  # 网站图标
   [params.label]
     text = "首页"
     icon = "/apple-touch-icon.png"
     iconHeight = 35
-    
-  # 资料配置
+
+  # 头像模式（未启用）
   [params.profileMode]
     enabled = false
-    title = "李石原"
-    imageUrl = "https://example.com/avatar.jpg"
-    imageTitle = "我的头像"
-    imageWidth = 120
-    imageHeight = 120
-    subtitle = "图像算法工程师 | 计算机视觉 | 深度学习"
-    
-  
 
-  # SEO优化配置
+  # SEO 配置
   [params.seo]
-    # 图片默认描述
-    image = "https://example.com/default-image.jpg"
-    # Twitter卡片配置
     twitterCard = "summary_large_image"
-    # OpenGraph默认图片
-    ogImage = "https://example.com/default-image.jpg"
 
-  # 评论系统配置（可选）
+  # 评论系统
   [params.comments]
     enable = true
-    
-    # Giscus评论系统配置
     [params.comments.giscus]
-      repo = "litianfugt/litianfugt.github.io"  # 替换为您的GitHub仓库
-      repoId = "R_kgDOPkZVNQ"   # 替换为您的仓库ID
-      category = "General"  # 替换为您在仓库中创建的讨论类别
-      categoryId = "DIC_kwDOPkZVNc4Cv3cN" # 替换为您的讨论类别ID
-      mapping = "pathname"       # 映射方式：specific, pathname, url, title, og:title
-      strict = "0"               # 严格模式：0（默认）或 1
-      reactionsEnabled = "1"     # 启用反应：1（默认）或 0
-      emitMetadata = "1"         # 发射元数据：0（默认）或 1
-      inputPosition = "bottom"   # 输入框位置：top 或 bottom（默认）
-      theme = "preferred_color_scheme"  # 主题：light, dark, preferred_color_scheme（默认）
-      lang = "zh-CN"            # 语言：zh-CN（默认）或其他语言代码
-      loading = "lazy"          # 加载方式：lazy（默认）或 eager
+      repo = "litianfugt/litianfugt.github.io"
+      repoId = "R_kgDOPkZVNQ"
+      category = "General"
+      categoryId = "DIC_kwDOPkZVNc4Cv3cN"
+      mapping = "pathname"
+      strict = "0"
+      reactionsEnabled = "1"
+      emitMetadata = "1"
+      inputPosition = "bottom"
+      theme = "preferred_color_scheme"
+      lang = "zh-CN"
+      loading = "lazy"
 
-# 搜索输出格式
+# 输出格式
 [outputs]
   home = ["HTML", "RSS", "JSON"]
   section = ["HTML", "RSS"]
   taxonomy = ["HTML", "RSS"]
   term = ["HTML", "RSS"]
 
-# 搜索索引配置
 [outputFormats]
   [outputFormats.JSON]
     mediaType = "application/json"
@@ -175,7 +158,7 @@ pygmentsStyle = "monokai"
     isHTML = false
     notAlternative = true
 
-# 自定义CSS
+# Markdown 配置
 [markup]
   [markup.goldmark]
     [markup.goldmark.renderer]

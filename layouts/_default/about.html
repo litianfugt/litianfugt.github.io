@@ -1,0 +1,17 @@
+{{- define "main" }}
+
+<article class="post-single about-page">
+  <header class="post-header about-header">
+    <h1 class="about-title">
+      <span class="title-text">{{ .Title }}</span>
+    </h1>
+  </header>
+
+  <div class="post-content about-content">
+    {{- if not (.Param "disableAnchoredHeadings") }}
+    {{- partial "anchored_headings.html" .Content -}}
+    {{- else }}{{ .Content }}{{ end }}
+  </div>
+</article>
+
+{{- end }}{{- /* end main */}}

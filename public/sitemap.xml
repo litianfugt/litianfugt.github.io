@@ -2,13 +2,31 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/categories/%E7%94%9F%E6%B4%BB/</loc>
-    <lastmod>2025-12-15T17:44:24+08:00</lastmod>
+    <loc>http://localhost:1313/posts/how-to-config-llamafactory-env-on-huawei910b/</loc>
+    <lastmod>2026-01-21T10:47:06+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/huawei910b/</loc>
+    <lastmod>2026-01-21T10:47:06+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/llamafactory/</loc>
+    <lastmod>2026-01-21T10:47:06+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/</loc>
+    <lastmod>2026-01-21T10:47:06+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/</loc>
+    <lastmod>2026-01-21T10:47:06+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/categories/</loc>
-    <lastmod>2025-12-15T17:44:24+08:00</lastmod>
+    <lastmod>2026-01-21T10:47:06+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/</loc>
+    <lastmod>2026-01-21T10:47:06+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/</loc>
+    <lastmod>2026-01-21T10:47:06+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/categories/%E7%94%9F%E6%B4%BB/</loc>
     <lastmod>2025-12-15T17:44:24+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/thoughts/</loc>
@@ -23,9 +41,6 @@
     <loc>http://localhost:1313/thoughts/202512/12/</loc>
     <lastmod>2025-12-12T15:58:49+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/</loc>
-    <lastmod>2025-10-24T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>http://localhost:1313/tags/%E5%8D%9A%E5%AE%A2%E6%9B%B4%E6%96%B0/</loc>
     <lastmod>2025-10-24T00:00:00+00:00</lastmod>
   </url><url>
@@ -34,9 +49,6 @@
   </url><url>
     <loc>http://localhost:1313/tags/%E9%9A%8F%E6%83%B3/</loc>
     <lastmod>2025-10-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/posts/</loc>
-    <lastmod>2025-09-11T16:09:21+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/git/</loc>
     <lastmod>2025-09-10T00:00:00+08:00</lastmod>
