@@ -939,6 +939,12 @@ button {
     box-shadow: var(--shadow-md);
 }
 
+/* Dark mode hover */
+.dark .article-item:hover {
+    background: var(--theme);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
 .article-meta {
     display: flex;
     justify-content: space-between;
@@ -1752,13 +1758,20 @@ button {
 
 /* ===== Hero Banner ===== */
 .hero-banner {
-    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #EC4899 100%);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+    border: 1px solid var(--border);
     border-radius: 16px;
     padding: 40px;
     margin-bottom: 32px;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(79, 70, 229, 0.25);
+    box-shadow: var(--shadow-md);
+}
+
+.dark .hero-banner {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15);
 }
 
 .hero-content {
@@ -1918,6 +1931,12 @@ button {
     box-shadow: var(--shadow-md);
 }
 
+/* Dark mode hover */
+.dark .article-card:hover {
+    background: var(--entry);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
 .article-card-meta {
     display: flex;
     gap: 12px;
@@ -1992,6 +2011,12 @@ button {
     transform: translateY(-2px);
 }
 
+/* Dark mode hover */
+.dark .thought-card-mini:hover {
+    background: var(--theme);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
 .thought-date-mini {
     font-size: 0.75rem;
     font-weight: 600;
@@ -2035,6 +2060,11 @@ button {
 
 .sidebar-card:hover {
     border-color: var(--primary);
+}
+
+/* Dark mode hover */
+.dark .sidebar-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .sidebar-title {

@@ -12,8 +12,8 @@ This is a personal blog built with **Hugo** and the **PaperMod** theme. It featu
 # Start development server with live reload
 hugo server
 
-# Build for production (outputs to public/)
-hugo
+# Build for production (outputs to public/, minified)
+hugo --minify
 
 # Build including drafts
 hugo -D
@@ -32,7 +32,7 @@ Both support comments via Giscus (GitHub Discussions).
   - `layouts/_default/home.html`: Custom homepage with articles/thoughts grid
   - `layouts/partials/`: Reusable components (comments, etc.)
   - `layouts/thoughts/`: Thought-specific templates
-- `static/js/`: JavaScript files (thoughts.js handles likes/comments via Gist API, progress-bar.js)
+- `static/js/`: JavaScript files (thoughts.js handles mobile touch optimization, progress-bar.js)
 - `assets/css/extended/`: Custom CSS overrides
 - `content/`: Blog content (posts, thoughts, about, etc.)
 
@@ -46,7 +46,7 @@ All config in `hugo.toml`:
 
 ## Deployment
 
-GitHub Actions workflow at `.github/workflows/deploy.yaml` auto-deploys to GitHub Pages on push to main branch. The workflow also handles GitHub Gist configuration for likes/comments (see below).
+GitHub Actions workflow at `.github/workflows/deploy.yaml` auto-deploys to GitHub Pages on push to main branch.
 
 ## GitHub Gist Integration (Likes & Comments)
 

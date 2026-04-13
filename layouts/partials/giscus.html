@@ -1,0 +1,126 @@
+{{- /* 统一的评论系统 - Giscus集成 */ -}}
+{{- if .Site.Params.comments.enable }}
+<div class="giscus-wrapper">
+    <div class="giscus-header">
+        <h3 class="giscus-title">参与讨论</h3>
+        <p class="giscus-subtitle">欢迎在下方留下您的想法和见解</p>
+    </div>
+
+    <div class="giscus-container">
+        <script src="https://giscus.app/client.js"
+                data-repo="{{ .Site.Params.comments.giscus.repo }}"
+                data-repo-id="{{ .Site.Params.comments.giscus.repoId }}"
+                data-category="{{ .Site.Params.comments.giscus.category }}"
+                data-category-id="{{ .Site.Params.comments.giscus.categoryId }}"
+                data-mapping="pathname"
+                data-strict="0"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="bottom"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async>
+        </script>
+    </div>
+</div>
+
+<style>
+.giscus-wrapper {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: var(--theme);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.giscus-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.giscus-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin: 0 0 0.5rem 0;
+}
+
+.giscus-subtitle {
+    color: var(--secondary);
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.giscus-container {
+    min-height: 200px;
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .giscus-wrapper {
+        margin-top: 1.5rem;
+        padding: 1rem;
+    }
+
+    .giscus-title {
+        font-size: 1.25rem;
+    }
+}
+
+/* Dark mode adjustments */
+.dark .giscus-wrapper {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+</style>
+
+<script>
+// Giscus theme sync - unified implementation
+document.addEventListener('DOMContentLoaded', function() {
+    const updateGiscusTheme = () => {
+        const isDark = document.body.classList.contains('dark');
+        const theme = isDark ? 'dark' : 'light';
+
+        const giscusFrames = document.querySelectorAll('.giscus-container iframe.giscus-frame');
+        giscusFrames.forEach(frame => {
+            try {
+                frame.contentWindow.postMessage({
+                    giscus: {
+                        setConfig: {
+                            theme: theme
+                        }
+                    }
+                }, 'https://giscus.app');
+            } catch (error) {
+                console.warn('Giscus: Failed to update theme:', error);
+            }
+        });
+    };
+
+    // Listen for theme changes via MutationObserver
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                setTimeout(updateGiscusTheme, 100);
+            }
+        });
+    });
+
+    observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class']
+    });
+
+    // Initial theme update
+    setTimeout(updateGiscusTheme, 500);
+
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        setTimeout(updateGiscusTheme, 100);
+    });
+});
+</script>
+{{- end }}
