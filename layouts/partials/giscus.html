@@ -114,9 +114,6 @@ document.addEventListener('DOMContentLoaded', function() {
         attributeFilter: ['class']
     });
 
-    // Initial theme update
-    setTimeout(updateGiscusTheme, 500);
-
     // Listen for system theme changes
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
         setTimeout(updateGiscusTheme, 100);
